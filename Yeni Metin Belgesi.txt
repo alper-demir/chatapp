@@ -1,0 +1,95 @@
+# MERN Chat Uygulaması - MVP Geliştirme Kılavuzu
+
+## 1. Proje Amacı
+Bu proje, birebir ve grup sohbetlerini destekleyen, sesli mesaj gönderebilme özelliği olan ve uçtan uca şifrelenmiş bir chat uygulaması geliştirmeyi hedeflemektedir. Yapı, SOLID prensiplerine uygun olacak şekilde esnek ve ölçeklenebilir tasarlanacaktır. Gelecekte yeni özellikler eklemeyi kolaylaştıracak bir mimari benimsenecektir.
+
+## 2. Kullanılacak Teknolojiler ve Araçlar
+
+### **Frontend (React + Vite + Tailwind CSS)**
+- **React.js** - Kullanıcı arayüzünü oluşturmak için.
+- **Vite** - Hızlı geliştirme ortamı ve build sürecini optimize etmek için.
+- **Tailwind CSS** - Modern ve hızlı stil yönetimi için.
+- **React Router** - Sayfalar arası yönlendirme için.
+- **Zustand veya Redux Toolkit** - Durum yönetimi için.
+- **socket.io-client** - Gerçek zamanlı iletişim için.
+- **React Hook Form + Yup** - Form yönetimi ve doğrulama için.
+- **react-hot-toast** - Kullanıcı bildirimleri için.
+
+### **Backend (Node.js + Express.js)**
+- **Node.js** - Backend geliştirme platformu.
+- **Express.js** - REST API geliştirmek için.
+- **Socket.io** - Gerçek zamanlı mesajlaşma altyapısı için.
+- **MongoDB Atlas** - Bulut tabanlı NoSQL veritabanı.
+- **Mongoose** - MongoDB ile etkileşim için ODM kütüphanesi.
+- **Firebase Authentication** - Google ile giriş için.
+- **bcryptjs** - Şifre hashleme için.
+- **jsonwebtoken (JWT)** - Kullanıcı oturum yönetimi için.
+- **Multer + Cloudinary** - Medya dosyalarını yönetmek için.
+- **winston** - Loglama yönetimi için.
+
+## 3. Veritabanı Modelleri
+### **User Model**
+```js
+const UserSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  avatar: { type: String },
+  createdAt: { type: Date, default: Date.now }
+});
+```
+
+### **Conversation Model**
+```js
+const ConversationSchema = new mongoose.Schema({
+  participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  isGroup: { type: Boolean, default: false },
+  groupName: { type: String },
+  createdAt: { type: Date, default: Date.now }
+});
+```
+
+### **Message Model**
+```js
+const MessageSchema = new mongoose.Schema({
+  conversationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Conversation', required: true },
+  sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  text: { type: String },
+  audioUrl: { type: String },
+  createdAt: { type: Date, default: Date.now }
+});
+```
+
+## 4. Uçtan Uca Şifreleme
+- **crypto** modülü ile mesajları şifreleyip çözeceğiz.
+- Kullanıcılar için RSA tabanlı anahtar çifti oluşturulacak.
+- AES-256 ile mesajları şifreleyip ileteceğiz.
+
+## 5. SOLID Prensipleri ve Yapılandırma
+- **Single Responsibility Principle (SRP):** Her model ve servis tek bir sorumluluk alacak.
+- **Open/Closed Principle (OCP):** Yeni özellik eklemek mevcut kodları değiştirmeden mümkün olacak.
+- **Liskov Substitution Principle (LSP):** Kullanıcı rolleri genişletilebilir olacak.
+- **Interface Segregation Principle (ISP):** Modüller birbirinden bağımsız çalışabilecek.
+- **Dependency Inversion Principle (DIP):** Bağımlılıklar soyut katmanlar üzerinden yönetilecek.
+
+## 6. Yol Haritası
+### **1. Hafta - Proje Temelleri**
+- Proje yapısını oluşturma.
+- Veritabanı modellerini ve ilişkileri belirleme.
+- Kullanıcı kimlik doğrulama (JWT & Google Auth).
+
+### **2. Hafta - Mesajlaşma Sistemi**
+- Gerçek zamanlı mesajlaşmayı socket.io ile geliştirme.
+- Sesli mesaj yükleme ve oynatma entegrasyonu.
+
+### **3. Hafta - Uçtan Uca Şifreleme**
+- Mesaj şifreleme ve çözme mekanizmasını ekleme.
+- Güvenlik testleri yapma.
+
+### **4. Hafta - UI/UX ve Son Dokunuşlar**
+- Responsive tasarım ve animasyonlar.
+- Testler ve hata düzeltmeleri.
+- Uygulamayı dağıtma (Vercel / Railway / Render).
+
+Bu yapı, gelecekte yeni özellikler eklemeyi kolaylaştıracak şekilde tasarlanmıştır. Herhangi bir aşamayı detaylandırmak istersen bana bildirebilirsin! 🚀
+

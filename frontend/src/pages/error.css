@@ -1,0 +1,26 @@
+/* Animasyon tanımı */
+@keyframes scale {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+  
+  .animate-404 {
+    animation: scale 2s infinite;
+  }
+  
+  /* Kart için Glassmorphism efektini garantile */
+  .error-card {
+    background: rgba(255, 255, 255, 0.1); /* Şeffaf beyaz */
+    backdrop-filter: blur(10px); /* Bulanıklık efekti */
+    -webkit-backdrop-filter: blur(10px); /* Safari desteği için */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Hafif kenarlık */
+    border-radius: 1rem; /* Yuvarlak köşeler */
+    padding: 2rem;
+    max-width: 28rem; /* max-w-md */
+    text-align: center;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+  }
