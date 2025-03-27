@@ -2,6 +2,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import socket from "../socket/init";
 
 const URL = import.meta.env.VITE_SERVER_URL;
 
@@ -73,22 +74,65 @@ const ChatLayout = () => {
     // Sohbetleri API'den çekme
     const fetchConversations = async () => {
         try {
-            const response = await fetch(`${URL}/conversation/get/${userId}`, {
-                method: "GET",
-            });
+            const response = await fetch(`${URL}/conversation/get/${userId}`, { method: "GET" });
+            if (!response.ok) throw new Error("Sohbetler alınırken hata oluştu");
+            const data = await response.json();
+            setConversations(data);
+        } catch (error) {
+            console.error("Sohbetler alınırken hata oluştu: ", error);
+            setConversations([]);
+        }
+    };
+
+    const handleCreateGroup = async () => {
+        try {
+
+            const response = await fetch(`${URL}/conversation/create`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    participants: ["67dc1ac0fff366f30708cebf", "67dc1ac7fff366f30708cec3", "67dec4f5dab4c3699feb4816"],
+                    isGroup: true,
+                    groupName: "Yeni Grup",
+                    admins: [userId]
+                }),
+            })
 
             if (!response.ok) {
-                throw new Error("Sohbetler alınırken hata oluştu");
+                throw new Error("Grup oluşturulamadı");
             }
 
             const data = await response.json();
-            console.log("Sohbetler: ", JSON.stringify(data));
-            setConversations(data); // Sohbetleri state'e ata
+
+            console.log("Grup oluşturuldu: ", JSON.stringify(data));
+
         } catch (error) {
-            console.error("Sohbetler alınırken hata oluştu: ", error);
-            setConversations([]); // Hata durumunda boş liste
+            console.error("Grup oluşturma hatası: ", error);
         }
-    };
+    }
+
+    useEffect(() => {
+        // Kullanıcıyı kendi userId odasına kat
+        socket.emit("joinUser", userId);
+
+        // Conversation güncellemelerini dinle (sadece kendi user odasındaki güncellemeleri alır)
+        socket.on("receiveConversation", (updatedConversation) => {
+            console.log("Güncellenen conversation:", updatedConversation);
+            setConversations((prevConversations) => {
+                const filteredConversations = prevConversations.filter(
+                    (conv) => conv._id !== updatedConversation._id
+                );
+                // En üste ekle (en güncel conversation)
+                return [updatedConversation, ...filteredConversations];
+            });
+        });
+
+        return () => {
+            socket.off("receiveConversation");
+        };
+    }, [userId]);
 
     // İlk yüklemede sohbetleri çek
     useEffect(() => {
@@ -141,6 +185,7 @@ const ChatLayout = () => {
 
                     {/* Sohbet listesi başlığı */}
                     <h2 className="text-lg font-medium mb-4 text-[#111B21]">Sohbetler</h2>
+                    <button className="p-2 bg-blue-500 text-white rounded-lg mb-4 hover:bg-blue-600 text-sm cursor-pointer" onClick={handleCreateGroup}>Grup oluştur</button>
                     <ul className="flex-1 overflow-y-auto">
                         {conversations.map((conv) => (
                             <li key={conv._id} className="mb-2">

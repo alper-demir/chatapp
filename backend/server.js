@@ -7,11 +7,14 @@ import authRouter from "./router/auth.router.js";
 import userRouter from "./router/user.router.js";
 import conversationRouter from "./router/conversation.router.js";
 import messageRouter from "./router/message.router.js";
+import { initializeSocket } from "./socket/index.js";
 
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+
+initializeSocket(server);
 
 app.use(express.json());
 app.use(cors());

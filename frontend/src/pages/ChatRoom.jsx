@@ -1,21 +1,25 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
+import socket from "../socket/init";
 
 const ChatRoom = () => {
+
     const URL = import.meta.env.VITE_SERVER_URL;
     const { roomId } = useParams();
     const userId = useSelector((state) => state.user.user.userId); // Sender
     const [newMessage, setNewMessage] = useState("");
     const [messages, setMessages] = useState([]);
     const messagesEndRef = useRef(null); // En alta kaydırmak için referans
+    const [conversation, setConversation] = useState(null);
+    const [participants, setParticipants] = useState([]);
+    const [isOnline, setIsOnline] = useState(false);
 
     const fetchMessages = async () => {
         try {
             const response = await fetch(`${URL}/message/${roomId}`);
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
                 setMessages(data);
             } else {
                 console.error("Mesajlar getirilemedi.");
@@ -25,35 +29,60 @@ const ChatRoom = () => {
         }
     };
 
+    const fetchConversation = async () => {
+        try {
+            const response = await fetch(`${URL}/conversation/get/id/${roomId}`);
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+                setConversation(data);
+                setParticipants(data.participants);
+            } else {
+                console.error("Sohbet getirilemedi.");
+            }
+        }
+        catch (error) {
+            console.error("Sohbet getirilemedi:", error);
+        }
+    }
+
     const handleSendMessage = async () => {
         if (newMessage.trim()) {
             console.log(roomId, userId, newMessage);
-            try {
-                const response = await fetch(`${URL}/message`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        conversationId: roomId,
-                        sender: userId,
-                        content: newMessage,
-                    }),
-                });
+            // try {
+            //     const response = await fetch(`${URL}/message`, {
+            //         method: "POST",
+            //         headers: {
+            //             "Content-Type": "application/json",
+            //         },
+            //         body: JSON.stringify({
+            //             conversationId: roomId,
+            //             sender: userId,
+            //             content: newMessage,
+            //         }),
+            //     });
 
-                const data = await response.json();
-                console.log("Mesaj gönderildi:", data);
-                setMessages((prev) => [...prev, data]);
-                if (response.ok) {
-                    console.log("Mesaj başarıyla gönderildi.");
-                    setNewMessage("");
-                    console.log("Mesaj gönderildi:", newMessage);
-                } else {
-                    console.error("Mesaj gönderme hatası.");
-                }
-            } catch (error) {
-                console.error("Mesaj gönderme hatası:", error);
-            }
+            //     const data = await response.json();
+            //     console.log("Mesaj gönderildi:", data);
+            //     setMessages((prev) => [...prev, data]);
+            //     if (response.ok) {
+            //         console.log("Mesaj başarıyla gönderildi.");
+            //         setNewMessage("");
+            //         console.log("Mesaj gönderildi:", newMessage);
+            //     } else {
+            //         console.error("Mesaj gönderme hatası.");
+            //     }
+            // } catch (error) {
+            //     console.error("Mesaj gönderme hatası:", error);
+            // }
+
+            socket.emit("sendMessage", {
+                conversationId: roomId,
+                sender: userId,
+                content: newMessage,
+            });
+            setNewMessage("");
+            console.log("Mesaj gönderildi:", newMessage);
         }
     };
 
@@ -62,8 +91,47 @@ const ChatRoom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
+
+
+
+    useEffect(() => {
+        socket.emit("joinRoom", roomId, userId);
+
+        socket.on("receiveMessage", (message) => {
+            // Gelen mesajın conversationId'sinin aktif oda ile aynı olduğundan emin ol
+            if (message.conversationId === roomId) {
+                setMessages((prev) => [...prev, message]);
+                scrollToBottom();
+            }
+        });
+
+        socket.emit("online", userId);
+
+        socket.on("onlineUsers", (users) => {
+            // Mevcut kullanıcıyı çıkar
+            const filteredParticipants = participants.filter(participant => participant !== userId);
+
+            // Online olan katılımcıları kontrol et
+            const isOnline = filteredParticipants.some(participant => users.includes(participant));
+
+            console.log(users);
+            console.log(filteredParticipants);
+            console.log(isOnline ? "Online" : "Offline");
+            setIsOnline(isOnline);
+        });
+
+        return () => {
+            // Temizleme: event listener'ı kaldır
+            socket.off("onlineUsers");
+            socket.off("online");
+            socket.off("receiveMessage");
+        };
+
+    }, [roomId, userId, participants]);
+
     // Mesajlar yüklendiğinde veya güncellendiğinde en alta kaydır
     useEffect(() => {
+        fetchConversation();
         fetchMessages();
     }, [roomId]);
 
@@ -76,6 +144,9 @@ const ChatRoom = () => {
             {/* Sohbet başlığı */}
             <div className="p-4 bg-white border-b border-gray-200">
                 <h2 className="text-lg font-medium text-[#111B21]">{roomId} ID'li sohbet odası</h2>
+                {
+                    !conversation?.isGroup && isOnline && <span className="text-xs text-[#667781]">Çevrimiçi</span>
+                }
             </div>
 
             {/* Mesaj alanı */}
