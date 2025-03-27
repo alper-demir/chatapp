@@ -144,7 +144,7 @@ const ChatRoom = () => {
             {/* Sohbet başlığı */}
             <div className="p-4 bg-white border-b border-gray-200">
                 {
-                    conversation.isGroup ? (
+                    conversation?.isGroup ? (
                         <>
                             <h3 className="text-lg font-medium text-[#111B21]">{conversation.groupName}</h3>
                         </>
