@@ -143,10 +143,16 @@ const ChatRoom = () => {
         <div className="flex flex-col h-full bg-[#F0F2F5]">
             {/* Sohbet başlığı */}
             <div className="p-4 bg-white border-b border-gray-200">
-                <h2 className="text-lg font-medium text-[#111B21]">{roomId} ID'li sohbet odası</h2>
                 {
-                    !conversation?.isGroup && isOnline && <span className="text-xs text-[#667781]">Çevrimiçi</span>
+                    conversation.isGroup ? (
+                        <>
+                            <h3 className="text-lg font-medium text-[#111B21]">{conversation.groupName}</h3>
+                        </>
+                    ) : isOnline && (
+                        <span className="text-xs text-[#667781]">Çevrimiçi</span>
+                    )
                 }
+                <div className="text-xs text-[#667781]">{roomId} ID'li sohbet odası</div>
             </div>
 
             {/* Mesaj alanı */}
