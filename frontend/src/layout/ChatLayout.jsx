@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import socket from "../socket/init";
 import autoAnimate from '@formkit/auto-animate'
-import { timeAgo } from "../utils/date";
+import { formatConversationTime } from "../utils/date";
 
 const URL = import.meta.env.VITE_SERVER_URL;
 
@@ -218,7 +218,7 @@ const ChatLayout = () => {
                                 <div className="font-medium text-gray-800 truncate">{conv._id}</div>
                                 <div className="text-sm text-gray-500 flex justify-between">
                                     <span className="truncate mr-2">{conv.lastMessage?.content || "Yeni sohbet"}</span>
-                                    <span className="text-xs text-gray-400">{timeAgo(conv.updatedAt)}</span>
+                                    <span className="text-xs text-gray-400">{formatConversationTime(conv.updatedAt)}</span>
                                 </div>
                             </div>
                         </Link>
