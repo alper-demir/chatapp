@@ -143,9 +143,18 @@ const ChatLayout = () => {
         };
     }, [userId]);
 
+
+    // Sayfa refresh edildiğinde seçili sohbet bilgisi görünmüyordu.
+    const handleSelectedConversation = () => {
+        if (window.location.pathname.split("/").length === 3) { // Bir sohbet odasında demektir. /chat/:conversationId döner. (yani 3 elemanlı bir dizi olacak splitten sonra)
+            setSelectedRoom(window.location.pathname.split("/")[2])
+        }
+    }
+
     // İlk yüklemede sohbetleri çek
     useEffect(() => {
         fetchConversations();
+        handleSelectedConversation();
     }, []);
 
     return (
