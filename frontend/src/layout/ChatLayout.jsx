@@ -1,8 +1,9 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import socket from "../socket/init";
+import autoAnimate from '@formkit/auto-animate'
 
 const URL = import.meta.env.VITE_SERVER_URL;
 
@@ -15,6 +16,13 @@ const ChatLayout = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResult, setSearchResult] = useState(null);
     const [conversations, setConversations] = useState([]); // Dinamik sohbetler için state
+
+    const conversationListRef = useRef(null);
+
+    // AutoAnimate initialize
+    useEffect(() => {
+        conversationListRef.current && autoAnimate(conversationListRef.current);
+    }, [conversationListRef]);
 
     // Arama işlemi (API'den kullanıcı bulma)
     const handleSearch = async (query) => {
@@ -186,7 +194,7 @@ const ChatLayout = () => {
                     {/* Sohbet listesi başlığı */}
                     <h2 className="text-lg font-medium mb-4 text-[#111B21]">Sohbetler</h2>
                     <button className="p-2 bg-blue-500 text-white rounded-lg mb-4 hover:bg-blue-600 text-sm cursor-pointer" onClick={handleCreateGroup}>Grup oluştur</button>
-                    <ul className="flex-1 overflow-y-auto">
+                    <ul className="flex-1 overflow-y-auto" ref={conversationListRef}>
                         {conversations.map((conv) => (
                             <li key={conv._id} className="mb-2">
                                 <Link
