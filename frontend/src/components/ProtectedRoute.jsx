@@ -13,7 +13,6 @@ const ProtectedRoute = () => {
     if (token) {
         const decodedJWT = jwtDecode(token);
         dispatch(setUser(decodedJWT));
-        console.log(decodedJWT);
     }
 
     return token ? <Outlet /> : <Navigate to="/login" replace />;
