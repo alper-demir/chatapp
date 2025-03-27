@@ -1,4 +1,5 @@
-export const timeAgo = (timestamp) => {
+// Sohbet listesi için tarih formatı (relatif zaman)
+export const formatConversationTime = (timestamp) => {
     const postDate = new Date(timestamp);
     const now = new Date();
 
@@ -35,4 +36,12 @@ export const timeAgo = (timestamp) => {
     const month = String(postDate.getMonth() + 1).padStart(2, '0');
     const year = postDate.getFullYear();
     return `${day}.${month}.${year}`;
+};
+
+// Mesaj detayları için saat formatı
+export const formatMessageTime = (timestamp) => {
+    return new Date(timestamp).toLocaleTimeString('tr-TR', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 };
