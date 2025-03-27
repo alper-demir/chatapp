@@ -149,83 +149,84 @@ const ChatLayout = () => {
     }, []);
 
     return (
-        <div className="flex h-screen bg-[#F0F2F5] font-['Roboto',sans-serif]">
-            {/* Sohbet listesi */}
-            <div className="hidden md:block w-full md:w-1/4 bg-white border-r border-gray-200">
-                <div className="p-4 h-full flex flex-col">
-                    {/* Arama çubuğu */}
-                    <div className="mb-4">
+        <div className="flex h-screen bg-gray-50 font-inter antialiased">
+            {/* Sidebar */}
+            <div className="hidden md:flex md:w-[320px] bg-white border-r border-gray-200 shadow-sm flex-col">
+                {/* Header */}
+                <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <h1 className="text-xl font-semibold text-gray-800">Mesajlar</h1>
+                    <button
+                        onClick={handleCreateGroup}
+                        className="text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200 rounded-lg px-3 py-1.5 flex items-center space-x-1"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>Yeni Sohbet</span>
+                    </button>
+                </div>
+
+                {/* Arama Alanı */}
+                <div className="px-5 py-4 border-b border-gray-100">
+                    <div className="relative">
                         <input
-                            type="email"
+                            type="text"
                             value={searchQuery}
                             onChange={(e) => handleSearch(e.target.value)}
-                            placeholder="E-posta ile ara..."
-                            className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#007BFF] placeholder-gray-400 text-sm"
+                            placeholder="Kullanıcı ara..."
+                            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-sm transition-all duration-200"
                         />
-                        {/* Arama sonucu */}
-                        {searchResult && (
-                            <div className="mt-2 p-3 bg-[#E8F0FE] rounded-lg">
-                                <div className="flex items-center">
-                                    <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center mr-3 border border-gray-300">
-                                        {searchResult.avatar ? searchResult.avatar : "👤"}
-                                    </div>
-                                    <div>
-                                        <div className="font-medium text-[#111B21]">
-                                            {searchResult.email.split("@")[0]}
-                                        </div>
-                                        <div className="text-sm text-[#667781]">{searchResult.email}</div>
-                                        <div className="text-xs text-[#667781]">
-                                            {searchResult.isOnline ? "Çevrimiçi" : "Çevrimdışı"}
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={() => startChat(searchResult)}
-                                        className="ml-auto p-1.5 bg-[#007BFF] text-white rounded-lg hover:bg-[#0056b3] text-sm"
-                                    >
-                                        Sohbet Başlat
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                        {searchQuery && !searchResult && (
-                            <div className="mt-2 p-3 text-sm text-[#667781]">Kullanıcı bulunamadı</div>
-                        )}
+                        <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
                     </div>
 
-                    {/* Sohbet listesi başlığı */}
-                    <h2 className="text-lg font-medium mb-4 text-[#111B21]">Sohbetler</h2>
-                    <button className="p-2 bg-blue-500 text-white rounded-lg mb-4 hover:bg-blue-600 text-sm cursor-pointer" onClick={handleCreateGroup}>Grup oluştur</button>
-                    <ul className="flex-1 overflow-y-auto" ref={conversationListRef}>
-                        {conversations.map((conv) => (
-                            <li key={conv._id} className="mb-2">
-                                <Link
-                                    to={`/chat/${conv._id}`}
-                                    className={`flex items-center p-3 rounded-lg hover:bg-gray-100 ${selectedRoom === conv._id ? "bg-[#E8F0FE]" : ""
-                                        }`}
-                                    onClick={() => setSelectedRoom(conv._id)}
-                                >
-                                    <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center mr-3 border border-gray-300">
-                                        {conv.isGroup ? "👥" : "👤"} {/* Grupsa 👥, değilse 👤 */}
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="font-medium text-[#111B21]">
-                                            {
-                                                conv._id
-                                            }
-                                        </div>
-                                        <div className="text-sm text-[#667781] truncate">
-                                            {conv.lastMessage?.content || "Mesaj yok"}
-                                            <span>{timeAgo(conv.updatedAt)}</span>
-                                        </div>
-                                    </div>
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
+                    {/* Arama Sonucu */}
+                    {searchResult && (
+                        <div className="mt-3 bg-indigo-50 rounded-lg p-3 flex items-center space-x-3 shadow-sm">
+                            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                                {searchResult.avatar || "👤"}
+                            </div>
+                            <div className="flex-1">
+                                <div className="font-medium text-gray-800">{searchResult.email.split("@")[0]}</div>
+                                <div className="text-sm text-gray-500">{searchResult.email}</div>
+                            </div>
+                            <button
+                                onClick={() => startChat(searchResult)}
+                                className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition-colors duration-200"
+                            >
+                                Sohbet Et
+                            </button>
+                        </div>
+                    )}
                 </div>
+
+                {/* Sohbet Listesi */}
+                <nav className="flex-1 overflow-y-auto py-2" ref={conversationListRef}>
+                    {conversations.map((conv) => (
+                        <Link
+                            key={conv._id}
+                            to={`/chat/${conv._id}`}
+                            className={`px-5 py-3 flex items-center hover:bg-gray-100 transition-colors duration-150 ${selectedRoom === conv._id ? "bg-indigo-50 border-l-4 border-indigo-600" : ""
+                                }`}
+                            onClick={() => setSelectedRoom(conv._id)}
+                        >
+                            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center mr-4">
+                                {conv.isGroup ? "👥" : "👤"}
+                            </div>
+                            <div className="flex-1 truncate">
+                                <div className="font-medium text-gray-800 truncate">{conv._id}</div>
+                                <div className="text-sm text-gray-500 flex justify-between">
+                                    <span className="truncate mr-2">{conv.lastMessage?.content || "Yeni sohbet"}</span>
+                                    <span className="text-xs text-gray-400">{timeAgo(conv.updatedAt)}</span>
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
+                </nav>
             </div>
 
-            {/* Mesaj ekranı */}
+            {/* Ana İçerik Alanı */}
             <div className="flex-1 md:w-3/4">
                 <Outlet />
             </div>
