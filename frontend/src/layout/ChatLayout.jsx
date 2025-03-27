@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import socket from "../socket/init";
 import autoAnimate from '@formkit/auto-animate'
+import { timeAgo } from "../utils/date";
 
 const URL = import.meta.env.VITE_SERVER_URL;
 
@@ -214,6 +215,7 @@ const ChatLayout = () => {
                                         </div>
                                         <div className="text-sm text-[#667781] truncate">
                                             {conv.lastMessage?.content || "Mesaj yok"}
+                                            <span>{timeAgo(conv.updatedAt)}</span>
                                         </div>
                                     </div>
                                 </Link>
