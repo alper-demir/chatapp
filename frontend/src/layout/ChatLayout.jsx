@@ -5,6 +5,10 @@ import { useSelector } from "react-redux";
 import socket from "../socket/init";
 import autoAnimate from '@formkit/auto-animate'
 import { formatConversationTime } from "../utils/date";
+import { IoMdMore, IoIosSettings, IoIosLogOut } from "react-icons/io";
+import { CgProfile } from "react-icons/cg";
+import { HiOutlineUserGroup } from "react-icons/hi2";
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 
 const URL = import.meta.env.VITE_SERVER_URL;
 
@@ -164,15 +168,78 @@ const ChatLayout = () => {
                 {/* Header */}
                 <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                     <h1 className="text-xl font-semibold text-gray-800">Mesajlar</h1>
-                    <button
-                        onClick={handleCreateGroup}
-                        className="text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200 rounded-lg px-3 py-1.5 flex items-center space-x-1"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                        <span>Yeni Sohbet</span>
-                    </button>
+                    <div className="flex items-center gap-x-2">
+                        <Menu as="div" className="relative inline-flex">
+                            <MenuButton className="flex items-center justify-center w-8 h-8 rounded-full text-gray-500 focus:outline-none transition-colors duration-200 data-[hover]:bg-gray-200 data-[open]:bg-gray-200 cursor-pointer">
+                                <IoMdMore className="text-xl" />
+                            </MenuButton>
+
+                            <MenuItems
+                                className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                                enter="transition ease-out duration-100"
+                                enterFrom="transform opacity-0 scale-95"
+                                enterTo="transform opacity-100 scale-100"
+                                leave="transition ease-in duration-75"
+                                leaveFrom="transform opacity-100 scale-100"
+                                leaveTo="transform opacity-0 scale-95"
+                                anchor="right start"
+                            >
+                                <div className="py-1">
+                                    <MenuItem>
+                                        {({ active }) => (
+                                            <button
+                                                className={`cursor-pointer ${active ? 'bg-green-50 text-green-700' : 'text-gray-700'
+                                                    } group flex w-full items-center px-4 py-2 text-sm`}
+                                                onClick={handleCreateGroup}
+                                            >
+                                                <HiOutlineUserGroup className="h-4 w-4 mr-3" />
+                                                Yeni Grup
+                                            </button>
+                                        )}
+                                    </MenuItem>
+                                    <MenuItem>
+                                        {({ active }) => (
+                                            <button
+                                                className={`cursor-pointer ${active ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700'
+                                                    } group flex w-full items-center px-4 py-2 text-sm`}
+                                            >
+                                                <CgProfile className="h-4 w-4 mr-3" />
+                                                Profil
+                                            </button>
+                                        )}
+                                    </MenuItem>
+                                    <MenuItem>
+                                        {({ active }) => (
+                                            <button
+                                                className={`cursor-pointer ${active ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700'
+                                                    } group flex w-full items-center px-4 py-2 text-sm`}
+                                            >
+                                                <IoIosSettings className="h-4 w-4 mr-3" />
+                                                Ayarlar
+                                            </button>
+                                        )}
+                                    </MenuItem>
+
+                                    <div className="my-1 h-px bg-gray-200" />
+
+                                    <MenuItem>
+                                        {({ active }) => (
+                                            <button
+                                                className={`cursor-pointer ${active ? 'bg-red-50 text-red-700' : 'text-gray-700'
+                                                    } group flex w-full items-center px-4 py-2 text-sm`}
+                                            >
+                                                <IoIosLogOut className="h-4 w-4 mr-3" />
+                                                Çıkış yap
+                                            </button>
+                                        )}
+                                    </MenuItem>
+                                </div>
+                            </MenuItems>
+                        </Menu>
+
+
+                    </div>
+
                 </div>
 
                 {/* Arama Alanı */}
