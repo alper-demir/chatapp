@@ -1,21 +1,31 @@
 import Conversation from "../models/conversation.model.js";
 
 export const createConversation = async (req, res) => {
-
     const { participants, isGroup, admins, groupName } = req.body;
-    console.log("participants" + participants);
 
-    const conversation = await Conversation.findOne({ participants: { $all: participants } });
+    if (!isGroup) {
+        // Bireysel sohbet: Aynı katılımcılar arasında mevcut bir sohbet var mı?
+        const existingIndividual = await Conversation.findOne({
+            participants: { $all: participants, $size: participants.length },
+            isGroup: false
+        });
 
-    if (conversation?.length === 0 || !conversation) { // Create Conversation
-        const newConversation = await Conversation.create({ participants, isGroup: isGroup ? isGroup : false, admins: admins ? admins : [], groupName: groupName ? groupName : "" });
-        return res.status(201).json(newConversation);
+        if (existingIndividual) {
+            // Mevcut bireysel sohbeti döndür
+            return res.status(200).json(existingIndividual);
+        }
     }
 
-    // Return conversation
-    return res.status(200).json(conversation);
+    // Grup sohbeti veya bireysel sohbet yoksa: Yeni sohbet oluştur
+    const newConversation = await Conversation.create({
+        participants,
+        isGroup: isGroup || false,
+        admins: admins || [],
+        groupName: groupName || ""
+    });
 
-}
+    return res.status(201).json(newConversation);
+};
 
 export const getConversations = async (req, res) => {
     // Get all conversations of a user
