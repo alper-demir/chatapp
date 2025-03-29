@@ -167,7 +167,7 @@ const ChatLayout = () => {
             <div className="hidden md:flex md:w-[320px] bg-white border-r border-gray-200 shadow-sm flex-col">
                 {/* Header */}
                 <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-                    <h1 className="text-xl font-semibold text-gray-800">Mesajlar</h1>
+                    <h1 className="text-xl font-semibold text-gray-800">Sohbetler</h1>
                     <div className="flex items-center gap-x-2">
                         <Menu as="div" className="relative inline-flex">
                             <MenuButton className="flex items-center justify-center w-8 h-8 rounded-full text-gray-500 focus:outline-none transition-colors duration-200 data-[hover]:bg-gray-200 data-[open]:bg-gray-200 cursor-pointer">
@@ -187,14 +187,14 @@ const ChatLayout = () => {
                                 <div className="py-1">
                                     <MenuItem>
                                         {({ active }) => (
-                                            <button
+                                            <Link to="/chat/group-conversation"
                                                 className={`cursor-pointer ${active ? 'bg-green-50 text-green-700' : 'text-gray-700'
                                                     } group flex w-full items-center px-4 py-2 text-sm`}
-                                                onClick={handleCreateGroup}
+                                                // onClick={handleCreateGroup}
                                             >
                                                 <HiOutlineUserGroup className="h-4 w-4 mr-3" />
                                                 Yeni Grup
-                                            </button>
+                                            </Link>
                                         )}
                                     </MenuItem>
                                     <MenuItem>
@@ -293,7 +293,7 @@ const ChatLayout = () => {
                             <div className="flex-1 truncate">
                                 <div className="font-medium text-gray-800 truncate">{conv._id}</div>
                                 <div className="text-sm text-gray-500 flex justify-between">
-                                    <span className="truncate mr-2">{conv.lastMessage?.content || "Yeni sohbet"}</span>
+                                    <span className="truncate mr-2" title={conv.lastMessage?.content}>{conv.lastMessage?.content || "Yeni sohbet"}</span>
                                     <span className="text-xs text-gray-400">{formatConversationTime(conv.updatedAt)}</span>
                                 </div>
                             </div>
