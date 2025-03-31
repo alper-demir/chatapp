@@ -29,6 +29,21 @@ const ChatLayout = () => {
         conversationListRef.current && autoAnimate(conversationListRef.current);
     }, [conversationListRef]);
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === "Escape") {
+                setSelectedRoom(null);
+                navigate("/chat");
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [navigate]);
+
     // Arama işlemi (API'den kullanıcı bulma)
     const handleSearch = async (query) => {
         setSearchQuery(query);
