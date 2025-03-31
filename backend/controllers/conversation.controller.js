@@ -1,4 +1,5 @@
 import Conversation from "../models/conversation.model.js";
+import { io } from "../socket/index.js";
 
 export const createConversation = async (req, res) => {
     const { participants, isGroup, admins, groupName } = req.body;
@@ -23,6 +24,10 @@ export const createConversation = async (req, res) => {
         admins: admins || [],
         groupName: groupName || ""
     });
+
+    participants.map(participant => { // Oluşturulan conversation bilgisini katılımcılara ilet.
+        io.to(participant).emit("receiveConversation", newConversation);
+    })
 
     return res.status(201).json(newConversation);
 };
