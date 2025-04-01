@@ -185,28 +185,30 @@ const ChatRoom = () => {
                                     </div>
                                 )}
                                 <div className="text-sm">{msg.content}</div>
-                                <div className="text-xs text-gray-500 mt-1.5 text-right">
-                                    {formatMessageTime(msg.createdAt)}
+                                <div className="text-gray-500 mt-1.5 text-right flex items-center gap-x-1">
+                                    <span className="text-xs">
+                                        {formatMessageTime(msg.createdAt)}
+                                    </span>
+                                    <div className="flex text-sm">
+                                        {/* Checkmark'ler yalnızca gönderici mevcut kullanıcıysa görünecek */}
+                                        {msg.sender._id === userId && (
+                                            conversation?.isGroup
+                                                ? (
+                                                    // Grup sohbetinde: Tüm diğer katılımcılar okuduysa çift tik, değilse tek tik
+                                                    msg.readBy?.length === conversation.participants.length - 1
+                                                        ? <IoCheckmarkDoneOutline className="text-indigo-600" />
+                                                        : <IoCheckmark className="text-indigo-600" />
+                                                )
+                                                : (
+                                                    // Birebir sohbette: Karşı taraf okuduysa çift tik, değilse tek tik
+                                                    msg.readBy?.length === 1
+                                                        ? <IoCheckmarkDoneOutline className="text-indigo-600" />
+                                                        : <IoCheckmark className="text-indigo-600" />
+                                                )
+                                        )}
+                                    </div>
+                                </div>
 
-                                </div>
-                                <div className="flex">
-                                    {/* Checkmark'ler yalnızca gönderici mevcut kullanıcıysa görünecek */}
-                                    {msg.sender._id === userId && (
-                                        conversation?.isGroup
-                                            ? (
-                                                // Grup sohbetinde: Tüm diğer katılımcılar okuduysa çift tik, değilse tek tik
-                                                msg.readBy?.length === conversation.participants.length - 1
-                                                    ? <IoCheckmarkDoneOutline className="text-indigo-600" />
-                                                    : <IoCheckmark className="text-indigo-600" />
-                                            )
-                                            : (
-                                                // Birebir sohbette: Karşı taraf okuduysa çift tik, değilse tek tik
-                                                msg.readBy?.length === 1
-                                                    ? <IoCheckmarkDoneOutline className="text-indigo-600" />
-                                                    : <IoCheckmark className="text-indigo-600" />
-                                            )
-                                    )}
-                                </div>
                             </div>
                         </div>
                     </div>
