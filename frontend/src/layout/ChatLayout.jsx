@@ -115,18 +115,20 @@ const ChatLayout = () => {
     };
 
     useEffect(() => {
-        // Kullanıcıyı kendi userId odasına kat
         socket.emit("joinUser", userId);
 
-        // Conversation güncellemelerini dinle (sadece kendi user odasındaki güncellemeleri alır)
         socket.on("receiveConversation", (updatedConversation) => {
             console.log("Güncellenen conversation:", updatedConversation);
             setConversations((prevConversations) => {
+                // Eski conversation’ı çıkar
                 const filteredConversations = prevConversations.filter(
                     (conv) => conv._id !== updatedConversation._id
                 );
-                // En üste ekle (en güncel conversation)
-                return [updatedConversation, ...filteredConversations];
+                // Yeni listeyi oluştur ve updatedAt’a göre sırala
+                const newConversations = [...filteredConversations, updatedConversation];
+                return newConversations.sort((a, b) =>
+                    new Date(b.updatedAt) - new Date(a.updatedAt)
+                );
             });
         });
 

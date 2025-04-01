@@ -72,6 +72,12 @@ const initializeSocket = (server) => {
                 // Odaya güncellenmiş mesajları gönder
                 io.to(data.conversationId).emit("receiveMarkAsRead", updatedMessages);
 
+                const updatedConversation = await Conversation.findById(data.conversationId).populate("lastMessage");
+
+                updatedConversation.participants.forEach(participant => {
+                    io.to(participant.toString()).emit("receiveConversation", updatedConversation);
+                });
+
             } catch (error) {
                 console.error("markAsRead hatası: ", error);
                 // Hata durumunda frontend'e bilgi ver (opsiyonel)
