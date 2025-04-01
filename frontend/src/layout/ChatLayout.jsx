@@ -105,41 +105,14 @@ const ChatLayout = () => {
             const response = await fetch(`${URL}/conversation/get/${userId}`, { method: "GET" });
             if (!response.ok) throw new Error("Sohbetler alınırken hata oluştu");
             const data = await response.json();
+            console.log(data);
+            
             setConversations(data);
         } catch (error) {
             console.error("Sohbetler alınırken hata oluştu: ", error);
             setConversations([]);
         }
     };
-
-    const handleCreateGroup = async () => {
-        try {
-
-            const response = await fetch(`${URL}/conversation/create`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    participants: ["67dc1ac0fff366f30708cebf", "67dc1ac7fff366f30708cec3", "67dec4f5dab4c3699feb4816"],
-                    isGroup: true,
-                    groupName: "Yeni Grup",
-                    admins: [userId]
-                }),
-            })
-
-            if (!response.ok) {
-                throw new Error("Grup oluşturulamadı");
-            }
-
-            const data = await response.json();
-
-            console.log("Grup oluşturuldu: ", JSON.stringify(data));
-
-        } catch (error) {
-            console.error("Grup oluşturma hatası: ", error);
-        }
-    }
 
     useEffect(() => {
         // Kullanıcıyı kendi userId odasına kat

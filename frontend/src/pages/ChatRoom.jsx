@@ -50,32 +50,6 @@ const ChatRoom = () => {
     const handleSendMessage = async () => {
         if (newMessage.trim()) {
             console.log(roomId, userId, newMessage);
-            // try {
-            //     const response = await fetch(`${URL}/message`, {
-            //         method: "POST",
-            //         headers: {
-            //             "Content-Type": "application/json",
-            //         },
-            //         body: JSON.stringify({
-            //             conversationId: roomId,
-            //             sender: userId,
-            //             content: newMessage,
-            //         }),
-            //     });
-
-            //     const data = await response.json();
-            //     console.log("Mesaj gönderildi:", data);
-            //     setMessages((prev) => [...prev, data]);
-            //     if (response.ok) {
-            //         console.log("Mesaj başarıyla gönderildi.");
-            //         setNewMessage("");
-            //         console.log("Mesaj gönderildi:", newMessage);
-            //     } else {
-            //         console.error("Mesaj gönderme hatası.");
-            //     }
-            // } catch (error) {
-            //     console.error("Mesaj gönderme hatası:", error);
-            // }
 
             socket.emit("sendMessage", {
                 conversationId: roomId,
@@ -91,9 +65,6 @@ const ChatRoom = () => {
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
-
-
-
 
     useEffect(() => {
         socket.emit("joinRoom", roomId, userId);
