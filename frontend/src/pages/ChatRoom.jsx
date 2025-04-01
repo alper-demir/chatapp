@@ -1,12 +1,17 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import socket from "../socket/init";
 import { formatMessageTime } from "../utils/date";
+import { IoCheckmarkDoneOutline } from "react-icons/io5";
+import { IoCheckmark } from "react-icons/io5";
 
 const ChatRoom = () => {
 
     const URL = import.meta.env.VITE_SERVER_URL;
+
+    const navigate = useNavigate();
+
     const { roomId } = useParams();
     const userId = useSelector((state) => state.user.user.userId); // Sender
     const [newMessage, setNewMessage] = useState("");
@@ -37,6 +42,11 @@ const ChatRoom = () => {
                 const data = await response.json();
                 console.log(data);
                 setConversation(data);
+                console.log("Conversation: " + JSON.stringify(data.participants));
+
+                if (!data?.participants.includes(userId)) {
+                    navigate("/chat")
+                }
                 setParticipants(data.participants);
             } else {
                 console.error("Sohbet getirilemedi.");
@@ -74,6 +84,7 @@ const ChatRoom = () => {
             if (message.conversationId === roomId) {
                 setMessages((prev) => [...prev, message]);
                 scrollToBottom();
+                socket.emit("markAsRead", { conversationId: roomId, userId })
             }
         });
 
@@ -92,11 +103,22 @@ const ChatRoom = () => {
             setIsOnline(isOnline);
         });
 
+        socket.emit("markAsRead", { conversationId: roomId, userId })
+
+        socket.on("receiveMarkAsRead", (updatedMessages) => {
+            console.log("Güncellenmiş mesajlar:", updatedMessages);
+            if (updatedMessages[0]?.conversationId === roomId) {
+                setMessages(updatedMessages);
+                scrollToBottom();
+            }
+        });
+
         return () => {
             // Temizleme: event listener'ı kaldır
             socket.off("onlineUsers");
             socket.off("online");
             socket.off("receiveMessage");
+            socket.off("receiveMarkAsRead");
         };
 
     }, [roomId, userId, participants]);
@@ -165,6 +187,25 @@ const ChatRoom = () => {
                                 <div className="text-sm">{msg.content}</div>
                                 <div className="text-xs text-gray-500 mt-1.5 text-right">
                                     {formatMessageTime(msg.createdAt)}
+
+                                </div>
+                                <div className="flex">
+                                    {/* Checkmark'ler yalnızca gönderici mevcut kullanıcıysa görünecek */}
+                                    {msg.sender._id === userId && (
+                                        conversation?.isGroup
+                                            ? (
+                                                // Grup sohbetinde: Tüm diğer katılımcılar okuduysa çift tik, değilse tek tik
+                                                msg.readBy?.length === conversation.participants.length - 1
+                                                    ? <IoCheckmarkDoneOutline className="text-indigo-600" />
+                                                    : <IoCheckmark className="text-indigo-600" />
+                                            )
+                                            : (
+                                                // Birebir sohbette: Karşı taraf okuduysa çift tik, değilse tek tik
+                                                msg.readBy?.length === 1
+                                                    ? <IoCheckmarkDoneOutline className="text-indigo-600" />
+                                                    : <IoCheckmark className="text-indigo-600" />
+                                            )
+                                    )}
                                 </div>
                             </div>
                         </div>

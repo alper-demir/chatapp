@@ -106,7 +106,7 @@ const ChatLayout = () => {
             if (!response.ok) throw new Error("Sohbetler alınırken hata oluştu");
             const data = await response.json();
             console.log(data);
-            
+
             setConversations(data);
         } catch (error) {
             console.error("Sohbetler alınırken hata oluştu: ", error);
@@ -279,6 +279,12 @@ const ChatLayout = () => {
                                     <span className="text-xs text-gray-400">{formatConversationTime(conv.updatedAt)}</span>
                                 </div>
                             </div>
+                            <span className="p-1 rounded-full bg-red-400 text-white text-xs">
+                                {
+                                    conv?.lastMessage?.readBy?.includes(userId) || conv?.lastMessage?.sender === userId ? "✓" : "Okunmamış mesaj"
+                                }
+                            </span>
+
                         </Link>
                     ))}
                 </nav>

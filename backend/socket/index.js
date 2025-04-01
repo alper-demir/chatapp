@@ -50,6 +50,35 @@ const initializeSocket = (server) => {
             console.log(`User ${socket.id} left room: ${roomId}`);
         });
 
+        socket.on("markAsRead", async (data) => {
+            console.log(`${data.conversationId} conversation için okundu alanına ${data.userId} ekleniyor`);
+
+            try {
+                // Gönderici olmayan ve henüz kullanıcı tarafından okunmamış mesajları güncelle
+                await Message.updateMany(
+                    {
+                        conversationId: data.conversationId,
+                        sender: { $ne: data.userId }, // Kendi mesajlarını okundu olarak işaretleme
+                        readBy: { $nin: [data.userId] } // Henüz okunmamış mesajlar
+                    },
+                    { $addToSet: { readBy: data.userId } } // Kullanıcıyı readBy'a ekle, addToSet aynı değeri 2 kez eklemez. Yani userId tekrar tekrar diziye eklenmeyecek
+                );
+
+                // Güncellenmiş mesajları al (frontend'e göndermek için)
+                const updatedMessages = await Message.find({
+                    conversationId: data.conversationId
+                }).populate("sender", { password: 0 });
+
+                // Odaya güncellenmiş mesajları gönder
+                io.to(data.conversationId).emit("receiveMarkAsRead", updatedMessages);
+
+            } catch (error) {
+                console.error("markAsRead hatası: ", error);
+                // Hata durumunda frontend'e bilgi ver (opsiyonel)
+                io.to(data.conversationId).emit("markAsReadError", { message: "Mesajlar okundu olarak işaretlenemedi." });
+            }
+        });
+
         socket.on("sendMessage", async (message) => {
             try {
                 console.log("Message received: ", message.content, message.sender, message.conversationId);
