@@ -168,8 +168,18 @@ const ChatLayout = () => {
         }
     }
 
+    const theme = () => {
+        const theme = localStorage.getItem("theme");
+        if (theme === "dark") {
+            document.querySelector("html").classList.add("dark");
+        } else {
+            document.querySelector("html").classList.remove("dark");
+        }
+    }
+
     // İlk yüklemede sohbetleri çek
     useEffect(() => {
+        theme();
         fetchConversations();
         handleSelectedConversation();
     }, []);
@@ -179,7 +189,7 @@ const ChatLayout = () => {
             {/* Sidebar */}
             <div className="hidden md:flex md:w-[320px] bg-white border-r border-gray-200 shadow-sm flex-col">
                 {/* Header */}
-                <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between dark:bg-red-200">
                     <h1 className="text-xl font-semibold text-gray-800">Sohbetler</h1>
                     <div className="flex items-center gap-x-2">
                         <Menu as="div" className="relative inline-flex">
@@ -217,13 +227,13 @@ const ChatLayout = () => {
                                     </MenuItem>
                                     <MenuItem>
                                         {({ active }) => (
-                                            <button
+                                            <Link to="/settings" onClick={() => setSelectedRoom(null)}
                                                 className={`cursor-pointer ${active ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700'
                                                     } group flex w-full items-center px-4 py-2 text-sm`}
                                             >
                                                 <IoIosSettings className="h-4 w-4 mr-3" />
                                                 Ayarlar
-                                            </button>
+                                            </Link>
                                         )}
                                     </MenuItem>
 

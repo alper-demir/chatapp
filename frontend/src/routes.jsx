@@ -7,6 +7,7 @@ import Error from "./pages/Error"; // Error bileşeni import ediliyor
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthRoute from "./components/AuthRoute";
 import GroupConversation from "./pages/GroupConversation";
+import Settings from "./pages/Settings";
 
 const routes = createBrowserRouter([
   {
@@ -20,11 +21,12 @@ const routes = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        path: "/chat",
+        path: "/",
         element: <ChatLayout />,
         children: [
-          { path: ":roomId", element: <ChatRoom /> },
-          { path: "group-conversation", element: <GroupConversation /> }
+          { path: "settings", element: <Settings /> },
+          { path: "chat/:roomId", element: <ChatRoom /> },
+          { path: "chat/group-conversation", element: <GroupConversation /> }
         ],
       },
     ],
