@@ -24,6 +24,9 @@ const ChatLayout = () => {
 
     const conversationListRef = useRef(null);
 
+    const otherScreenSound = new Audio("/notification-other-screen.mp3"); // public/notification-other-screen.mp3
+
+
     // AutoAnimate initialize
     useEffect(() => {
         conversationListRef.current && autoAnimate(conversationListRef.current);
@@ -120,22 +123,30 @@ const ChatLayout = () => {
         socket.on("receiveConversation", (updatedConversation) => {
             console.log("Güncellenen conversation:", updatedConversation);
             setConversations((prevConversations) => {
-                // Eski conversation’ı çıkar
                 const filteredConversations = prevConversations.filter(
                     (conv) => conv._id !== updatedConversation._id
                 );
-                // Yeni listeyi oluştur ve updatedAt’a göre sırala
                 const newConversations = [...filteredConversations, updatedConversation];
-                return newConversations.sort((a, b) =>
+                const sortedConversations = newConversations.sort((a, b) =>
                     new Date(b.updatedAt) - new Date(a.updatedAt)
                 );
+
+                // Ses çalma: Aktif oda değilse ve sekme arka plandaysa
+                if (updatedConversation._id !== selectedRoom && updatedConversation.lastMessage.sender !== userId) {
+                    const isTabActive = document.visibilityState === "visible";
+                    if (!isTabActive || selectedRoom !== updatedConversation._id) {
+                        otherScreenSound.play().catch((err) => console.error("Ses çalma hatası:", err));
+                    }
+                }
+
+                return sortedConversations;
             });
         });
 
         return () => {
             socket.off("receiveConversation");
         };
-    }, [userId]);
+    }, [userId, selectedRoom]);
 
 
     // Sayfa refresh edildiğinde seçili sohbet bilgisi görünmüyordu.

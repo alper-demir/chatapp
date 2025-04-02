@@ -21,6 +21,9 @@ const ChatRoom = () => {
     const [participants, setParticipants] = useState([]);
     const [isOnline, setIsOnline] = useState(false);
 
+    const socketMessageSound = new Audio("/notification-socket.mp3"); // public/notification-socket.mp3
+    const otherScreenMessageSound = new Audio("/notification-other-screen.mp3"); // public/notification-other-screen.mp3
+
     const fetchMessages = async () => {
         try {
             const response = await fetch(`${URL}/message/${roomId}`);
@@ -84,7 +87,17 @@ const ChatRoom = () => {
             if (message.conversationId === roomId) {
                 setMessages((prev) => [...prev, message]);
                 scrollToBottom();
-                socket.emit("markAsRead", { conversationId: roomId, userId })
+                socket.emit("markAsRead", { conversationId: roomId, userId }) // Mevcut kullanıcı soketteyse anlık olarak mesajı okumuş demektir.
+
+                if (message.sender._id !== userId) { // Kendi mesajlarımızda ses çalma
+                    const isTabActive = document.visibilityState === "visible";
+                    if (isTabActive) {
+                        socketMessageSound.play().catch((err) => console.error("Ses çalma hatası:", err));
+                    } else {
+                        otherScreenMessageSound.play().catch((err) => console.error("Ses çalma hatası:", err));
+                    }
+                }
+
             }
         });
 
