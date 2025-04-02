@@ -3,8 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import socket from "../socket/init";
 import { formatMessageTime } from "../utils/date";
-import { IoCheckmarkDoneOutline } from "react-icons/io5";
-import { IoCheckmark } from "react-icons/io5";
+import { IoCheckmarkDoneSharp, IoCheckmarkSharp } from "react-icons/io5";
 
 const ChatRoom = () => {
 
@@ -160,17 +159,17 @@ const ChatRoom = () => {
     }, [messages]);
 
     return (
-        <div className="flex flex-col h-full bg-gray-50 font-inter">
+        <div className="flex flex-col h-full bg-main-bg dark:bg-dark-main-bg font-inter">
             {/* Chat Header */}
-            <header className="px-6 py-4 bg-white border-b border-gray-200 shadow-sm flex items-center justify-between">
+            <header className="px-6 py-4 border-b border-border dark:border-dark-border shadow-sm flex items-center justify-between">
                 <div>
                     {conversation?.isGroup ? (
-                        <h2 className="text-xl font-semibold text-gray-800">
+                        <h2 className="text-xl font-semibold">
                             {conversation.groupName}
                         </h2>
                     ) : (
                         <div>
-                            <h2 className="text-xl font-semibold text-gray-800">
+                            <h2 className="text-xl font-semibold">
                                 {conversation?.email?.split('@')[0] || 'Kullanıcı'}
                             </h2>
                             {isOnline && (
@@ -187,11 +186,11 @@ const ChatRoom = () => {
             </header>
 
             {/* Mesaj Alanı */}
-            <main className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-100">
+            <main className="flex-1 overflow-y-auto p-6 space-y-4 bg-main-bg dark:bg-dark-main-bg">
                 {Object.keys(groupedMessages).map((date) => (
                     <div key={date}>
                         {/* Tarih başlığı - ortalanmış */}
-                        <div className="text-center text-sm text-gray-500 my-4">
+                        <div className="text-center text-sm my-4">
                             {date === today ? "Bugün" : date}
                         </div>
                         {/* O tarihteki mesajlar */}
@@ -204,8 +203,8 @@ const ChatRoom = () => {
                                     className={`
                             flex items-start max-w-lg p-3 rounded-xl my-1
                             ${msg.sender._id === userId
-                                            ? "bg-indigo-100 text-gray-800"
-                                            : "bg-white text-gray-800 shadow-sm"}
+                                            ? "bg-message-sender dark:bg-dark-message-sender"
+                                            : "bg-message-other dark:bg-dark-message-other shadow-sm"}
                         `}
                                 >
                                     {msg.sender._id !== userId && conversation?.isGroup && (
@@ -215,26 +214,26 @@ const ChatRoom = () => {
                                     )}
                                     <div>
                                         {msg.sender._id !== userId && conversation?.isGroup && (
-                                            <div className="text-sm font-semibold text-gray-700 mb-1">
+                                            <div className="text-sm font-semibold mb-1">
                                                 {msg.sender?.email?.split("@")[0]}
                                             </div>
                                         )}
                                         <div className="text-sm">{msg.content}</div>
-                                        <div className="text-gray-500 mt-1.5 text-right flex items-center gap-x-1">
+                                        <div className="text-sidebar-text dark:text-dark-sidebar-text mt-1.5 text-right flex items-center gap-x-1">
                                             <span className="text-xs">{formatMessageTime(msg.createdAt)}</span>
                                             <div className="flex text-sm">
                                                 {msg.sender._id === userId && (
                                                     conversation?.isGroup ? (
                                                         msg.readBy?.length === conversation.participants.length - 1 ? (
-                                                            <IoCheckmarkDoneOutline className="text-indigo-600" />
+                                                            <IoCheckmarkDoneSharp className="text-doublecheckmark dark:text-dark-doublecheckmark" />
                                                         ) : (
-                                                            <IoCheckmark className="text-indigo-600" />
+                                                            <IoCheckmarkSharp className="text-checkmark dark:text-dark-checkmark" />
                                                         )
                                                     ) : (
                                                         msg.readBy?.length === 1 ? (
-                                                            <IoCheckmarkDoneOutline className="text-indigo-600" />
+                                                            <IoCheckmarkDoneSharp className="text-doublecheckmark dark:text-dark-doublecheckmark" />
                                                         ) : (
-                                                            <IoCheckmark className="text-indigo-600" />
+                                                            <IoCheckmarkSharp className="text-checkmark dark:text-dark-checkmark" />
                                                         )
                                                     )
                                                 )}
@@ -250,19 +249,19 @@ const ChatRoom = () => {
             </main>
 
             {/* Mesaj Gönderme Alanı */}
-            <footer className="p-4 bg-white border-t border-gray-200">
+            <footer className="p-4 border-t border-border dark:border-dark-border">
                 <div className="flex items-center space-x-2">
                     <input
                         type="text"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Mesajınızı yazın..."
-                        className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition-all duration-200"
+                        className="flex-1 px-4 py-2.5 border border-border dark:border-dark-border rounded-lg focus:outline-none text-sm transition-all duration-200"
                         onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                     />
                     <button
                         onClick={handleSendMessage}
-                        className="px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 flex items-center space-x-2"
+                        className="px-4 py-2.5 bg-chatbutton dark:bg-dark-chatbutton text-white rounded-lg hover:bg-chatbutton-hover dark:hover:bg-dark-chatbutton-hover transition-colors duration-200 flex items-center space-x-2 cursor-pointer"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clipRule="evenodd" />

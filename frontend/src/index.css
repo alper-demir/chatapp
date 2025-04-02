@@ -1,3 +1,49 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --color-text: #000000;
+    --color-dark-text: #F3F4F6;
+
+    --color-sidebar: #F9F9F9;
+    --color-dark-sidebar: #171717;
+
+    --color-main-bg: #ffffff;
+    --color-dark-main-bg: #212121;
+
+    --color-sidebar-selected: #E3E3E3;
+    --color-sidebar-hover: #ECECEC;
+
+    --color-dark-sidebar-selected: #2F2F2F;
+    --color-dark-sidebar-hover: #212121;
+
+    --color-sidebar-text: #99a1af;
+    --color-dark-sidebar-text: #99a1af;
+
+    --color-border: #EFEFEF;
+    --color-dark-border: #363636;
+
+    --color-dark-dropdown-hover: #282828;
+
+    --color-sidebar-selected-border: #4f39f6;
+    --color-dark-sidebar-selected-border: #FCC800;
+
+    --color-message-sender: #e5e7eb;
+    --color-dark-message-sender: #474747;
+
+    --color-message-other: #F3F4F6;
+    --color-dark-message-other: #36393d;
+
+    --color-checkmark: #4f39f6;
+    --color-dark-checkmark: #7c86ff;
+
+    --color-doublecheckmark: #4f39f6;
+    --color-dark-doublecheckmark: #7c86ff;
+
+    --color-chatbutton: #4f39f6;
+    --color-dark-chatbutton: #fc7353;
+
+    --color-chatbutton-hover: #3e25fa;
+    --color-dark-chatbutton-hover: #fc5e3a;
+}

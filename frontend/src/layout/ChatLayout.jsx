@@ -185,27 +185,27 @@ const ChatLayout = () => {
     }, []);
 
     return (
-        <div className="flex h-screen bg-gray-50 font-inter antialiased">
+        <div className="flex h-screen bg-gray-50 font-inter antialiased text-text dark:text-dark-text">
             {/* Sidebar */}
-            <div className="hidden md:flex md:w-[320px] bg-white border-r border-gray-200 shadow-sm flex-col">
+            <div className="hidden md:flex md:w-[320px] bg-sidebar dark:bg-dark-sidebar border-r border-border dark:border-dark-border shadow-sm flex-col">
                 {/* Header */}
-                <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between dark:bg-red-200">
-                    <h1 className="text-xl font-semibold text-gray-800">Sohbetler</h1>
+                <div className="px-5 py-4 border-b border-border dark:border-dark-border flex items-center justify-between">
+                    <h1 className="text-xl font-semibold">Sohbetler</h1>
                     <div className="flex items-center gap-x-2">
                         <Menu as="div" className="relative inline-flex">
-                            <MenuButton className="flex items-center justify-center w-8 h-8 rounded-full text-gray-500 focus:outline-none transition-colors duration-200 data-[hover]:bg-gray-200 data-[open]:bg-gray-200 cursor-pointer">
+                            <MenuButton className="flex items-center justify-center w-8 h-8 rounded-full focus:outline-none transition-colors duration-200 data-[hover]:bg-sidebar-hover dark:data-[hover]:bg-dark-sidebar-hover data-[open]:bg-sidebar-hover dark:data-[open]:bg-dark-sidebar-hover cursor-pointer">
                                 <IoMdMore className="text-xl" />
                             </MenuButton>
 
                             <MenuItems
-                                className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                                className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-main-bg dark:bg-dark-main-bg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
                                 anchor="right start"
                             >
                                 <div className="py-1">
                                     <MenuItem>
                                         {({ active }) => (
                                             <Link to="/chat/group-conversation"
-                                                className={`cursor-pointer ${active ? 'bg-green-50 text-green-700' : 'text-gray-700'
+                                                className={`cursor-pointer ${active ? 'bg-sidebar-hover dark:bg-dark-dropdown-hover text-text dark:text-dark-text' : 'text-text dark:text-dark-text'
                                                     } group flex w-full items-center px-4 py-2 text-sm`}
                                             // onClick={handleCreateGroup}
                                             >
@@ -217,7 +217,7 @@ const ChatLayout = () => {
                                     <MenuItem>
                                         {({ active }) => (
                                             <button
-                                                className={`cursor-pointer ${active ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700'
+                                                className={`cursor-pointer ${active ? 'bg-sidebar-hover dark:bg-dark-dropdown-hover text-text dark:text-dark-text' : 'text-text dark:text-dark-text'
                                                     } group flex w-full items-center px-4 py-2 text-sm`}
                                             >
                                                 <CgProfile className="h-4 w-4 mr-3" />
@@ -228,7 +228,7 @@ const ChatLayout = () => {
                                     <MenuItem>
                                         {({ active }) => (
                                             <Link to="/settings" onClick={() => setSelectedRoom(null)}
-                                                className={`cursor-pointer ${active ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700'
+                                                className={`cursor-pointer ${active ? 'bg-sidebar-hover dark:bg-dark-dropdown-hover text-text dark:text-dark-text' : 'text-text dark:text-dark-text'
                                                     } group flex w-full items-center px-4 py-2 text-sm`}
                                             >
                                                 <IoIosSettings className="h-4 w-4 mr-3" />
@@ -242,7 +242,7 @@ const ChatLayout = () => {
                                     <MenuItem>
                                         {({ active }) => (
                                             <button
-                                                className={`cursor-pointer ${active ? 'bg-red-50 text-red-700' : 'text-gray-700'
+                                                className={`cursor-pointer ${active ? 'bg-sidebar-hover dark:bg-dark-dropdown-hover text-text dark:text-dark-text' : 'text-text dark:text-dark-text'
                                                     } group flex w-full items-center px-4 py-2 text-sm`}
                                             >
                                                 <IoIosLogOut className="h-4 w-4 mr-3" />
@@ -260,14 +260,14 @@ const ChatLayout = () => {
                 </div>
 
                 {/* Arama Alanı */}
-                <div className="px-5 py-4 border-b border-gray-100">
+                <div className="px-5 py-4 border-b border-border dark:border-dark-border">
                     <div className="relative">
                         <input
                             type="text"
                             value={searchQuery}
                             onChange={(e) => handleSearch(e.target.value)}
                             placeholder="Kullanıcı ara..."
-                            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-sm transition-all duration-200"
+                            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border dark:border-dark-border text-sm transition-all duration-200 placeholder-gray-400"
                         />
                         <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -281,7 +281,7 @@ const ChatLayout = () => {
                                 {searchResult.avatar || "👤"}
                             </div>
                             <div className="flex-1">
-                                <div className="font-medium text-gray-800">{searchResult.email.split("@")[0]}</div>
+                                <div className="font-medium">{searchResult.email.split("@")[0]}</div>
                                 <div className="text-sm text-gray-500">{searchResult.email}</div>
                             </div>
                             <button
@@ -300,7 +300,7 @@ const ChatLayout = () => {
                         <Link
                             key={conv._id}
                             to={`/chat/${conv._id}`}
-                            className={`px-5 py-3 flex items-center hover:bg-gray-100 transition-colors duration-150 ${selectedRoom === conv._id ? "bg-indigo-50 border-l-4 border-indigo-600" : ""
+                            className={`px-5 py-3 flex items-center hover:bg-sidebar-hover dark:hover:bg-dark-sidebar-hover transition-colors duration-150 ${selectedRoom === conv._id ? "bg-sidebar-selected dark:bg-dark-sidebar-selected border-l-4 border-sidebar-selected-border dark:border-dark-sidebar-selected-border" : ""
                                 }`}
                             onClick={() => setSelectedRoom(conv._id)}
                         >
@@ -308,10 +308,10 @@ const ChatLayout = () => {
                                 {conv.isGroup ? "👥" : "👤"}
                             </div>
                             <div className="flex-1 truncate">
-                                <div className="font-medium text-gray-800 truncate">{conv._id}</div>
-                                <div className="text-sm text-gray-500 flex justify-between">
+                                <div className="font-medium truncate">{conv._id}</div>
+                                <div className="text-sm text-sidebar-text dark:text-dark-sidebar-text flex justify-between items-center">
                                     <span className="truncate mr-2" title={conv.lastMessage?.content}>{conv.lastMessage?.content || "Yeni sohbet"}</span>
-                                    <span className="text-xs text-gray-400">{formatConversationTime(conv.updatedAt)}</span>
+                                    <span className="text-xs">{formatConversationTime(conv.updatedAt)}</span>
                                 </div>
                             </div>
                             <span className="p-1 rounded-full bg-red-400 text-white text-xs">
@@ -326,7 +326,7 @@ const ChatLayout = () => {
             </div>
 
             {/* Ana İçerik Alanı */}
-            <div className="flex-1 md:w-3/4">
+            <div className="flex-1 md:w-3/4 bg-main-bg dark:bg-dark-main-bg">
                 <Outlet />
             </div>
         </div>
