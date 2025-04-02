@@ -136,6 +136,19 @@ const ChatRoom = () => {
 
     }, [roomId, userId, participants]);
 
+    // Mesajları tarihe göre gruplama
+    const groupedMessages = messages.reduce((acc, msg) => {
+        const date = new Date(msg.createdAt).toLocaleDateString(); // Mesajın tarihini al (örneğin: "02.04.2025")
+        if (!acc[date]) {
+            acc[date] = [];
+        }
+        acc[date].push(msg);
+        return acc;
+    }, {});
+
+    // Bugünün tarihini al
+    const today = new Date().toLocaleDateString();
+
     // Mesajlar yüklendiğinde veya güncellendiğinde en alta kaydır
     useEffect(() => {
         fetchConversation();
@@ -175,55 +188,62 @@ const ChatRoom = () => {
 
             {/* Mesaj Alanı */}
             <main className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-100">
-                {messages && messages.map((msg) => (
-                    <div
-                        key={msg._id}
-                        className={`flex ${msg.sender._id === userId ? 'justify-end' : 'justify-start'}`}
-                    >
-                        <div className={`
-                            flex items-start max-w-lg p-3 rounded-xl 
-                            ${msg.sender._id === userId
-                                ? 'bg-indigo-100 text-gray-800'
-                                : 'bg-white text-gray-800 shadow-sm'}
-                        `}>
-                            {msg.sender._id !== userId && conversation?.isGroup && (
-                                <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
-                                    {msg.sender?.avatar || '👤'}
-                                </div>
-                            )}
-                            <div>
-                                {msg.sender._id !== userId && conversation?.isGroup && (
-                                    <div className="text-sm font-semibold text-gray-700 mb-1">
-                                        {msg.sender?.email?.split('@')[0]}
-                                    </div>
-                                )}
-                                <div className="text-sm">{msg.content}</div>
-                                <div className="text-gray-500 mt-1.5 text-right flex items-center gap-x-1">
-                                    <span className="text-xs">
-                                        {formatMessageTime(msg.createdAt)}
-                                    </span>
-                                    <div className="flex text-sm">
-                                        {/* Checkmark'ler yalnızca gönderici mevcut kullanıcıysa görünecek */}
-                                        {msg.sender._id === userId && (
-                                            conversation?.isGroup
-                                                ? (
-                                                    // Grup sohbetinde: Tüm diğer katılımcılar okuduysa çift tik, değilse tek tik
-                                                    msg.readBy?.length === conversation.participants.length - 1
-                                                        ? <IoCheckmarkDoneOutline className="text-indigo-600" />
-                                                        : <IoCheckmark className="text-indigo-600" />
-                                                )
-                                                : (
-                                                    // Birebir sohbette: Karşı taraf okuduysa çift tik, değilse tek tik
-                                                    msg.readBy?.length === 1
-                                                        ? <IoCheckmarkDoneOutline className="text-indigo-600" />
-                                                        : <IoCheckmark className="text-indigo-600" />
-                                                )
-                                        )}
-                                    </div>
-                                </div>
-
-                            </div>
+                {Object.keys(groupedMessages).map((date) => (
+                    <div key={date}>
+                        {/* Tarih başlığı - ortalanmış */}
+                        <div className="text-center text-sm text-gray-500 my-4">
+                            {date === today ? "Bugün" : date}
                         </div>
+                        {/* O tarihteki mesajlar */}
+                        {groupedMessages[date].map((msg) => (
+                            <div
+                                key={msg._id}
+                                className={`flex ${msg.sender._id === userId ? "justify-end" : "justify-start"}`}
+                            >
+                                <div
+                                    className={`
+                            flex items-start max-w-lg p-3 rounded-xl my-1
+                            ${msg.sender._id === userId
+                                            ? "bg-indigo-100 text-gray-800"
+                                            : "bg-white text-gray-800 shadow-sm"}
+                        `}
+                                >
+                                    {msg.sender._id !== userId && conversation?.isGroup && (
+                                        <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
+                                            {msg.sender?.avatar || "👤"}
+                                        </div>
+                                    )}
+                                    <div>
+                                        {msg.sender._id !== userId && conversation?.isGroup && (
+                                            <div className="text-sm font-semibold text-gray-700 mb-1">
+                                                {msg.sender?.email?.split("@")[0]}
+                                            </div>
+                                        )}
+                                        <div className="text-sm">{msg.content}</div>
+                                        <div className="text-gray-500 mt-1.5 text-right flex items-center gap-x-1">
+                                            <span className="text-xs">{formatMessageTime(msg.createdAt)}</span>
+                                            <div className="flex text-sm">
+                                                {msg.sender._id === userId && (
+                                                    conversation?.isGroup ? (
+                                                        msg.readBy?.length === conversation.participants.length - 1 ? (
+                                                            <IoCheckmarkDoneOutline className="text-indigo-600" />
+                                                        ) : (
+                                                            <IoCheckmark className="text-indigo-600" />
+                                                        )
+                                                    ) : (
+                                                        msg.readBy?.length === 1 ? (
+                                                            <IoCheckmarkDoneOutline className="text-indigo-600" />
+                                                        ) : (
+                                                            <IoCheckmark className="text-indigo-600" />
+                                                        )
+                                                    )
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 ))}
                 <div ref={messagesEndRef} />
