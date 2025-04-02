@@ -123,6 +123,17 @@ const ChatLayout = () => {
         socket.on("receiveConversation", (updatedConversation) => {
             console.log("Güncellenen conversation:", updatedConversation);
             setConversations((prevConversations) => {
+                const existingConversation = prevConversations.find(
+                    (conv) => conv._id === updatedConversation._id
+                );
+
+                // Yeni mesaj mı, yoksa sadece okundu güncellemesi mi?
+                const isNewMessage =
+                    !existingConversation || // Yeni bir sohbetse
+                    (existingConversation.lastMessage &&
+                        updatedConversation.lastMessage &&
+                        existingConversation.lastMessage._id !== updatedConversation.lastMessage._id); // lastMessage değiştiyse
+
                 const filteredConversations = prevConversations.filter(
                     (conv) => conv._id !== updatedConversation._id
                 );
@@ -131,12 +142,13 @@ const ChatLayout = () => {
                     new Date(b.updatedAt) - new Date(a.updatedAt)
                 );
 
-                // Ses çalma: Aktif oda değilse ve sekme arka plandaysa
-                if (updatedConversation._id !== selectedRoom && updatedConversation.lastMessage.sender !== userId) {
-                    const isTabActive = document.visibilityState === "visible";
-                    if (!isTabActive || selectedRoom !== updatedConversation._id) {
-                        otherScreenSound.play().catch((err) => console.error("Ses çalma hatası:", err));
-                    }
+                // Ses çalma koşulları
+                if (
+                    isNewMessage && // Yeni mesaj geldiyse
+                    updatedConversation._id !== selectedRoom && // Aktif oda değilse
+                    updatedConversation.lastMessage?.sender !== userId // Mesajı sen göndermediyse
+                ) {
+                    otherScreenSound.play().catch((err) => console.error("Ses çalma hatası:", err));
                 }
 
                 return sortedConversations;
