@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IoIosArrowBack, IoIosSave, IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineDarkMode, MdLightMode } from "react-icons/md";
+import { setUserSettings } from "../store/userSlice";
 
 const Settings = () => {
     const URL = import.meta.env.VITE_SERVER_URL;
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const userId = useSelector((state) => state.user.user.userId);
 
     const [profile, setProfile] = useState({
@@ -139,6 +142,15 @@ const Settings = () => {
             });
             if (!response.ok) throw new Error("Güncelleme başarısız");
             console.log("Bildirim ayarları güncellendi:", notifications);
+
+            const data = await response.json();
+
+            dispatch(setUserSettings({
+                notifications: data.user.notifications, // Mevcut state’i kullan
+                privacy: data.user.privacy, // Eski privacy’yi koru
+                theme: data.user.theme,     // Eski theme’i koru
+            }));
+
         } catch (error) {
             console.error("Hata:", error);
         }
@@ -161,6 +173,16 @@ const Settings = () => {
             });
             if (!response.ok) throw new Error("Güncelleme başarısız");
             console.log("Tema güncellendi:", newTheme);
+
+            const data = await response.json();
+            console.log(data.user);
+
+            dispatch(setUserSettings({
+                notifications: data.user.notifications,
+                privacy: data.user.privacy,
+                theme: data.user.theme,
+            }));
+
         } catch (error) {
             console.error("Hata:", error);
         }
@@ -175,6 +197,16 @@ const Settings = () => {
             });
             if (!response.ok) throw new Error("Güncelleme başarısız");
             console.log("Gizlilik ayarları güncellendi:", privacy);
+
+            const data = await response.json();
+            console.log(data.user);
+
+            dispatch(setUserSettings({
+                notifications: data.user.notifications,
+                privacy: data.user.privacy,
+                theme: data.user.theme,
+            }));
+
         } catch (error) {
             console.error("Hata:", error);
         }

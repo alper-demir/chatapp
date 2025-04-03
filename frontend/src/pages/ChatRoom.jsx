@@ -13,6 +13,7 @@ const ChatRoom = () => {
 
     const { roomId } = useParams();
     const userId = useSelector((state) => state.user.user.userId); // Sender
+    const userSettings = useSelector(state => state.user.userSettings);
     const [newMessage, setNewMessage] = useState("");
     const [messages, setMessages] = useState([]);
     const messagesEndRef = useRef(null); // En alta kaydırmak için referans
@@ -88,7 +89,7 @@ const ChatRoom = () => {
                 scrollToBottom();
                 socket.emit("markAsRead", { conversationId: roomId, userId }) // Mevcut kullanıcı soketteyse anlık olarak mesajı okumuş demektir.
 
-                if (message.sender._id !== userId) { // Kendi mesajlarımızda ses çalma
+                if (message.sender._id !== userId && userSettings?.notifications?.enableNotifications) { // Kendi mesajlarımızda ses çalma, bildirim etkinse çal
                     const isTabActive = document.visibilityState === "visible";
                     if (isTabActive) {
                         socketMessageSound.play().catch((err) => console.error("Ses çalma hatası:", err));
@@ -133,7 +134,7 @@ const ChatRoom = () => {
             socket.off("receiveMarkAsRead");
         };
 
-    }, [roomId, userId, participants]);
+    }, [roomId, userId, participants, userSettings]);
 
     // Mesajları tarihe göre gruplama
     const groupedMessages = messages.reduce((acc, msg) => {

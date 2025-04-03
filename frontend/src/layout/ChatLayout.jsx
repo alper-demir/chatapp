@@ -16,6 +16,8 @@ const ChatLayout = () => {
 
     const navigate = useNavigate();
     const userId = useSelector((state) => state.user.user.userId);
+    const userSettings = useSelector(state => state.user.userSettings);
+    console.log(userSettings);
 
     const [selectedRoom, setSelectedRoom] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -146,7 +148,8 @@ const ChatLayout = () => {
                 if (
                     isNewMessage && // Yeni mesaj geldiyse
                     updatedConversation._id !== selectedRoom && // Aktif oda değilse
-                    updatedConversation.lastMessage?.sender !== userId // Mesajı sen göndermediyse
+                    updatedConversation.lastMessage?.sender !== userId && // Mesajı sen göndermediyse
+                    userSettings?.notifications?.enableNotifications // Bildirim ayarları etkinse
                 ) {
                     otherScreenSound.play().catch((err) => console.error("Ses çalma hatası:", err));
                 }
@@ -158,7 +161,7 @@ const ChatLayout = () => {
         return () => {
             socket.off("receiveConversation");
         };
-    }, [userId, selectedRoom]);
+    }, [userId, selectedRoom, userSettings]);
 
 
     // Sayfa refresh edildiğinde seçili sohbet bilgisi görünmüyordu.
