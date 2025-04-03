@@ -34,7 +34,8 @@ export const getUserSettings = async (req, res) => {
             avatar: user.avatar || "👤",
             firstName: user.firstName || "",
             lastName: user.lastName || "",
-            about: user.about || "", // Hakkında bilgisi
+            about: user.about || "",
+            username: user.username || "",
             notifications: {
                 enableNotifications: user.notifications?.enableNotifications ?? true, // Bildirim ayarları
             },
@@ -51,8 +52,8 @@ export const getUserSettings = async (req, res) => {
 
 export const updateUserSettings = async (req, res) => {
     const { userId } = req.params;
-    console.log(req.body);
-    
+    const { username } = req.body;
+
     try {
         const user = await User.findById(userId);
         console.log(user);
@@ -61,8 +62,30 @@ export const updateUserSettings = async (req, res) => {
             return res.status(404).json({ message: "Kullanıcı bulunamadı" });
         }
 
+        if (username) {
+            // Kullanıcı adını güncellemeden önce kontrol et
+            const existingUser = await User.findOne({ username });
+            if (existingUser && existingUser._id.toString() !== userId) {
+                return res.status(400).json({ message: "Bu kullanıcı adı zaten alınmış" });
+            }
+            user.username = username;
+        }
+
         await user.updateOne(req.body); // Body'den gelen bilgiler güncellenecek.
         res.status(200).json({ message: "Ayarlar güncellendi", user });
+    } catch (error) {
+        res.status(500).json({ message: "Sunucu hatası", error });
+    }
+};
+
+export const checkUsername = async (req, res) => {
+    const { username } = req.params;
+    try {
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return res.status(400).json({ message: "Bu kullanıcı adı zaten alınmış" });
+        }
+        res.status(200).json({ message: "Bu kullanıcı adı kullanılabilir" });
     } catch (error) {
         res.status(500).json({ message: "Sunucu hatası", error });
     }
