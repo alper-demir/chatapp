@@ -1,43 +1,107 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { IoIosArrowBack, IoIosSave } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineDarkMode, MdLightMode } from "react-icons/md";
 
 const Settings = () => {
+    const URL = import.meta.env.VITE_SERVER_URL;
     const navigate = useNavigate();
     const userId = useSelector((state) => state.user.user.userId);
 
-    // Durum yönetimi için state'ler
+    // Profil state'i
     const [profile, setProfile] = useState({
-        avatar: "👤",
-        name: "Kullanıcı Adı",
-        status: "Çevrimiçi",
-    });
-    const [notifications, setNotifications] = useState({
-        enableNotifications: true,
-        enableSound: true,
-    });
-    const [theme, setTheme] = useState(localStorage.getItem("theme")); // "light" veya "dark"
-    const [privacy, setPrivacy] = useState({
-        showOnlineStatus: true,
-        showMessagePreviews: true,
+        avatar: "👤", // Varsayılan avatar olarak emoji
+        firstName: "",
+        lastName: "",
+        about: "", // Yeni eklenen about alanı
     });
 
+    // Bildirim state'i
+    const [notifications, setNotifications] = useState({
+        enableNotifications: true,
+    });
+
+    // Tema state'i
+    const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+
+    // Gizlilik state'i
+    const [privacy, setPrivacy] = useState({
+        showOnlineStatus: true,
+    });
+
+    // Ayarları çekme fonksiyonu
+    const fetchSettings = async () => {
+        try {
+            const response = await fetch(`${URL}/user/settings/${userId}`);
+            if (!response.ok) throw new Error("Ayarlar alınamadı");
+            const data = await response.json();
+            console.log(data);
+
+            setProfile({
+                avatar: data.avatar || "👤", // Avatar yoksa varsayılan değer
+                firstName: data.firstName || "",
+                lastName: data.lastName || "",
+                about: data.about || "", // API’den gelen about değeri
+            });
+            setNotifications({
+                enableNotifications: data.notifications?.enableNotifications ?? true,
+            });
+            setPrivacy({
+                showOnlineStatus: data.privacy?.showOnlineStatus ?? true,
+            });
+            setTheme(data.theme || "light");
+
+            // Tema ayarını localStorage ile senkronize et
+            if (data.theme === "dark") {
+                document.querySelector("html").classList.add("dark");
+                localStorage.setItem("theme", "dark");
+            } else {
+                document.querySelector("html").classList.remove("dark");
+                localStorage.setItem("theme", "light");
+            }
+        } catch (error) {
+            console.error("Hata:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchSettings();
+    }, [userId]);
+
     // Profil kaydetme fonksiyonu
-    const handleSaveProfile = () => {
-        // API çağrısı burada yapılabilir
-        console.log("Profil güncellendi:", profile);
+    const handleSaveProfile = async () => {
+        console.log(profile);
+        try {
+            const response = await fetch(`${URL}/user/settings/${userId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(profile),
+            });
+            if (!response.ok) throw new Error("Güncelleme başarısız");
+            console.log("Profil güncellendi:", profile);
+        } catch (error) {
+            console.error("Hata:", error);
+        }
     };
 
     // Bildirim ayarlarını kaydetme fonksiyonu
-    const handleSaveNotifications = () => {
-        // API çağrısı burada yapılabilir
-        console.log("Bildirim ayarları güncellendi:", notifications);
+    const handleSaveNotifications = async () => {
+        try {
+            const response = await fetch(`${URL}/user/settings/${userId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ notifications }),
+            });
+            if (!response.ok) throw new Error("Güncelleme başarısız");
+            console.log("Bildirim ayarları güncellendi:", notifications);
+        } catch (error) {
+            console.error("Hata:", error);
+        }
     };
 
     // Tema değiştirme fonksiyonu
-    const handleThemeChange = (newTheme) => {
+    const handleThemeChange = async (newTheme) => {
         setTheme(newTheme);
         if (newTheme === "dark") {
             document.querySelector("html").classList.add("dark");
@@ -46,12 +110,32 @@ const Settings = () => {
             document.querySelector("html").classList.remove("dark");
             localStorage.setItem("theme", "light");
         }
+        try {
+            const response = await fetch(`${URL}/user/settings/${userId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ theme: newTheme }),
+            });
+            if (!response.ok) throw new Error("Güncelleme başarısız");
+            console.log("Tema güncellendi:", newTheme);
+        } catch (error) {
+            console.error("Hata:", error);
+        }
     };
 
     // Gizlilik ayarlarını kaydetme fonksiyonu
-    const handleSavePrivacy = () => {
-        // API çağrısı burada yapılabilir
-        console.log("Gizlilik ayarları güncellendi:", privacy);
+    const handleSavePrivacy = async () => {
+        try {
+            const response = await fetch(`${URL}/user/settings/${userId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ privacy }),
+            });
+            if (!response.ok) throw new Error("Güncelleme başarısız");
+            console.log("Gizlilik ayarları güncellendi:", privacy);
+        } catch (error) {
+            console.error("Hata:", error);
+        }
     };
 
     return (
@@ -70,7 +154,7 @@ const Settings = () => {
             {/* Ayarlar İçeriği */}
             <div className="flex-1 overflow-y-auto space-y-6 pr-2">
                 {/* Profil Ayarları */}
-                <div className=" rounded-lg shadow-sm p-5 border border-border dark:border-dark-border">
+                <div className="rounded-lg shadow-sm p-5 border border-border dark:border-dark-border">
                     <h2 className="text-lg font-medium text-title dark:text-dark-title mb-4">Profil Ayarları</h2>
                     <div className="flex items-center space-x-4 mb-4">
                         <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-xl">
@@ -78,17 +162,25 @@ const Settings = () => {
                         </div>
                         <input
                             type="text"
-                            value={profile.name}
-                            onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                            className="flex-1 px-4 py-2 border border-border dark:border-dark-border rounded-lg focus:outline-none text-sm transition-all duration-200"
+                            value={profile.firstName}
+                            onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
+                            className="flex-1 capitalize px-4 py-2 border border-border dark:border-dark-border rounded-lg focus:outline-none text-sm transition-all duration-200"
                             placeholder="Adınızı girin"
                         />
+                        <input
+                            type="text"
+                            value={profile.lastName}
+                            onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
+                            className="flex-1 capitalize px-4 py-2 border border-border dark:border-dark-border rounded-lg focus:outline-none text-sm transition-all duration-200"
+                            placeholder="Soyadınızı girin"
+                        />
                     </div>
+                    {/* About için textarea */}
                     <textarea
-                        value={profile.status}
-                        onChange={(e) => setProfile({ ...profile, status: e.target.value })}
-                        className="w-full px-4 py-2 border border-border dark:border-dark-border rounded-lg focus:outline-none text-sm transition-none duration-200 resize-none"
-                        placeholder="Durumunuzu girin"
+                        value={profile.about}
+                        onChange={(e) => setProfile({ ...profile, about: e.target.value })}
+                        className="w-full px-4 py-2 border placeholder:text-gray-500 dark:placeholder:text-gray-500 border-border dark:border-dark-border rounded-lg focus:outline-none text-sm transition-all duration-200 resize-none"
+                        placeholder="Hakkınızda bir şeyler yazın"
                         rows="3"
                     />
                     <button
@@ -100,11 +192,11 @@ const Settings = () => {
                 </div>
 
                 {/* Bildirim Ayarları */}
-                <div className=" rounded-lg shadow-sm p-5 border border-border dark:border-dark-border">
+                <div className="rounded-lg shadow-sm p-5 border border-border dark:border-dark-border">
                     <h2 className="text-lg font-medium text-title dark:text-dark-title mb-4">Bildirim Ayarları</h2>
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <span className=" text-sm">Bildirimleri Etkinleştir</span>
+                            <span className="text-sm">Bildirimleri Etkinleştir</span>
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input
                                     type="checkbox"
@@ -113,24 +205,6 @@ const Settings = () => {
                                         setNotifications({
                                             ...notifications,
                                             enableNotifications: e.target.checked,
-                                        })
-                                    }
-                                    className="sr-only peer"
-                                />
-                                <div className="w-11 h-6 bg-gray-300 dark:bg-dark-sidebar-selected rounded-full peer-checked:bg-button dark:peer-checked:bg-dark-button transition-colors duration-200"></div>
-                                <div className="absolute left-1 top-1 w-4 h-4 rounded-full transition-transform duration-200 peer-checked:translate-x-5 bg-white"></div>
-                            </label>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <span className=" text-sm">Sesli Bildirimler</span>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={notifications.enableSound}
-                                    onChange={(e) =>
-                                        setNotifications({
-                                            ...notifications,
-                                            enableSound: e.target.checked,
                                         })
                                     }
                                     className="sr-only peer"
@@ -149,19 +223,23 @@ const Settings = () => {
                 </div>
 
                 {/* Tema Ayarları */}
-                <div className=" rounded-lg shadow-sm p-5 border border-border dark:border-dark-border">
+                <div className="rounded-lg shadow-sm p-5 border border-border dark:border-dark-border">
                     <h2 className="text-lg font-medium text-title dark:text-dark-title mb-4">Tema Ayarları</h2>
                     <div className="flex space-x-4">
                         <button
                             onClick={() => handleThemeChange("light")}
-                            className={`px-4 py-2 rounded-lg text-xl cursor-pointer ${theme === "light" ? "bg-button dark:bg-dark-button text-white" : "bg-gray-200 dark:bg-dark-sidebar-selected"
+                            className={`px-4 py-2 rounded-lg text-xl cursor-pointer ${theme === "light"
+                                ? "bg-button dark:bg-dark-button text-white"
+                                : "bg-gray-200 dark:bg-dark-sidebar-selected"
                                 } hover:bg-button-hover dark:hover:bg-dark-button-hover hover:text-white transition-colors duration-200`}
                         >
                             <MdLightMode />
                         </button>
                         <button
                             onClick={() => handleThemeChange("dark")}
-                            className={`px-4 py-2 rounded-lg text-xl cursor-pointer ${theme === "dark" ? "bg-button dark:bg-dark-button text-white" : "bg-gray-200 dark:bg-dark-sidebar-selected"
+                            className={`px-4 py-2 rounded-lg text-xl cursor-pointer ${theme === "dark"
+                                ? "bg-button dark:bg-dark-button text-white"
+                                : "bg-gray-200 dark:bg-dark-sidebar-selected"
                                 } hover:bg-button-hover dark:hover:bg-dark-button-hover hover:text-white transition-colors duration-200`}
                         >
                             <MdOutlineDarkMode />
@@ -170,7 +248,7 @@ const Settings = () => {
                 </div>
 
                 {/* Gizlilik Ayarları */}
-                <div className=" rounded-lg shadow-sm p-5 border border-border dark:border-dark-border">
+                <div className="rounded-lg shadow-sm p-5 border border-border dark:border-dark-border">
                     <h2 className="text-lg font-medium text-title dark:text-dark-title mb-4">Gizlilik Ayarları</h2>
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
@@ -191,24 +269,6 @@ const Settings = () => {
                                 <div className="absolute left-1 top-1 w-4 h-4 rounded-full transition-transform duration-200 peer-checked:translate-x-5 bg-white"></div>
                             </label>
                         </div>
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm">Mesaj Önizlemelerini Göster</span>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={privacy.showMessagePreviews}
-                                    onChange={(e) =>
-                                        setPrivacy({
-                                            ...privacy,
-                                            showMessagePreviews: e.target.checked,
-                                        })
-                                    }
-                                    className="sr-only peer"
-                                />
-                                <div className="w-11 h-6 bg-gray-300 dark:bg-dark-sidebar-selected rounded-full peer-checked:bg-button dark:peer-checked:bg-dark-button transition-colors duration-200"></div>
-                                <div className="absolute left-1 top-1 w-4 h-4 rounded-full transition-transform duration-200 peer-checked:translate-x-5 bg-white"></div>
-                            </label>
-                        </div>
                     </div>
                     <button
                         onClick={handleSavePrivacy}
@@ -219,7 +279,7 @@ const Settings = () => {
                 </div>
 
                 {/* Hesap Ayarları */}
-                <div className=" rounded-lg shadow-sm p-5 border border-border dark:border-dark-border">
+                <div className="rounded-lg shadow-sm p-5 border border-border dark:border-dark-border">
                     <h2 className="text-lg font-medium text-title dark:text-dark-title mb-4">Hesap Ayarları</h2>
                     <div className="space-y-4">
                         <button className="w-full cursor-pointer px-4 py-2 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700 transition-colors duration-200 text-sm">
@@ -230,8 +290,8 @@ const Settings = () => {
                         </button>
                     </div>
                 </div>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 };
 
