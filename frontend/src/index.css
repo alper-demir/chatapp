@@ -46,4 +46,14 @@
 
     --color-chatbutton-hover: #3e25fa;
     --color-dark-chatbutton-hover: #fc5e3a;
+
+    --color-title: #1e2939;
+    --color-dark-title: #f3f4f6;
+
+    --color-button: #2B7FFF;
+    --color-dark-button: #615FFF;
+
+    --color-button-hover: #155DFC;
+    --color-dark-button-hover: #4F39F6;
+
 }
