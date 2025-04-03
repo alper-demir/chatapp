@@ -56,7 +56,6 @@ export const updateUserSettings = async (req, res) => {
 
     try {
         const user = await User.findById(userId);
-        console.log(user);
 
         if (!user) {
             return res.status(404).json({ message: "Kullanıcı bulunamadı" });
@@ -72,6 +71,7 @@ export const updateUserSettings = async (req, res) => {
         }
 
         await user.updateOne(req.body); // Body'den gelen bilgiler güncellenecek.
+
         res.status(200).json({ message: "Ayarlar güncellendi", user });
     } catch (error) {
         res.status(500).json({ message: "Sunucu hatası", error });
