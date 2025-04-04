@@ -311,7 +311,15 @@ const MainLayout = () => {
                                 {conv.isGroup ? "👥" : "👤"}
                             </div>
                             <div className="flex-1 truncate">
-                                <div className="font-medium truncate">{conv._id}</div>
+                                <div className="font-medium truncate">
+                                    {
+                                        conv.isGroup ? (
+                                            <>{conv.groupName}</>
+                                        ) : (
+                                            conv?.participants.map(p => p._id !== userId && <>{p.username}</>)
+                                        )
+                                    }
+                                </div>
                                 <div className="text-sm text-sidebar-text dark:text-dark-sidebar-text flex justify-between items-center">
                                     <span className="truncate mr-2" title={conv.lastMessage?.content}>{conv.lastMessage?.content || "Yeni sohbet"}</span>
                                     <span className="text-xs">{formatConversationTime(conv.updatedAt)}</span>
