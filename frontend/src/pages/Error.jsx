@@ -23,10 +23,10 @@ const Error = () => {
 
                 {/* Chat Sayfasına Yönlendirme Butonu */}
                 <Link
-                    to="/chat"
+                    to="/"
                     className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-md"
                 >
-                    Go to Chat
+                    Go to Home
                 </Link>
             </div>
         </div>
