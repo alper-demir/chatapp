@@ -281,7 +281,7 @@ const Settings = () => {
                         />
                         <button
                             onClick={handleCheckUsername}
-                            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors duration-200 flex items-center text-sm"
+                            className="px-4 py-2 bg-button hover:bg-button-hover dark:bg-dark-button dark:hover:bg-dark-button-hover text-white rounded-lg transition-colors duration-200 flex items-center text-sm cursor-pointer"
                         >
                             <IoIosCheckmarkCircleOutline className="mr-2" /> Kontrol Et
                         </button>
