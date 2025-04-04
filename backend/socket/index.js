@@ -72,10 +72,10 @@ const initializeSocket = (server) => {
                 // Odaya güncellenmiş mesajları gönder
                 io.to(data.conversationId).emit("receiveMarkAsRead", updatedMessages);
 
-                const updatedConversation = await Conversation.findById(data.conversationId).populate("lastMessage");
+                const updatedConversation = await Conversation.findById(data.conversationId).populate([{ path: "lastMessage", populate: { path: "sender", select: { password: 0 } } }, { path: "participants", select: { password: 0 } }]);
 
                 updatedConversation.participants.forEach(participant => {
-                    io.to(participant.toString()).emit("receiveConversation", updatedConversation);
+                    io.to(participant._id.toString()).emit("receiveConversation", updatedConversation);
                 });
 
             } catch (error) {
@@ -105,14 +105,14 @@ const initializeSocket = (server) => {
                     message.conversationId,
                     { lastMessage: newMessage._id, updatedAt: Date.now() },
                     { new: true }
-                ).populate("lastMessage");
+                ).populate([{ path: "lastMessage", populate: { path: "sender", select: { password: 0 } } }, { path: "participants", select: { password: 0 } }]);
 
                 // Sadece ilgili conversation odasındaki kullanıcılara yeni mesajı gönder
                 io.to(message.conversationId).emit("receiveMessage", populatedMessage);
 
                 // Conversation güncellemesini, katılımcıların user odalarına gönder
                 updatedConversation.participants.forEach(participant => {
-                    io.to(participant.toString()).emit("receiveConversation", updatedConversation);
+                    io.to(participant._id.toString()).emit("receiveConversation", updatedConversation);
                 });
             } catch (error) {
                 console.error("sendMessage hatası: ", error);
