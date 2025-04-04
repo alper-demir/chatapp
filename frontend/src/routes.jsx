@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import ChatLayout from "./layout/ChatLayout";
 import ChatRoom from "./pages/ChatRoom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -8,6 +7,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AuthRoute from "./components/AuthRoute";
 import GroupConversation from "./pages/GroupConversation";
 import Settings from "./pages/Settings";
+import MainLayout from "./layout/MainLayout";
 
 const routes = createBrowserRouter([
   {
@@ -22,7 +22,7 @@ const routes = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <ChatLayout />,
+        element: <MainLayout />,
         children: [
           { path: "settings", element: <Settings /> },
           { path: "chat/:roomId", element: <ChatRoom /> },

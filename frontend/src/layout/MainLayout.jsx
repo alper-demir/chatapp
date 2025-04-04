@@ -12,7 +12,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 
 const URL = import.meta.env.VITE_SERVER_URL;
 
-const ChatLayout = () => {
+const MainLayout = () => {
 
     const navigate = useNavigate();
     const userId = useSelector((state) => state.user.user.userId);
@@ -22,7 +22,7 @@ const ChatLayout = () => {
     const [selectedRoom, setSelectedRoom] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResult, setSearchResult] = useState(null);
-    const [conversations, setConversations] = useState([]); // Dinamik sohbetler için state
+    const [conversations, setConversations] = useState([]);
 
     const conversationListRef = useRef(null);
 
@@ -336,4 +336,4 @@ const ChatLayout = () => {
     );
 };
 
-export default ChatLayout;
+export default MainLayout;
