@@ -36,7 +36,7 @@ export const getConversations = async (req, res) => {
     // Get all conversations of a user
     const { userId } = req.params;
     try {
-        const conversations = await Conversation.find({ participants: userId }).populate([{ path: "lastMessage", populate: { path: "sender", select: { password: 0 } } }, { path: "participants", select: { password: 0 } }]).sort({ updatedAt: -1 });
+        const conversations = await Conversation.find({ participants: userId }).populate([{ path: "lastMessage", populate: { path: "sender", select: "username" } }, { path: "participants", select: "username" }]).sort({ updatedAt: -1 });
         return res.status(200).json(conversations);
     } catch (error) {
         return res.status(500).json({ message: "Internal server error!", error });

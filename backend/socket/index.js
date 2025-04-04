@@ -72,7 +72,7 @@ const initializeSocket = (server) => {
                 // Odaya güncellenmiş mesajları gönder
                 io.to(data.conversationId).emit("receiveMarkAsRead", updatedMessages);
 
-                const updatedConversation = await Conversation.findById(data.conversationId).populate([{ path: "lastMessage", populate: { path: "sender", select: { password: 0 } } }, { path: "participants", select: { password: 0 } }]);
+                const updatedConversation = await Conversation.findById(data.conversationId).populate([{ path: "lastMessage", populate: { path: "sender", select: "username" } }, { path: "participants", select: "username" }]);
 
                 updatedConversation.participants.forEach(participant => {
                     io.to(participant._id.toString()).emit("receiveConversation", updatedConversation);
@@ -105,7 +105,7 @@ const initializeSocket = (server) => {
                     message.conversationId,
                     { lastMessage: newMessage._id, updatedAt: Date.now() },
                     { new: true }
-                ).populate([{ path: "lastMessage", populate: { path: "sender", select: { password: 0 } } }, { path: "participants", select: { password: 0 } }]);
+                ).populate([{ path: "lastMessage", populate: { path: "sender", select: "username" } }, { path: "participants", select: "username" }]);
 
                 // Sadece ilgili conversation odasındaki kullanıcılara yeni mesajı gönder
                 io.to(message.conversationId).emit("receiveMessage", populatedMessage);
