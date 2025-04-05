@@ -48,7 +48,7 @@ export const getConversationById = async (req, res) => {
     const { conversationId } = req.params;
 
     try {
-        const conversation = await Conversation.findById(conversationId).populate("lastMessage");
+        const conversation = await Conversation.findById(conversationId).populate([{ path: "lastMessage", select: "username" }, { path: "participants", select: "username" }]);
         return res.status(200).json(conversation);
     } catch (error) {
         return res.status(500).json({ message: "Internal server error!", error });

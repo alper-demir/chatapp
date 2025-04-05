@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import socket from "../socket/init";
 import { formatMessageTime } from "../utils/date";
 import { IoCheckmarkDoneSharp, IoCheckmarkSharp } from "react-icons/io5";
+import More from "../components/ChatRoom/More";
 
 const ChatRoom = () => {
 
@@ -47,7 +48,7 @@ const ChatRoom = () => {
                 setConversation(data);
                 console.log("Conversation: " + JSON.stringify(data.participants));
 
-                if (!data?.participants.includes(userId)) {
+                if (!data?.participants.map(p => p._id === userId)) {
                     navigate("/chat")
                 }
                 setParticipants(data.participants);
@@ -162,7 +163,7 @@ const ChatRoom = () => {
     return (
         <div className="flex flex-col h-full bg-main-bg dark:bg-dark-main-bg font-inter">
             {/* Chat Header */}
-            <header className="px-6 py-4 border-b border-border dark:border-dark-border shadow-sm flex items-center justify-between">
+            <header className="px-6 py-4 border-b border-border dark:border-dark-border shadow-sm flex items-center justify-between ">
                 <div>
                     {conversation?.isGroup ? (
                         <h2 className="text-xl font-semibold">
@@ -171,7 +172,7 @@ const ChatRoom = () => {
                     ) : (
                         <div>
                             <h2 className="text-xl font-semibold">
-                                {conversation?.email?.split('@')[0] || 'Kullanıcı'}
+                                {conversation?.participants?.map(p => p._id !== userId && <>{p.username}</>) || 'Kullanıcı'}
                             </h2>
                             {isOnline && (
                                 <span className="text-sm text-green-600 font-medium">
@@ -180,9 +181,9 @@ const ChatRoom = () => {
                             )}
                         </div>
                     )}
-                    <p className="text-xs text-gray-500 mt-1">
-                        Oda ID: {roomId}
-                    </p>
+                </div>
+                <div>
+                    {conversation?.isGroup && <More />}
                 </div>
             </header>
 
