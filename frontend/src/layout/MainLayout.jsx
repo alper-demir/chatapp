@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { useEffect } from "react";
 import Sidebar from "../components/Sidebar/Sidebar";
+import ModalManager from "../components/modals/ModalManager";
 
 const MainLayout = () => {
 
@@ -25,6 +26,7 @@ const MainLayout = () => {
             <div className="flex-1 md:w-3/4 bg-main-bg dark:bg-dark-main-bg">
                 <Outlet />
             </div>
+            <ModalManager />
         </div>
     );
 };

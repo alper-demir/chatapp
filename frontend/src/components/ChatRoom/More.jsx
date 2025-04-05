@@ -4,8 +4,21 @@ import { BsInfoSquare } from "react-icons/bs";
 import { IoMdMore } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { RxExit } from "react-icons/rx";
+import { useDispatch } from 'react-redux';
+import { openModal } from '../../store/modalSlice';
 
-const More = () => {
+const More = ({ conversationId, groupName }) => {
+
+    const dispatch = useDispatch();
+
+    const handleGroupInfoModal = () => {
+        dispatch(openModal({ modalType: "GroupInfoModal", modalData: { conversationId } }))
+    }
+
+    const handleLeaveGroupModal = () => {
+        dispatch(openModal({ modalType: "LeaveGroupModal", modalData: { conversationId, groupName } }))
+    }
+
     return (
         <Menu as="div" className="relative inline-flex">
             <MenuButton className="flex items-center justify-center w-8 h-8 rounded-full focus:outline-none transition-colors duration-200 data-[hover]:bg-sidebar-selected dark:data-[hover]:bg-dark-sidebar-selected data-[open]:bg-sidebar-selected dark:data-[open]:bg-dark-sidebar-selected cursor-pointer">
@@ -19,24 +32,24 @@ const More = () => {
                 <div className="py-1">
                     <MenuItem>
                         {({ active }) => (
-                            <Link to="/chat/group-conversation"
+                            <div onClick={handleGroupInfoModal}
                                 className={`cursor-pointer ${active ? 'bg-sidebar-hover dark:bg-dark-dropdown-hover text-text dark:text-dark-text' : 'text-text dark:text-dark-text'
                                     } group flex w-full items-center px-4 py-2 text-sm`}
                             >
                                 <BsInfoSquare className="h-4 w-4 mr-3" />
                                 Grup Bilgisi
-                            </Link>
+                            </div>
                         )}
                     </MenuItem>
                     <MenuItem>
                         {({ active }) => (
-                            <Link to="/chat/group-conversation"
+                            <div onClick={handleLeaveGroupModal}
                                 className={`cursor-pointer ${active ? 'bg-sidebar-hover dark:bg-dark-dropdown-hover text-text dark:text-dark-text' : 'text-text dark:text-dark-text'
                                     } group flex w-full items-center px-4 py-2 text-sm`}
                             >
                                 <RxExit className="h-4 w-4 mr-3" />
                                 Gruptan çık
-                            </Link>
+                            </div>
                         )}
                     </MenuItem>
                 </div>
