@@ -21,7 +21,7 @@ const LeaveGroupModal = ({ isOpen, close, modalData }) => {
                 },
                 body: JSON.stringify({
                     conversationId: modalData?.conversationId,
-                    userId: userId,
+                    userId, // Mevcut kullanıcı gruptan kendisi ayrılıyor
                 }),
             });
 

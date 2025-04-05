@@ -200,59 +200,75 @@ const ChatRoom = () => {
                         {groupedMessages[date].map((msg) => (
                             <div
                                 key={msg._id}
-                                className={`flex ${msg.sender._id === userId ? "justify-end" : "justify-start"}`}
+                                className={`flex ${msg.type === "system" ? "justify-center" : msg.sender._id === userId ? "justify-end" : "justify-start"}`}
                             >
-                                <div
-                                    className={`
-                            flex items-start max-w-lg p-3 rounded-xl my-1
-                            ${msg.sender._id === userId
-                                            ? "bg-message-sender dark:bg-dark-message-sender"
-                                            : "bg-message-other dark:bg-dark-message-other shadow-sm"}
-                        `}
-                                >
-                                    {msg.sender._id !== userId && conversation?.isGroup && (
-                                        <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
-                                            {msg.sender?.avatar || "👤"}
+                                {
+                                    msg.type === "system" && (
+                                        <div className="text-sm italic text-center p-2 bg-chatbutton dark:bg-dark-chatbutton rounded-lg text-dark-text my-2">
+                                            {
+                                                msg.systemMessageType === "user_added" ? (
+                                                    <>{msg.performedUser.username} kullanıcısı {msg.sender.username} tarafından eklendi</>
+                                                ) : msg.systemMessageType === "user_kicked" ? (
+                                                    <>{msg.performedUser.username} kullanıcısı {msg.sender.username} tarafından çıkarıldı</>
+                                                ) : msg.systemMessageType === "user_joined" ? (
+                                                    <>{msg.performedUser.username} kullanıcısı davet linki ile katıldı</>
+                                                ) : msg.systemMessageType === "user_left" && (
+                                                    <>{msg.performedUser.username} kullanıcısı ayrıldı</>
+                                                )
+                                            }
                                         </div>
-                                    )}
-                                    <div>
-                                        {msg.sender._id !== userId && conversation?.isGroup && (
-                                            <div className="text-sm font-semibold mb-1">
-                                                {msg.sender?.email?.split("@")[0]}
-                                            </div>
-                                        )}
-                                        <div className="text-sm">{msg.content}</div>
-                                        <div className="text-sidebar-text dark:text-dark-sidebar-text mt-1.5 text-right flex items-center gap-x-1">
-                                            <span className="text-xs">{formatMessageTime(msg.createdAt)}</span>
-                                            <div className="flex text-sm">
-                                                {msg.sender._id === userId && (
-                                                    conversation?.isGroup ? (
-                                                        msg.readBy?.length === conversation.participants.length - 1 ? (
-                                                            <IoCheckmarkDoneSharp className="text-doublecheckmark dark:text-dark-doublecheckmark" />
-                                                        ) : (
-                                                            <IoCheckmarkSharp className="text-checkmark dark:text-dark-checkmark" />
-                                                        )
-                                                    ) : (
-                                                        msg.readBy?.length === 1 ? (
-                                                            <IoCheckmarkDoneSharp className="text-doublecheckmark dark:text-dark-doublecheckmark" />
-                                                        ) : (
-                                                            <IoCheckmarkSharp className="text-checkmark dark:text-dark-checkmark" />
-                                                        )
-                                                    )
+                                    )
+                                }
+                                {
+                                    msg.type !== "system" && (
+                                        <div className={` flex items-start max-w-lg p-3 rounded-xl my-1 ${msg.sender._id === userId ? "bg-message-sender dark:bg-dark-message-sender" : "bg-message-other dark:bg-dark-message-other shadow-sm"}`}
+                                        >
+                                            {msg.sender._id !== userId && conversation?.isGroup && (
+                                                <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
+                                                    {msg.sender?.avatar || "👤"}
+                                                </div>
+                                            )}
+                                            <div>
+                                                {msg.sender._id !== userId && conversation?.isGroup && (
+                                                    <div className="text-sm font-semibold mb-1">
+                                                        {msg.sender?.email?.split("@")[0]}
+                                                    </div>
                                                 )}
+                                                <div className="text-sm">{msg.type === "text" && msg.content}</div>
+                                                <div className="text-sidebar-text dark:text-dark-sidebar-text mt-1.5 text-right flex items-center gap-x-1">
+                                                    <span className="text-xs">{formatMessageTime(msg.createdAt)}</span>
+                                                    <div className="flex text-sm">
+                                                        {msg.sender._id === userId && (
+                                                            conversation?.isGroup ? (
+                                                                msg.readBy?.length === conversation.participants.length - 1 ? (
+                                                                    <IoCheckmarkDoneSharp className="text-doublecheckmark dark:text-dark-doublecheckmark" />
+                                                                ) : (
+                                                                    <IoCheckmarkSharp className="text-checkmark dark:text-dark-checkmark" />
+                                                                )
+                                                            ) : (
+                                                                msg.readBy?.length === 1 ? (
+                                                                    <IoCheckmarkDoneSharp className="text-doublecheckmark dark:text-dark-doublecheckmark" />
+                                                                ) : (
+                                                                    <IoCheckmarkSharp className="text-checkmark dark:text-dark-checkmark" />
+                                                                )
+                                                            )
+                                                        )}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
+                                    )
+                                }
                             </div>
                         ))}
                     </div>
-                ))}
+                ))
+                }
                 <div ref={messagesEndRef} />
-            </main>
+            </main >
 
             {/* Mesaj Gönderme Alanı */}
-            <footer className="p-4 border-t border-border dark:border-dark-border">
+            < footer className="p-4 border-t border-border dark:border-dark-border" >
                 <div className="flex items-center space-x-2">
                     <input
                         type="text"
@@ -272,8 +288,8 @@ const ChatRoom = () => {
                         <span>Gönder</span>
                     </button>
                 </div>
-            </footer>
-        </div>
+            </footer >
+        </div >
     );
 };
 

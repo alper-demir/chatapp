@@ -67,7 +67,7 @@ const initializeSocket = (server) => {
                 // Güncellenmiş mesajları al (frontend'e göndermek için)
                 const updatedMessages = await Message.find({
                     conversationId: data.conversationId
-                }).populate("sender", { password: 0 });
+                }).populate([{ path: "sender", select: { password: 0 } }, { path: "performedUser", select: "username" }]);
 
                 // Odaya güncellenmiş mesajları gönder
                 io.to(data.conversationId).emit("receiveMarkAsRead", updatedMessages);

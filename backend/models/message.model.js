@@ -5,9 +5,16 @@ const MessageSchema = new mongoose.Schema({
     sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     type: {
         type: String,
-        enum: ['text', 'image', 'video', 'audio'],
+        enum: ['text', 'image', 'video', 'audio', 'system'],
         default: 'text'
     },
+    systemMessageType: {
+        type: String,
+        enum: ['user_joined', 'user_left', 'user_kicked', 'user_added'],
+        default: null
+    },
+    performer: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Eylemi gerçekleştiren kullanıcı (gruba ekleme/çıkarma)
+    performedUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Eyleme maruz kalan kullanıcı (gruba eklenen/çıkarılan)
     content: { type: String }, // Metin mesajları için
     mediaUrl: { type: String }, // Görsel, video, ses gibi dosyalar için
     mediaType: { type: String, enum: ['image', 'video', 'audio'], required: function () { return !!this.mediaUrl; } }, // Media varsa zorunlu

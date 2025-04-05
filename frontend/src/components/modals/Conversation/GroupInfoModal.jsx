@@ -67,6 +67,7 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
                 body: JSON.stringify({
                     conversationId: modalData?.conversationId,
                     userId: user._id,
+                    performer: userId // Eylemi gerçekleştiren kullanıcı mevcut kullanıcı ve grup yöneticisi olmalı
                 }),
             });
             if (!response.ok) throw new Error("Kullanıcı gruba eklenemedi");
@@ -91,6 +92,7 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
                 body: JSON.stringify({
                     conversationId: modalData?.conversationId,
                     userId: userIdToRemove,
+                    performer: userId // Eylemi gerçekleştiren kullanıcı mevcut kullanıcı ve grup yöneticisi olmalı
                 }),
             });
             if (!response.ok) throw new Error("Kullanıcı gruptan çıkarılamadı");

@@ -1,4 +1,5 @@
 import Conversation from "../models/conversation.model.js";
+import Message from "../models/message.model.js";
 import { io } from "../socket/index.js";
 
 export const createConversation = async (req, res) => {
@@ -56,7 +57,7 @@ export const getConversationById = async (req, res) => {
 }
 
 export const addParticipant = async (req, res) => {
-    const { conversationId, userId } = req.body;
+    const { conversationId, userId, performer } = req.body;
     try {
         const conversation = await Conversation.findById(conversationId);
         if (!conversation) return res.status(404).json({ message: "Sohbet bulunamadı" });
@@ -77,6 +78,10 @@ export const addParticipant = async (req, res) => {
             io.to(participant._id.toString()).emit("receiveConversation", updatedConversation);
         });
 
+        const newSystemMessage = await Message.create({ conversationId, sender: performer, type: "system", systemMessageType: "user_added", performedUser: userId })
+
+        io.to(conversationId).emit("receiveMessage", newSystemMessage);
+
         res.status(200).json(updatedConversation);
     } catch (error) {
         res.status(500).json({ message: "Sunucu hatası", error });
@@ -84,7 +89,11 @@ export const addParticipant = async (req, res) => {
 };
 
 export const removeParticipant = async (req, res) => {
-    const { conversationId, userId } = req.body;
+    const { conversationId, userId, performer } = req.body;
+
+    console.log(req.body);
+
+
     try {
         const conversation = await Conversation.findById(conversationId);
         if (!conversation) return res.status(404).json({ message: "Sohbet bulunamadı" });
@@ -105,6 +114,17 @@ export const removeParticipant = async (req, res) => {
         updatedConversation.participants.forEach((participant) => {
             io.to(participant.toString()).emit("receiveConversation", updatedConversation);
         });
+
+        // performer bilgisi varsa bir yönetici tarafından gruptan çıkarılmıştır. 
+
+        if (!performer) {
+            // Kullanıcı kendisi ayrılmıştır.
+            const newSystemMessage = await Message.create({ conversationId, sender: userId, type: "system", systemMessageType: "user_left", performedUser: userId })
+            io.to(conversationId).emit("receiveMessage", newSystemMessage);
+        } else {
+            const newSystemMessage = await Message.create({ conversationId, sender: performer, type: "system", systemMessageType: "user_kicked", performedUser: userId })
+            io.to(conversationId).emit("receiveMessage", newSystemMessage);
+        }
 
         res.status(200).json(updatedConversation);
     } catch (error) {
