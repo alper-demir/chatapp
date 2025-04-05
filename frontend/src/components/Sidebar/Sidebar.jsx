@@ -34,7 +34,7 @@ const Sidebar = () => {
         const handleKeyDown = (e) => {
             if (e.key === "Escape") {
                 setSelectedRoom(null);
-                navigate("/chat");
+                navigate("/");
             }
         };
 
@@ -154,8 +154,21 @@ const Sidebar = () => {
             });
         });
 
+        socket.on("removeConversation", ({ conversationId }) => {
+            console.log(`Sohbet kaldırılıyor: ${conversationId}`);
+            setConversations((prevConversations) =>
+                prevConversations.filter((conv) => conv._id !== conversationId)
+            );
+            // Eğer kullanıcı şu an bu sohbet odasındaysa, chat ekranından çıkar
+            if (selectedRoom === conversationId) {
+                setSelectedRoom(null);
+                navigate("/");
+            }
+        });
+
         return () => {
             socket.off("receiveConversation");
+            socket.off("removeConversation");
         };
     }, [userId, selectedRoom, userSettings]);
 

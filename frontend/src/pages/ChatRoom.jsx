@@ -47,9 +47,10 @@ const ChatRoom = () => {
                 console.log(data);
                 setConversation(data);
                 console.log("Conversation: " + JSON.stringify(data.participants));
-
-                if (!data?.participants.map(p => p._id === userId)) {
-                    navigate("/chat")
+                console.log(!data.participants.some(p => p._id === userId));
+                // Eğer kullanıcı bu odanın katılımcısı değilse anasayfaya yönlendir
+                if (!data.participants.some(p => p._id === userId)) {
+                    navigate("/");
                 }
                 setParticipants(data.participants);
             } else {
@@ -183,7 +184,7 @@ const ChatRoom = () => {
                     )}
                 </div>
                 <div>
-                    {conversation?.isGroup && <More />}
+                    {conversation?.isGroup && <More conversationId={roomId} groupName={conversation?.groupName} />}
                 </div>
             </header>
 
