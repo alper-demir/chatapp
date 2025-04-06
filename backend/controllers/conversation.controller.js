@@ -131,3 +131,44 @@ export const removeParticipant = async (req, res) => {
         res.status(500).json({ message: "Sunucu hatası", error });
     }
 };
+
+export const updateGroupInfo = async (req, res) => {
+    const { conversationId, groupName, description, userId } = req.body;
+
+    try {
+        const conversation = await Conversation.findById(conversationId);
+        if (!conversation) return res.status(404).json({ message: "Sohbet bulunamadı" });
+        if (!conversation.isGroup) return res.status(400).json({ message: "Bu bir grup sohbeti değil" });
+
+        if (!conversation.admins.includes(userId)) {
+            return res.status(403).json({ message: "Bu işlemi yapmak için yönetici yetkisine sahip olmalısınız." });
+        }
+
+        conversation.groupName = groupName || conversation.groupName;
+        conversation.description = description || conversation.description;
+        await conversation.save();
+
+        const systemMessage = await Message.create({
+            conversationId,
+            sender: userId,
+            type: "system",
+            systemMessageType: "group_info_updated",
+            performer: userId,
+        });
+
+        const updatedConversation = await Conversation.findById(conversationId)
+            .populate("participants", "username email avatar")
+            .populate("lastMessage");
+
+        updatedConversation.participants.forEach((participant) => {
+            io.to(participant.toString()).emit("receiveConversation", updatedConversation);
+        });
+
+        io.to(conversationId).emit("receiveMessage", systemMessage);
+
+        res.status(200).json(conversation);
+    } catch (error) {
+        console.error("updateGroupInfo hatası:", error);
+        res.status(500).json({ message: "Sunucu hatası", error });
+    }
+};

@@ -127,6 +127,11 @@ const ChatRoom = () => {
                 scrollToBottom();
             }
         });
+        // Conversation güncellendiğinde tetiklenir (örneğin grup bilgileri değiştiğinde)
+        socket.on("receiveConversation", (updatedConversation) => {
+            console.log("ChatRoom güncellenen conversation: ", updatedConversation);
+            setConversation(updatedConversation)
+        })
 
         return () => {
             // Temizleme: event listener'ı kaldır
@@ -212,8 +217,10 @@ const ChatRoom = () => {
                                                     <>{msg.performedUser.username} kullanıcısı {msg.sender.username} tarafından çıkarıldı</>
                                                 ) : msg.systemMessageType === "user_joined" ? (
                                                     <>{msg.performedUser.username} kullanıcısı davet linki ile katıldı</>
-                                                ) : msg.systemMessageType === "user_left" && (
+                                                ) : msg.systemMessageType === "user_left" ? (
                                                     <>{msg.performedUser.username} kullanıcısı ayrıldı</>
+                                                ) : msg.systemMessageType === "group_info_updated" && (
+                                                    <>Grup bilgisi {msg.sender.username} tarafından güncellendi</>
                                                 )
                                             }
                                         </div>
