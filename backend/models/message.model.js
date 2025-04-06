@@ -10,7 +10,7 @@ const MessageSchema = new mongoose.Schema({
     },
     systemMessageType: {
         type: String,
-        enum: ['user_joined', 'user_left', 'user_kicked', 'user_added'],
+        enum: ['user_joined', 'user_left', 'user_kicked', 'user_added', 'group_info_updated'],
         default: null
     },
     performer: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Eylemi gerçekleştiren kullanıcı (gruba ekleme/çıkarma)
