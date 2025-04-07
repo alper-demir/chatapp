@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { IoClose } from "react-icons/io5";
 import { FaUserPlus, FaUserMinus } from "react-icons/fa";
+import { searchUserWithEmail } from "../../../services/userService";
+import { addParticipantToGroup, getConversationWithConversationId, removeParticipantFromGroup, updateGroupInformations } from "../../../services/conversationService";
 
 const GroupInfoModal = ({ isOpen, close, modalData }) => {
     const URL = import.meta.env.VITE_SERVER_URL;
@@ -18,20 +20,12 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
 
     // Grup bilgilerini çek
     const fetchConversationInfo = async () => {
-        try {
-            const response = await fetch(`${URL}/conversation/get/id/${modalData?.conversationId}`, {
-                method: "GET",
-            });
-            if (!response.ok) throw new Error("Grup bilgileri alınamadı");
-            const data = await response.json();
-            setParticipants(data.participants);
-            setGroupName(data.groupName);
-            setDescription(data.description || "");
-            setConversation(data);
-            console.log("Grup bilgileri:", data);
-        } catch (error) {
-            console.error("Grup bilgileri alınırken hata oluştu:", error);
-        }
+        const data = await getConversationWithConversationId(modalData?.conversationId);
+        setParticipants(data.participants);
+        setGroupName(data.groupName);
+        setDescription(data.description || "");
+        setConversation(data);
+        console.log("Grup bilgileri:", data);
     };
 
     // Kullanıcı arama
@@ -42,106 +36,38 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
             return;
         }
 
-        try {
-            const response = await fetch(`${URL}/user/findByEmail/${query}`, {
-                method: "GET",
-            });
-            if (!response.ok) throw new Error("Kullanıcı bulunamadı");
-            const data = await response.json();
-            const filteredResults = Array.isArray(data)
-                ? data.filter((user) => !participants.some((p) => p._id === user._id))
-                : !participants.some((p) => p._id === data._id)
-                    ? [data]
-                    : [];
-            setSearchResults(filteredResults);
-        } catch (error) {
-            console.error("Kullanıcı arama hatası:", error);
-            setSearchResults([]);
-        }
+        const data = await searchUserWithEmail(query);
+        const filteredResults = Array.isArray(data)
+            ? data.filter((user) => !participants.some((p) => p._id === user._id))
+            : !participants.some((p) => p._id === data._id)
+                ? [data]
+                : [];
+        setSearchResults(filteredResults);
     };
 
     // Gruba kullanıcı ekleme
     const addUserToGroup = async (user) => {
-        try {
-            const response = await fetch(`${URL}/conversation/add-participant`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    conversationId: modalData?.conversationId,
-                    userId: user._id,
-                    performer: userId,
-                }),
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Kullanıcı gruba eklenemedi");
-            }
-            const updatedConversation = await response.json();
-            setParticipants(updatedConversation.participants);
-            setConversation(updatedConversation);
-            setSearchQuery("");
-            setSearchResults([]);
-        } catch (error) {
-            console.error("Kullanıcı gruba eklenirken hata oluştu:", error);
-        }
+        const updatedConversation = await addParticipantToGroup(modalData?.conversationId, user._id, userId);
+        setParticipants(updatedConversation.participants);
+        setConversation(updatedConversation);
+        setSearchQuery("");
+        setSearchResults([]);
     };
 
     // Gruptan kullanıcı çıkarma
     const removeUserFromGroup = async (userIdToRemove) => {
-        try {
-            const response = await fetch(`${URL}/conversation/remove-participant`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    conversationId: modalData?.conversationId,
-                    userId: userIdToRemove,
-                    performer: userId,
-                }),
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Kullanıcı gruptan çıkarılamadı");
-            }
-            const updatedConversation = await response.json();
-            setParticipants(updatedConversation.participants);
-            setConversation(updatedConversation);
-        } catch (error) {
-            console.error("Kullanıcı gruptan çıkarılırken hata oluştu:", error);
-        }
+        const updatedConversation = await removeParticipantFromGroup(modalData?.conversationId, userIdToRemove, userId);
+        setParticipants(updatedConversation.participants);
+        setConversation(updatedConversation);
+
     };
 
     // Grup bilgilerini güncelleme
     const updateGroupInfo = async () => {
         setIsLoading(true);
-        try {
-            const response = await fetch(`${URL}/conversation/update-group-info`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    conversationId: modalData?.conversationId,
-                    groupName,
-                    description,
-                    userId
-                }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Grup bilgileri güncellenemedi");
-            }
-
-            fetchConversationInfo(); // Güncellenmiş bilgileri tekrar çek
-        } catch (error) {
-            console.error("Grup bilgileri güncellenirken hata oluştu:", error);
-        } finally {
-            setIsLoading(false);
-        }
+        await updateGroupInformations(modalData?.conversationId, groupName, description, userId);
+        fetchConversationInfo(); // Güncellenmiş bilgileri tekrar çek
+        setIsLoading(false);
     };
 
     useEffect(() => {
@@ -164,7 +90,7 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
                         <DialogTitle as="h3" className="text-lg font-semibold">
                             Grup Bilgisi
                         </DialogTitle>
-                        <button onClick={close} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                        <button onClick={close} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer">
                             <IoClose className="h-6 w-6" />
                         </button>
                     </div>
@@ -207,7 +133,7 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
                             <button
                                 onClick={updateGroupInfo}
                                 disabled={isLoading || (!groupName && !description)}
-                                className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                                className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 cursor-pointer"
                             >
                                 {isLoading ? (
                                     <>
@@ -264,7 +190,7 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
                                     {isAdmin && !conversation?.admins?.includes(p._id) && p._id !== userId && (
                                         <button
                                             onClick={() => removeUserFromGroup(p._id)}
-                                            className="text-red-500 hover:text-red-700 flex items-center space-x-1 text-sm"
+                                            className="text-red-500 hover:text-red-700 flex items-center space-x-1 text-sm cursor-pointer"
                                         >
                                             <FaUserMinus />
                                             <span>Çıkar</span>
@@ -322,7 +248,7 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
                                             </div>
                                             <button
                                                 onClick={() => addUserToGroup(user)}
-                                                className="text-indigo-600 hover:text-indigo-800 flex items-center space-x-1 text-sm"
+                                                className="text-indigo-600 hover:text-indigo-800 flex items-center space-x-1 text-sm cursor-pointer"
                                             >
                                                 <FaUserPlus />
                                                 <span>Ekle</span>
@@ -338,7 +264,7 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
                     <div className="flex justify-end">
                         <button
                             onClick={close}
-                            className="px-4 py-2 bg-gray-200 dark:bg-dark-sidebar text-gray-700 dark:text-dark-text rounded-lg hover:bg-gray-300 dark:hover:bg-dark-sidebar-hover transition-colors"
+                            className="px-4 py-2 bg-gray-200 dark:bg-dark-sidebar text-gray-700 dark:text-dark-text rounded-lg hover:bg-gray-300 dark:hover:bg-dark-sidebar-hover transition-colors cursor-pointer"
                         >
                             Kapat
                         </button>

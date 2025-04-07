@@ -2,39 +2,23 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { startConversation } from "../services/conversationService";
-
+import { getProfileWithUsername } from "../services/userService"
 const Profile = () => {
 
     const { username } = useParams();
     const navigate = useNavigate();
     const userId = useSelector((state) => state.user.user.userId);
 
-    const URL = import.meta.env.VITE_SERVER_URL;
-
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     const fetchProfile = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${URL}/user/profile/${username}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setProfileData(data);
-            } else if (response.status === 404) {
-                setError("Kullanıcı bulunamadı.");
-            } else {
-                setError("Profil yüklenirken bir hata oluştu.");
-            }
+            const data = await getProfileWithUsername(username);
+            setProfileData(data);
         } catch (err) {
-            setError("Bir hata oluştu: " + err.message);
+            console.log(err);
         } finally {
             setLoading(false);
         }
@@ -42,8 +26,6 @@ const Profile = () => {
 
     const createConversation = async () => {
         try {
-            console.log(userId, profileData._id);
-
             const data = await startConversation(userId, profileData._id);
             navigate(`/chat/${data._id}`);
             console.log(data);
@@ -58,27 +40,10 @@ const Profile = () => {
 
     const isOwnProfile = userId === profileData?._id;
 
-    // Yükleme durumu
     if (loading) {
         return (
             <div className="flex items-center justify-center h-screen bg-main-bg dark:bg-dark-main-bg">
                 <p className="text-lg text-gray-500 dark:text-dark-text">Yükleniyor...</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="flex items-center justify-center h-screen bg-main-bg dark:bg-dark-main-bg">
-                <div className="text-center">
-                    <p className="text-lg text-red-500 dark:text-red-400">{error}</p>
-                    <button
-                        onClick={() => navigate("/")}
-                        className="mt-4 px-4 py-2 bg-chatbutton dark:bg-dark-chatbutton text-white rounded-lg hover:bg-chatbutton-hover dark:hover:bg-dark-chatbutton-hover transition-colors"
-                    >
-                        Ana Sayfaya Dön
-                    </button>
-                </div>
             </div>
         );
     }

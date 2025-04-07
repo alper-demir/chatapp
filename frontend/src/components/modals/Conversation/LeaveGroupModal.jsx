@@ -3,39 +3,20 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { IoClose } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { leaveConversation } from "../../../services/conversationService";
 
 const LeaveGroupModal = ({ isOpen, close, modalData }) => {
     const navigate = useNavigate();
-    const URL = import.meta.env.VITE_SERVER_URL;
     const userId = useSelector((state) => state.user.user.userId);
     const [isLoading, setIsLoading] = useState(false);
 
     // Gruptan çıkma işlemi
     const handleLeaveGroup = async () => {
         setIsLoading(true);
-        try {
-            const response = await fetch(`${URL}/conversation/remove-participant`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    conversationId: modalData?.conversationId,
-                    userId, // Mevcut kullanıcı gruptan kendisi ayrılıyor
-                }),
-            });
-
-            if (!response.ok) throw new Error("Gruptan çıkılamadı");
-            // İşlem başarılıysa modal'ı kapat
-            close();
-            navigate("/");
-        } catch (error) {
-            console.error("Gruptan çıkma hatası:", error);
-            // Hata durumunda kullanıcıya bilgi verebilirsiniz (örneğin, toast ile)
-            alert("Gruptan çıkarken bir hata oluştu. Lütfen tekrar deneyin.");
-        } finally {
-            setIsLoading(false);
-        }
+        await leaveConversation(modalData?.conversationId, userId);
+        setIsLoading(false);
+        close();
+        navigate("/");
     };
 
     return (
@@ -51,7 +32,7 @@ const LeaveGroupModal = ({ isOpen, close, modalData }) => {
                         </DialogTitle>
                         <button
                             onClick={close}
-                            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer"
                             disabled={isLoading}
                         >
                             <IoClose className="h-6 w-6" />
@@ -71,14 +52,14 @@ const LeaveGroupModal = ({ isOpen, close, modalData }) => {
                         <button
                             onClick={close}
                             disabled={isLoading}
-                            className="px-4 py-2 bg-gray-200 dark:bg-dark-sidebar text-gray-700 dark:text-dark-text rounded-lg hover:bg-gray-300 dark:hover:bg-dark-sidebar-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-4 py-2 bg-gray-200 dark:bg-dark-sidebar text-gray-700 dark:text-dark-text rounded-lg hover:bg-gray-300 dark:hover:bg-dark-sidebar-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
                             İptal
                         </button>
                         <button
                             onClick={handleLeaveGroup}
                             disabled={isLoading}
-                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 cursor-pointer"
                         >
                             {isLoading ? (
                                 <>

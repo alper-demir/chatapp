@@ -5,16 +5,14 @@ import socket from "../../socket/init";
 import autoAnimate from '@formkit/auto-animate'
 import More from './More';
 import Conversation from './Conversation';
-import { startConversation } from '../../services/conversationService';
-
-const URL = import.meta.env.VITE_SERVER_URL;
+import { getConversationsWithUserId, startConversation } from '../../services/conversationService';
+import { searchUserWithEmail } from '../../services/userService';
 
 const Sidebar = () => {
 
     const navigate = useNavigate();
     const userId = useSelector((state) => state.user.user.userId);
     const userSettings = useSelector(state => state.user.userSettings);
-    console.log(userSettings);
 
     const [selectedRoom, setSelectedRoom] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -24,7 +22,6 @@ const Sidebar = () => {
     const conversationListRef = useRef(null);
 
     const otherScreenSound = new Audio("/notification-other-screen.mp3"); // public/notification-other-screen.mp3
-
 
     // AutoAnimate initialize
     useEffect(() => {
@@ -55,15 +52,7 @@ const Sidebar = () => {
         }
 
         try {
-            const response = await fetch(`${URL}/user/findByEmail/${query}`, {
-                method: "GET",
-            });
-
-            if (!response.ok) {
-                throw new Error("Kullanıcı bulunamadı");
-            }
-
-            const data = await response.json();
+            const data = await searchUserWithEmail(query);
             setSearchResult(data);
             console.log("API'den dönen veri: ", JSON.stringify(data));
         } catch (error) {
@@ -90,11 +79,8 @@ const Sidebar = () => {
     // Sohbetleri API'den çekme
     const fetchConversations = async () => {
         try {
-            const response = await fetch(`${URL}/conversation/get/${userId}`, { method: "GET" });
-            if (!response.ok) throw new Error("Sohbetler alınırken hata oluştu");
-            const data = await response.json();
-            console.log(data);
-
+            const data = await getConversationsWithUserId(userId);
+            console.log("Conversations: " + JSON.stringify(data));
             setConversations(data);
         } catch (error) {
             console.error("Sohbetler alınırken hata oluştu: ", error);

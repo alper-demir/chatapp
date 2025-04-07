@@ -2,7 +2,6 @@ import React from 'react'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { BsInfoSquare } from "react-icons/bs";
 import { IoMdMore } from "react-icons/io";
-import { Link } from "react-router-dom";
 import { RxExit } from "react-icons/rx";
 import { useDispatch } from 'react-redux';
 import { openModal } from '../../store/modalSlice';
