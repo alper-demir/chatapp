@@ -65,7 +65,7 @@ const Profile = () => {
                         </p>
                         {isOwnProfile && (
                             <button
-                                onClick={() => navigate("/profile/edit")}
+                                onClick={() => navigate("/settings")}
                                 className="mt-2 px-3 py-1 bg-chatbutton dark:bg-dark-chatbutton text-white rounded-lg hover:bg-chatbutton-hover dark:hover:bg-dark-chatbutton-hover transition-colors text-sm"
                             >
                                 Profili Düzenle
@@ -81,7 +81,7 @@ const Profile = () => {
                             Hakkında
                         </h2>
                         <p className="text-sm">
-                            {profileData?.bio || "Bu kullanıcı hakkında bilgi yok."}
+                            {profileData?.about || "Bu kullanıcı hakkında bilgi yok."}
                         </p>
                     </div>
                     <div>
