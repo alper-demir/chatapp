@@ -5,6 +5,7 @@ import socket from "../../socket/init";
 import autoAnimate from '@formkit/auto-animate'
 import More from './More';
 import Conversation from './Conversation';
+import { startConversation } from '../../services/conversationService';
 
 const URL = import.meta.env.VITE_SERVER_URL;
 
@@ -72,23 +73,9 @@ const Sidebar = () => {
     };
 
     // Sohbet başlatma
-    const startChat = async (user) => {
+    const createConversation = async (user) => {
         try {
-            const response = await fetch(`${URL}/conversation/create`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    participants: [userId, user._id], // Mevcut kullanıcı ve aranan kullanıcı
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error("Sohbet başlatılamadı");
-            }
-
-            const data = await response.json();
+            const data = await startConversation(userId, user._id);
             console.log("Sohbet başlatıldı: ", JSON.stringify(data));
             setSelectedRoom(data._id);
             setSearchQuery("");
@@ -120,6 +107,7 @@ const Sidebar = () => {
 
         socket.on("receiveConversation", (updatedConversation) => {
             console.log("Güncellenen conversation:", updatedConversation);
+            handleSelectedConversation();
             setConversations((prevConversations) => {
                 const existingConversation = prevConversations.find(
                     (conv) => conv._id === updatedConversation._id
@@ -219,7 +207,7 @@ const Sidebar = () => {
                             <div className="text-sm text-gray-500">{searchResult.email}</div>
                         </div>
                         <button
-                            onClick={() => startChat(searchResult)}
+                            onClick={() => createConversation(searchResult)}
                             className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition-colors duration-200"
                         >
                             Sohbet Et
