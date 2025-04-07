@@ -8,6 +8,7 @@ import AuthRoute from "./components/AuthRoute";
 import GroupConversation from "./pages/GroupConversation";
 import Settings from "./pages/Settings";
 import MainLayout from "./layout/MainLayout";
+import Profile from "./pages/Profile";
 
 const routes = createBrowserRouter([
   {
@@ -26,7 +27,8 @@ const routes = createBrowserRouter([
         children: [
           { path: "settings", element: <Settings /> },
           { path: "chat/:roomId", element: <ChatRoom /> },
-          { path: "chat/group-conversation", element: <GroupConversation /> }
+          { path: "chat/group-conversation", element: <GroupConversation /> },
+          { path: "profile/:username", element: <Profile /> }
         ],
       },
     ],
