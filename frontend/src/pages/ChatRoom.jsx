@@ -107,10 +107,10 @@ const ChatRoom = () => {
 
         socket.on("onlineUsers", (users) => {
             // Mevcut kullanıcıyı çıkar
-            const filteredParticipants = participants.filter(participant => participant !== userId);
+            const filteredParticipants = participants.filter(participant => participant._id !== userId);
 
             // Online olan katılımcıları kontrol et
-            const isOnline = filteredParticipants.some(participant => users.includes(participant));
+            const isOnline = filteredParticipants.some(participant => users.includes(participant._id));
 
             console.log(users);
             console.log(filteredParticipants);
@@ -129,9 +129,11 @@ const ChatRoom = () => {
         });
         // Conversation güncellendiğinde tetiklenir (örneğin grup bilgileri değiştiğinde)
         socket.on("receiveConversation", (updatedConversation) => {
-            console.log("ChatRoom güncellenen conversation: ", updatedConversation);
-            setConversation(updatedConversation)
-        })
+            if (updatedConversation._id === roomId) {
+                console.log("ChatRoom güncellenen conversation: ", updatedConversation);
+                setConversation(updatedConversation);
+            }
+        });
 
         return () => {
             // Temizleme: event listener'ı kaldır
