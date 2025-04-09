@@ -105,7 +105,7 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
                     transition
                     className="w-full max-w-md rounded-2xl bg-main-bg dark:bg-dark-main-bg p-6 shadow-xl ring-1 ring-white/10 transform transition-all duration-300 ease-out scale-100 opacity-100"
                 >
-                    <div className="flex justify-between items-center border-b pb-3 mb-4">
+                    <div className="flex justify-between items-center border-b border-border dark:border-dark-border pb-3 mb-4">
                         <DialogTitle as="h3" className="text-lg font-semibold">
                             Grup Bilgisi
                         </DialogTitle>
@@ -192,7 +192,7 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
                             {participants.map((p) => (
                                 <div
                                     key={p._id}
-                                    className="flex items-center justify-between p-2 rounded-lg bg-gray-100 dark:bg-dark-sidebar hover:bg-gray-200 dark:hover:bg-dark-sidebar-hover transition-colors"
+                                    className="flex items-center justify-between p-2 rounded-lg bg-sidebar dark:bg-dark-sidebar hover:bg-sidebar-selected dark:hover:bg-dark-sidebar-selected transition-colors"
                                 >
                                     <div className="flex items-center space-x-2">
                                         <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-sm">
@@ -254,7 +254,7 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
                                     {searchResults.map((user) => (
                                         <div
                                             key={user._id}
-                                            className="flex items-center justify-between p-2 rounded-lg bg-indigo-50 dark:bg-dark-sidebar hover:bg-indigo-100 dark:hover:bg-dark-sidebar-hover transition-colors"
+                                            className="flex items-center justify-between p-2 rounded-lg bg-sidebar dark:bg-dark-sidebar hover:bg-sidebar-selected dark:hover:bg-dark-sidebar-selected transition-colors"
                                         >
                                             <div className="flex items-center space-x-2">
                                                 <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-sm">
@@ -293,7 +293,7 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
                                     />
                                     <button
                                         onClick={handleCopyLink}
-                                        className="px-4 py-2 bg-button hover:bg-button-hover dark:bg-dark-button dark:hover:bg-dark-button-hover text-white rounded-lg transition-colors cursor-pointer"
+                                        className="px-2 text-sm transition-colors cursor-pointer"
                                     >
                                         Kopyala
                                     </button>
@@ -306,7 +306,7 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
                     <div className="flex justify-end">
                         <button
                             onClick={close}
-                            className="px-4 py-2 bg-gray-200 dark:bg-dark-sidebar text-gray-700 dark:text-dark-text rounded-lg hover:bg-gray-300 dark:hover:bg-dark-sidebar-hover transition-colors cursor-pointer"
+                            className="px-4 py-2 bg-sidebar dark:bg-dark-sidebar text-gray-700 dark:text-dark-text rounded-lg hover:bg-sidebar-selected dark:hover:bg-dark-sidebar-selected transition-colors cursor-pointer"
                         >
                             Kapat
                         </button>
