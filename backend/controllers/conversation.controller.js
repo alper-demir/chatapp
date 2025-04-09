@@ -203,7 +203,12 @@ export const joinConversationWithInvitationLink = async (req, res) => {
         conversation.participants.push(userId);
         await conversation.save();
         // Katılımcılara güncellemeyi gönder 
+
         // Sistem mesajı oluştur
+        const systemMessage = await Message.create({ conversationId, sender: userId, type: "system", systemMessageType: "user_joined_with_invitation_link", performedUser: userId });
+
+        io.to(conversationId).emit("receiveMessage", systemMessage);
+
         return res.status(200).json({ message: "Gruba katılım başarılı", conversation });
     } catch (error) {
         res.status(500).json({ message: "Sunucu hatası :" + error })

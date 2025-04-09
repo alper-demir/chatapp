@@ -221,8 +221,10 @@ const ChatRoom = () => {
                                                     <>{msg.performedUser.username} kullanıcısı davet linki ile katıldı</>
                                                 ) : msg.systemMessageType === "user_left" ? (
                                                     <>{msg.performedUser.username} kullanıcısı ayrıldı</>
-                                                ) : msg.systemMessageType === "group_info_updated" && (
+                                                ) : msg.systemMessageType === "group_info_updated" ? (
                                                     <>Grup bilgisi {msg.sender.username} tarafından güncellendi</>
+                                                ) : msg.systemMessageType === "user_joined_with_invitation_link" && (
+                                                    <>{msg.performedUser.username} kullanıcısı davet linki ile katıldı</>
                                                 )
                                             }
                                         </div>
