@@ -211,7 +211,7 @@ const ChatRoom = () => {
                             >
                                 {
                                     msg.type === "system" && (
-                                        <div className="text-sm italic text-center p-2 bg-chatbutton dark:bg-dark-chatbutton rounded-lg text-dark-text my-2">
+                                        <div className="text-sm italic text-center p-2 bg-system-message dark:bg-dark-system-message rounded-lg text-dark-text my-2">
                                             {
                                                 msg.systemMessageType === "user_added" ? (
                                                     <>{msg.performedUser.username} kullanıcısı {msg.sender.username} tarafından eklendi</>
