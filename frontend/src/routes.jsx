@@ -9,6 +9,7 @@ import GroupConversation from "./pages/GroupConversation";
 import Settings from "./pages/Settings";
 import MainLayout from "./layout/MainLayout";
 import Profile from "./pages/Profile";
+import JoinGroup from "./pages/JoinGroup";
 
 const routes = createBrowserRouter([
   {
@@ -28,7 +29,8 @@ const routes = createBrowserRouter([
           { path: "settings", element: <Settings /> },
           { path: "chat/:roomId", element: <ChatRoom /> },
           { path: "chat/group-conversation", element: <GroupConversation /> },
-          { path: "profile/:username", element: <Profile /> }
+          { path: "profile/:username", element: <Profile /> },
+          { path: "join-group/:token", element: <JoinGroup /> }
         ],
       },
     ],

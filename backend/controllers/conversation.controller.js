@@ -1,6 +1,7 @@
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
 import { io } from "../socket/index.js";
+import { generateInvitationToken } from "../utils/JWT.js";
 
 export const createConversation = async (req, res) => {
     const { participants, isGroup, admins, groupName } = req.body;
@@ -172,3 +173,39 @@ export const updateGroupInfo = async (req, res) => {
         res.status(500).json({ message: "Sunucu hatası", error });
     }
 };
+
+export const createConversationGroupInvitve = async (req, res) => {
+    const { conversationId, userId } = req.body;
+    try {
+        const conversation = await Conversation.findById(conversationId);
+        if (!conversation) return res.status(404).json({ message: "Sohbet bulunamadı" });
+        if (!conversation.isGroup) return res.status(400).json({ message: "Bu bir grup sohbeti değil" });
+        if (!conversation.admins.includes(userId)) return res.status(403).json({ message: "Bu işlemi yapmak için yönetici yetkisine sahip olmalısınız." });
+
+        const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+        const token = generateInvitationToken(conversationId);
+
+        const link = `${CLIENT_URL}/join-group/${token}`;
+
+        return res.status(200).json({ link })
+    } catch (error) {
+        res.status(500).json({ message: "Sunucu hatası : " + error });
+    }
+}
+
+export const joinConversationWithInvitationLink = async (req, res) => {
+    const { userId, conversationId } = req.body;
+    try {
+        const conversation = await Conversation.findById(conversationId);
+        if (!conversation) return res.status(404).json({ message: "Sohbet bulunamadı" });
+        if (!conversation.isGroup) return res.status(400).json({ message: "Bu bir grup sohbeti değil" });
+        if (conversation.participants.includes(userId)) return res.status(400).json({ message: "Kullanıcı zaten grupta" });
+        conversation.participants.push(userId);
+        await conversation.save();
+        // Katılımcılara güncellemeyi gönder 
+        // Sistem mesajı oluştur
+        return res.status(200).json({ message: "Gruba katılım başarılı", conversation });
+    } catch (error) {
+        res.status(500).json({ message: "Sunucu hatası :" + error })
+    }
+}

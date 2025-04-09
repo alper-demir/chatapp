@@ -127,3 +127,30 @@ export const leaveConversation = async (conversationId, userId) => {
         console.error("Gruptan çıkma hatası:", error);
     }
 }
+
+export const createInvitationLink = async (conversationId, userId) => {
+    try {
+        const response = await fetch(`${URL}/conversation/create/invite`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ conversationId, userId }),
+        });
+        return await response.json();
+    } catch (error) {
+        console.error("Davet linki oluşturulamadı:", error);
+    }
+}
+
+export const joinGroupConversationWithInvitationLink = async (conversationId, userId) => {
+    try {
+        const response = await fetch(`${URL}/conversation/join-group`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ conversationId, userId }),
+        })
+        if (!response.ok) throw new Error("Link ile gruba katılırken hata oluştu");
+        return await response.json();
+    } catch (error) {
+        console.error("Davet linki oluşturulamadı:", error);
+    }
+}

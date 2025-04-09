@@ -4,10 +4,9 @@ import { useSelector } from "react-redux";
 import { IoClose } from "react-icons/io5";
 import { FaUserPlus, FaUserMinus } from "react-icons/fa";
 import { searchUserWithEmail } from "../../../services/userService";
-import { addParticipantToGroup, getConversationWithConversationId, removeParticipantFromGroup, updateGroupInformations } from "../../../services/conversationService";
+import { addParticipantToGroup, createInvitationLink, getConversationWithConversationId, removeParticipantFromGroup, updateGroupInformations } from "../../../services/conversationService";
 
 const GroupInfoModal = ({ isOpen, close, modalData }) => {
-    const URL = import.meta.env.VITE_SERVER_URL;
     const userId = useSelector((state) => state.user.user.userId);
 
     const [participants, setParticipants] = useState([]);
@@ -17,6 +16,7 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
     const [groupName, setGroupName] = useState("");
     const [description, setDescription] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [inviteLink, setInviteLink] = useState("");
 
     // Grup bilgilerini çek
     const fetchConversationInfo = async () => {
@@ -68,6 +68,25 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
         await updateGroupInformations(modalData?.conversationId, groupName, description, userId);
         fetchConversationInfo(); // Güncellenmiş bilgileri tekrar çek
         setIsLoading(false);
+    };
+
+    const handleCreateInviteLink = async () => {
+        try {
+            const data = await createInvitationLink(modalData?.conversationId, userId);
+            if (data.link) {
+                setInviteLink(data.link);
+            } else {
+                console.error("Davet linki alınamadı:", data.message);
+            }
+        } catch (error) {
+            console.error("Davet linki oluşturulamadı:", error);
+        }
+    };
+
+    // Linki kopyalama
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText(inviteLink);
+        alert("Davet linki kopyalandı!");
     };
 
     useEffect(() => {
@@ -255,6 +274,29 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
                                             </button>
                                         </div>
                                     ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Davet Linki Oluşturma */}
+                    {isAdmin && (
+                        <div className="mb-6">
+                            <button className="text-sm font-semibold mb-2 cursor-pointer" onClick={handleCreateInviteLink}>Davet Linki Oluştur</button>
+                            {inviteLink && (
+                                <div className="mt-2 flex items-center space-x-2">
+                                    <input
+                                        type="text"
+                                        value={inviteLink}
+                                        readOnly
+                                        className="w-full px-3 py-2 border border-border dark:border-dark-border rounded-lg text-sm bg-gray-100 dark:bg-dark-sidebar"
+                                    />
+                                    <button
+                                        onClick={handleCopyLink}
+                                        className="px-4 py-2 bg-button hover:bg-button-hover dark:bg-dark-button dark:hover:bg-dark-button-hover text-white rounded-lg transition-colors cursor-pointer"
+                                    >
+                                        Kopyala
+                                    </button>
                                 </div>
                             )}
                         </div>
