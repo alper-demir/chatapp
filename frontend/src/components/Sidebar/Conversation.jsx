@@ -33,11 +33,9 @@ const Conversation = ({ conv, selectedRoom, setSelectedRoom }) => {
                     <span className="text-xs">{formatConversationTime(conv.updatedAt)}</span>
                 </div>
             </div>
-            <span className="p-1 rounded-full bg-red-400 text-white text-xs">
-                {conv?.lastMessage?.readBy?.includes(userId) || conv?.lastMessage?.sender._id === userId
-                    ? "✓"
-                    : "Okunmamış mesaj"}
-            </span>
+            {/* <span className="p-1 rounded-full bg-red-400 text-white text-xs">
+                {conv?.lastMessage?.readBy?.includes(userId) || conv?.lastMessage?.sender._id === userId ? "✓" : conv.lastMessage ? "Okunmamış mesaj" : "Yeni"}
+            </span> */}
         </Link>
     );
 };

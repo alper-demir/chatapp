@@ -54,7 +54,6 @@ const Sidebar = () => {
         try {
             const data = await searchUserWithEmail(query);
             setSearchResult(data);
-            console.log("API'den dönen veri: ", JSON.stringify(data));
         } catch (error) {
             console.error("Arama hatası: ", error);
             setSearchResult(null);
@@ -65,7 +64,6 @@ const Sidebar = () => {
     const createConversation = async (user) => {
         try {
             const data = await startConversation(userId, user._id);
-            console.log("Sohbet başlatıldı: ", JSON.stringify(data));
             setSelectedRoom(data._id);
             setSearchQuery("");
             setSearchResult(null);
@@ -80,7 +78,6 @@ const Sidebar = () => {
     const fetchConversations = async () => {
         try {
             const data = await getConversationsWithUserId(userId);
-            console.log("Conversations: " + JSON.stringify(data));
             setConversations(data);
         } catch (error) {
             console.error("Sohbetler alınırken hata oluştu: ", error);
@@ -90,8 +87,10 @@ const Sidebar = () => {
 
     useEffect(() => {
         socket.emit("joinUser", userId);
+    }, [userId]);
 
-        socket.on("receiveConversation", (updatedConversation) => {
+    useEffect(() => {
+        const handleReceiveConversation = (updatedConversation) => {
             console.log("Güncellenen conversation:", updatedConversation);
             handleSelectedConversation();
             setConversations((prevConversations) => {
@@ -126,25 +125,32 @@ const Sidebar = () => {
 
                 return sortedConversations;
             });
-        });
+        };
 
-        socket.on("removeConversation", ({ conversationId }) => {
-            console.log(`Sohbet kaldırılıyor: ${conversationId}`);
+        socket.on("receiveConversation", handleReceiveConversation);
+
+        return () => {
+            socket.off("receiveConversation", handleReceiveConversation);
+        };
+    }, [userId, selectedRoom, userSettings]);
+
+    useEffect(() => {
+        const handleRemoveConversation = ({ conversationId }) => {
             setConversations((prevConversations) =>
                 prevConversations.filter((conv) => conv._id !== conversationId)
             );
-            // Eğer kullanıcı şu an bu sohbet odasındaysa, chat ekranından çıkar
             if (selectedRoom === conversationId) {
                 setSelectedRoom(null);
                 navigate("/");
             }
-        });
+        };
+
+        socket.on("removeConversation", handleRemoveConversation);
 
         return () => {
-            socket.off("receiveConversation");
-            socket.off("removeConversation");
+            socket.off("removeConversation", handleRemoveConversation);
         };
-    }, [userId, selectedRoom, userSettings]);
+    }, [userId, selectedRoom]);
 
 
     // Sayfa refresh edildiğinde seçili sohbet bilgisi görünmüyordu.

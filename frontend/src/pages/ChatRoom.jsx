@@ -86,13 +86,14 @@ const ChatRoom = () => {
 
     useEffect(() => {
         socket.emit("joinRoom", roomId, userId);
+        socket.emit("markAsRead", { conversationId: roomId, userId });
 
-        socket.on("receiveMessage", (message) => {
-            // Gelen mesajın conversationId'sinin aktif oda ile aynı olduğundan emin ol
+        const handleReceiveMessage = (message) => {
+            // Gelen mesajın conversationId'sinin aktif oda ile aynı olduğundan emin ol            
             if (message.conversationId === roomId) {
                 setMessages((prev) => [...prev, message]);
                 scrollToBottom();
-                socket.emit("markAsRead", { conversationId: roomId, userId }) // Mevcut kullanıcı soketteyse anlık olarak mesajı okumuş demektir.
+                socket.emit("markAsRead", { conversationId: roomId, userId }); // Mevcut kullanıcı soketteyse anlık olarak mesajı okumuş demektir.
 
                 if (message.sender._id !== userId && userSettings?.notifications?.enableNotifications) { // Kendi mesajlarımızda ses çalma, bildirim etkinse çal
                     const isTabActive = document.visibilityState === "visible";
@@ -102,51 +103,67 @@ const ChatRoom = () => {
                         otherScreenMessageSound.play().catch((err) => console.error("Ses çalma hatası:", err));
                     }
                 }
-
             }
-        });
+        };
 
+        socket.on("receiveMessage", handleReceiveMessage);
+
+        return () => {
+            socket.off("receiveMessage", handleReceiveMessage);
+        };
+    }, [roomId, userId, userSettings]);
+
+    useEffect(() => {
         socket.emit("online", userId);
 
-        socket.on("onlineUsers", (users) => {
+        const handleOnlineUsers = (users) => {
             // Mevcut kullanıcıyı çıkar
             const filteredParticipants = participants.filter(participant => participant._id !== userId);
-
             // Online olan katılımcıları kontrol et
             const isOnline = filteredParticipants.some(participant => users.includes(participant._id));
-
             console.log(users);
             console.log(filteredParticipants);
             console.log(isOnline ? "Online" : "Offline");
             setIsOnline(isOnline);
-        });
+        };
 
-        socket.emit("markAsRead", { conversationId: roomId, userId })
+        socket.on("onlineUsers", handleOnlineUsers);
 
-        socket.on("receiveMarkAsRead", (updatedMessages) => {
-            console.log("Güncellenmiş mesajlar:", updatedMessages);
+        return () => {
+            socket.off("onlineUsers", handleOnlineUsers);
+        };
+    }, [participants, userId]);
+
+    useEffect(() => {
+        const handleReceiveMarkAsRead = (updatedMessages) => {
             if (updatedMessages[0]?.conversationId === roomId) {
+                console.log("Güncellenmiş mesajlar:", updatedMessages);
                 setMessages(updatedMessages);
                 scrollToBottom();
             }
-        });
-        // Conversation güncellendiğinde tetiklenir (örneğin grup bilgileri değiştiğinde)
-        socket.on("receiveConversation", (updatedConversation) => {
+        };
+
+        socket.on("receiveMarkAsRead", handleReceiveMarkAsRead);
+
+        return () => {
+            socket.off("receiveMarkAsRead", handleReceiveMarkAsRead);
+        };
+    }, [roomId]);
+
+    useEffect(() => {
+        const handleReceiveConversation = (updatedConversation) => {
             if (updatedConversation._id === roomId) {
                 console.log("ChatRoom güncellenen conversation: ", updatedConversation);
                 setConversation(updatedConversation);
             }
-        });
+        };
+        // Conversation güncellendiğinde tetiklenir (örneğin grup bilgileri değiştiğinde)
+        socket.on("receiveConversation", handleReceiveConversation);
 
         return () => {
-            // Temizleme: event listener'ı kaldır
-            socket.off("onlineUsers");
-            socket.off("online");
-            socket.off("receiveMessage");
-            socket.off("receiveMarkAsRead");
+            socket.off("receiveConversation", handleReceiveConversation);
         };
-
-    }, [roomId, userId, participants, userSettings]);
+    }, [roomId]);
 
     // Mesajları tarihe göre gruplama
     const groupedMessages = messages.reduce((acc, msg) => {
@@ -174,8 +191,8 @@ const ChatRoom = () => {
     return (
         <div className="flex flex-col h-full bg-main-bg dark:bg-dark-main-bg font-inter">
             {/* Chat Header */}
-            <header className="px-6 py-4 border-b border-border dark:border-dark-border shadow-sm flex items-center justify-between ">
-                <div>
+            <header className="px-6 py-4 border-b border-border dark:border-dark-border shadow-sm flex items-center justify-between">
+                <div className="mb-1">
                     {conversation?.isGroup ? (
                         <h2 className="text-xl font-semibold">
                             {conversation.groupName}
