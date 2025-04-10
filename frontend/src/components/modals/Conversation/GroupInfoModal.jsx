@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { IoClose } from "react-icons/io5";
 import { FaUserPlus, FaUserMinus } from "react-icons/fa";
 import { searchUserWithEmail } from "../../../services/userService";
-import { addParticipantToGroup, createInvitationLink, getConversationWithConversationId, removeParticipantFromGroup, updateGroupInformations } from "../../../services/conversationService";
+import { addParticipantToGroup, createInvitationLink, getConversationWithConversationId, grantUserAdmin, removeParticipantFromGroup, updateGroupInformations } from "../../../services/conversationService";
 
 const GroupInfoModal = ({ isOpen, close, modalData }) => {
     const userId = useSelector((state) => state.user.user.userId);
@@ -59,8 +59,15 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
         const updatedConversation = await removeParticipantFromGroup(modalData?.conversationId, userIdToRemove, userId);
         setParticipants(updatedConversation.participants);
         setConversation(updatedConversation);
+        console.log("kullanıcı çıkarıdlı" + JSON.stringify(updatedConversation));
 
     };
+
+    // Kullanıcıyı yönetici yapma
+    const grantUserAsAdmin = async (userIdToGrant) => {
+        await grantUserAdmin(modalData?.conversationId, userIdToGrant, userId);
+        fetchConversationInfo();
+    }
 
     // Grup bilgilerini güncelleme
     const updateGroupInfo = async () => {
@@ -207,13 +214,22 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
                                         </span>
                                     </div>
                                     {isAdmin && !conversation?.admins?.includes(p._id) && p._id !== userId && (
-                                        <button
-                                            onClick={() => removeUserFromGroup(p._id)}
-                                            className="text-red-500 hover:text-red-700 flex items-center space-x-1 text-sm cursor-pointer"
-                                        >
-                                            <FaUserMinus />
-                                            <span>Çıkar</span>
-                                        </button>
+                                        <div className="flex gap-x-3">
+                                            <button
+                                                onClick={() => grantUserAsAdmin(p._id)}
+                                                className="text-blue-500 hover:text-blue-600 flex items-center space-x-1 text-sm cursor-pointer font-semibold"
+                                            >
+                                                <FaUserPlus />
+                                                <span>Yönetici yap</span>
+                                            </button>
+                                            <button
+                                                onClick={() => removeUserFromGroup(p._id)}
+                                                className="text-rose-500 hover:text-rose-600 flex items-center space-x-1 text-sm cursor-pointer font-semibold"
+                                            >
+                                                <FaUserMinus />
+                                                <span>Çıkar</span>
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             ))}

@@ -154,3 +154,21 @@ export const joinGroupConversationWithInvitationLink = async (conversationId, us
         console.error("Davet linki oluşturulamadı:", error);
     }
 }
+
+export const grantUserAdmin = async (conversationId, userIdToGrant, performer) => {
+    try {
+        const response = await fetch(`${URL}/conversation/grant-admin`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                conversationId,
+                userIdToGrant,
+                performer
+            })
+        })
+        if (!response.ok) throw new Error("Kullanıcıyı yönetici yaparken hata oluştu");
+        return await response.json();
+    } catch (error) {
+        console.error("Kullanıcıyı yönetici yaparken hata " + error)
+    }
+}

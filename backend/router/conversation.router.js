@@ -1,5 +1,5 @@
 import express from "express";
-import { createConversation, getConversations, getConversationById, addParticipant, removeParticipant, updateGroupInfo, createConversationGroupInvitve, joinConversationWithInvitationLink } from "../controllers/conversation.controller.js";
+import { createConversation, getConversations, getConversationById, addParticipant, removeParticipant, updateGroupInfo, createConversationGroupInvitve, joinConversationWithInvitationLink, grantUserAdmin } from "../controllers/conversation.controller.js";
 
 const conversationRouter = express.Router();
 
@@ -11,5 +11,6 @@ conversationRouter.put("/remove-participant", removeParticipant);
 conversationRouter.put("/update-group-info", updateGroupInfo);
 conversationRouter.post("/create/invite", createConversationGroupInvitve);
 conversationRouter.post("/join-group", joinConversationWithInvitationLink);
+conversationRouter.put("/grant-admin", grantUserAdmin);
 
 export default conversationRouter;

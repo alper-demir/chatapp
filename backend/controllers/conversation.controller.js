@@ -99,9 +99,11 @@ export const removeParticipant = async (req, res) => {
         const conversation = await Conversation.findById(conversationId);
         if (!conversation) return res.status(404).json({ message: "Sohbet bulunamadı" });
         if (!conversation.isGroup) return res.status(400).json({ message: "Bu bir grup sohbeti değil" });
+        if (!conversation.participants.includes(userId)) return res.status(400).json({ message: "Kullanıcı zaten grupta değil" });
 
         // Kullanıcıyı participants dizisinden çıkar
         conversation.participants = conversation.participants.filter((p) => p.toString() !== userId);
+        conversation.admins = conversation.admins.filter((a) => a.toString() !== userId); // Kullanıcı yöneticisiyse listeden çıkar
         await conversation.save();
 
         const updatedConversation = await Conversation.findById(conversationId)
@@ -212,5 +214,40 @@ export const joinConversationWithInvitationLink = async (req, res) => {
         return res.status(200).json({ message: "Gruba katılım başarılı", conversation });
     } catch (error) {
         res.status(500).json({ message: "Sunucu hatası :" + error })
+    }
+}
+
+export const grantUserAdmin = async (req, res) => {
+    const { conversationId, userIdToGrant, performer } = req.body;
+    try {
+        const conversation = await Conversation.findById(conversationId);
+        if (!conversation) return res.status(404).json({ message: "Sohbet bulunamadı" });
+        if (!conversation.isGroup) return res.status(400).json({ message: "Bu bir grup sohbeti değil" });
+        if (!conversation.admins.includes(performer)) return res.status(403).json({ message: "Bu işlemi yapmak için yönetici yetkisine sahip olmalısınız." });
+
+        if (conversation.admins.includes(userIdToGrant)) {
+            return res.status(400).json({ message: "Kullanıcı zaten yönetici" });
+        }
+
+        conversation.admins.push(userIdToGrant);
+        await conversation.save();
+
+        const systemMessage = await Message.create({
+            conversationId,
+            sender: performer,
+            type: "system",
+            systemMessageType: "user_granted_admin",
+            performedUser: userIdToGrant,
+        });
+
+        io.to(conversationId).emit("receiveMessage", systemMessage);
+
+        const updatedConversation = await Conversation.findById(conversationId)
+            .populate("participants", "username email avatar")
+            .populate("lastMessage");
+
+        return res.status(200).json({ message: "Kullanıcıya yönetici yetkisi verildi", updatedConversation });
+    } catch (error) {
+        res.status(500).json({ message: "Sunucu hatası " + error });
     }
 }
