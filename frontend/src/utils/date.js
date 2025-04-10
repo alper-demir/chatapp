@@ -45,3 +45,7 @@ export const formatMessageTime = (timestamp) => {
         minute: '2-digit'
     });
 };
+
+export const formatDate = (timestamp) => {
+    return new Date(timestamp).toLocaleDateString();
+}
