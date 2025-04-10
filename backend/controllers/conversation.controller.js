@@ -4,7 +4,7 @@ import { io } from "../socket/index.js";
 import { generateInvitationToken } from "../utils/JWT.js";
 
 export const createConversation = async (req, res) => {
-    const { participants, isGroup, admins, groupName } = req.body;
+    const { participants, isGroup, userId, groupName } = req.body;
 
     if (!isGroup) {
         // Bireysel sohbet: Aynı katılımcılar arasında mevcut bir sohbet var mı?
@@ -23,8 +23,9 @@ export const createConversation = async (req, res) => {
     const newConversation = await Conversation.create({
         participants,
         isGroup: isGroup || false,
-        admins: admins || [],
-        groupName: groupName || ""
+        admins: [userId] || [],
+        groupName: groupName || "",
+        createdBy: userId || null
     });
 
     participants.map(participant => { // Oluşturulan conversation bilgisini katılımcılara ilet.
@@ -50,7 +51,11 @@ export const getConversationById = async (req, res) => {
     const { conversationId } = req.params;
 
     try {
-        const conversation = await Conversation.findById(conversationId).populate([{ path: "lastMessage", select: "username" }, { path: "participants", select: "username" }]);
+        const conversation = await Conversation.findById(conversationId).populate([
+            { path: "lastMessage", select: "username" },
+            { path: "participants", select: "username" },
+            { path: "createdBy", select: "username" }
+        ]);
         return res.status(200).json(conversation);
     } catch (error) {
         return res.status(500).json({ message: "Internal server error!", error });

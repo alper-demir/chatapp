@@ -26,10 +26,13 @@ const ChatRoom = () => {
     const otherScreenMessageSound = new Audio("/notification-other-screen.mp3"); // public/notification-other-screen.mp3
 
     const fetchMessages = async () => {
+        setMessages([])
         try {
-            const response = await fetch(`${URL}/message/${roomId}`);
+            const response = await fetch(`${URL}/message/${roomId}`, { method: "GET" });
             if (response.ok) {
                 const data = await response.json();
+                console.log(data);
+
                 setMessages(data);
             } else {
                 console.error("Mesajlar getirilemedi.");

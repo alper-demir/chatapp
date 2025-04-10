@@ -5,6 +5,8 @@ import { IoClose } from "react-icons/io5";
 import { FaUserPlus, FaUserMinus } from "react-icons/fa";
 import { searchUserWithEmail } from "../../../services/userService";
 import { addParticipantToGroup, createInvitationLink, getConversationWithConversationId, grantUserAdmin, removeParticipantFromGroup, updateGroupInformations } from "../../../services/conversationService";
+import { formatDate } from "../../../utils/date";
+import { Link } from "react-router-dom";
 
 const GroupInfoModal = ({ isOpen, close, modalData }) => {
     const userId = useSelector((state) => state.user.user.userId);
@@ -112,7 +114,7 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
                     transition
                     className="w-full max-w-md rounded-2xl bg-main-bg dark:bg-dark-main-bg p-6 shadow-xl ring-1 ring-white/10 transform transition-all duration-300 ease-out scale-100 opacity-100"
                 >
-                    <div className="flex justify-between items-center border-b border-border dark:border-dark-border pb-3 mb-4">
+                    <div className="flex justify-between items-center border-b border-border dark:border-dark-border pb-3 mb-3">
                         <DialogTitle as="h3" className="text-lg font-semibold">
                             Grup Bilgisi
                         </DialogTitle>
@@ -123,6 +125,11 @@ const GroupInfoModal = ({ isOpen, close, modalData }) => {
 
                     {/* Grup Bilgileri */}
                     <div className="space-y-4 mb-6">
+                        <div className="border-b border-border dark:border-dark-border pb-2">
+                            <span className="text-xs block mb-1">
+                                {conversation?.createdBy && <Link onClick={close} className="font-medium" to={`/profile/${conversation.createdBy.username}`}>{conversation.createdBy.username}</Link>} tarafından {formatDate(conversation?.createdAt)} tarihinde oluşturuldu
+                            </span>
+                        </div>
                         <div>
                             <label className="text-sm font-medium block mb-1">Grup Adı</label>
                             {isAdmin ? (
