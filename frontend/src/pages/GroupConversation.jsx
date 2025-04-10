@@ -68,7 +68,7 @@ const GroupConversation = () => {
                     participants: Array.from(new Set([...selectedUsers.map((user) => user._id), userId])), // Katılımcıları seç ve mevcut kullanıcıyıda dahil et.
                     isGroup: true,
                     groupName,
-                    admins: userId,
+                    userId,
                 }),
             });
 
