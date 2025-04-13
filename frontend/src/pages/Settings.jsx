@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { MdOutlineDarkMode, MdLightMode } from "react-icons/md";
 import { setUserSettings } from "../store/userSlice";
 import { deleteUserAccount } from "../services/userService";
+import { openModal } from "../store/modalSlice";
 
 const Settings = () => {
     const URL = import.meta.env.VITE_SERVER_URL;
@@ -227,6 +228,10 @@ const Settings = () => {
         return;
     }
 
+    const handleChangePasswordModal = () => {
+        dispatch(openModal({ modalType: "ChangePasswordModal" }))
+    }
+
     return (
         <div className="flex flex-col h-screen p-6 font-inter antialiased">
             {/* Üst Başlık ve Geri Butonu */}
@@ -409,7 +414,7 @@ const Settings = () => {
                 <div className="rounded-lg shadow-sm p-5 border border-border dark:border-dark-border">
                     <h2 className="text-lg font-medium text-title dark:text-dark-title mb-4">Hesap Ayarları</h2>
                     <div className="space-y-4">
-                        <button className="w-full cursor-pointer px-4 py-2 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700 transition-colors duration-200 text-sm">
+                        <button onClick={handleChangePasswordModal} className="w-full cursor-pointer px-4 py-2 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700 transition-colors duration-200 text-sm">
                             Şifre Değiştir
                         </button>
                         <button onClick={deleteAccount} className="w-full cursor-pointer px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors duration-200 text-sm">

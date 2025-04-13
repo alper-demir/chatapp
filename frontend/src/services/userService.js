@@ -59,3 +59,26 @@ export const deleteUserAccount = async (userId) => {
         console.log("Bir hata oluştu: " + error);
     }
 }
+
+export const changePassword = async (userId, currentPassword, newPassword) => {
+    try {
+        const response = await fetch(`${URL}/user/account/change-password/${userId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId, newPassword, currentPassword }),
+        })
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message);
+        }
+
+        return data;
+
+    } catch (error) {
+        console.log("Bir hata oluştu: " + error);
+    }
+}
