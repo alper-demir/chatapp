@@ -32,7 +32,7 @@ const Register = () => {
             const data = await response.json();
             console.log(data);
 
-            navigate("/"); // Kayıt başarılıysa chat sayfasına yönlendir
+            navigate("/");
         } catch (error) {
             console.error("Kayıt hatası:", error);
         }
