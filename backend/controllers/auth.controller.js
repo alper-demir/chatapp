@@ -39,6 +39,10 @@ export const login = async (req, res) => {
             return res.status(400).json({ message: "User not found!" });
         }
 
+        if (user.isDeleted) {
+            return res.status(400).json({ message: "Bu hesap silinmiş!" });
+        }
+
         const validatePassword = await bcrypt.compare(password, user.password);
 
         if (!validatePassword) {

@@ -9,7 +9,7 @@ export const findUserByEmail = async (req, res) => {
     }
 
     try {
-        const user = await User.findOne({ email }, { password: 0 });
+        const user = await User.findOne({ email, isDeleted: false }, { password: 0 });
         console.log(user);
 
         if (!user) {
@@ -25,7 +25,7 @@ export const findUserByEmail = async (req, res) => {
 export const getUserSettings = async (req, res) => {
     const { userId } = req.params;
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(userId, { isDeleted: false });
         if (!user) {
             return res.status(404).json({ message: "Kullanıcı bulunamadı" });
         }
@@ -97,12 +97,26 @@ export const findUserByUsername = async (req, res) => {
     const { username } = req.params;
 
     try {
-        const user = await User.findOne({ username }, { password: 0 });
+        const user = await User.findOne({ username, isDeleted: false }, { password: 0 });
         if (!user) {
             return res.status(404).json({ message: "Kullanıcı bulunamadı" });
         }
         res.status(200).json(user);
     } catch (error) {
         return res.status(500).json({ message: "Sunucu hatası", error });
+    }
+}
+
+export const deleteAccount = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const user = await User.findById(userId);
+        if (!user) { return res.status(404).json({ message: "Kullanıcı bulunamadı" }); }
+        if (user.isDeleted) { return res.status(400).json({ message: "Kullanıcı zaten silinmiş" }); }
+        await user.updateOne({ isDeleted: true });
+        res.status(200).json({ message: "Kullanıcı kaydı başarıyla silindi" });
+
+    } catch (error) {
+        res.status(500).json({ message: "Sunucu hatası : " + error });
     }
 }

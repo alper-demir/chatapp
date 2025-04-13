@@ -4,6 +4,7 @@ import { IoIosArrowBack, IoIosSave, IoIosCheckmarkCircleOutline } from "react-ic
 import { useNavigate } from "react-router-dom";
 import { MdOutlineDarkMode, MdLightMode } from "react-icons/md";
 import { setUserSettings } from "../store/userSlice";
+import { deleteUserAccount } from "../services/userService";
 
 const Settings = () => {
     const URL = import.meta.env.VITE_SERVER_URL;
@@ -212,6 +213,20 @@ const Settings = () => {
         }
     };
 
+    const deleteAccount = async () => {
+        if (window.confirm("Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.")) {
+            const data = await deleteUserAccount(userId);
+            if (data) {
+                console.log("Hesap silindi:", data);
+                localStorage.removeItem("token");
+                navigate("/login");
+            } else {
+                console.error("Hata:", data.message);
+            }
+        }
+        return;
+    }
+
     return (
         <div className="flex flex-col h-screen p-6 font-inter antialiased">
             {/* Üst Başlık ve Geri Butonu */}
@@ -397,7 +412,7 @@ const Settings = () => {
                         <button className="w-full cursor-pointer px-4 py-2 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700 transition-colors duration-200 text-sm">
                             Şifre Değiştir
                         </button>
-                        <button className="w-full cursor-pointer px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors duration-200 text-sm">
+                        <button onClick={deleteAccount} className="w-full cursor-pointer px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors duration-200 text-sm">
                             Hesabı Sil
                         </button>
                     </div>

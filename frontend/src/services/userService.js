@@ -39,3 +39,23 @@ export const searchUserWithEmail = async (email) => {
         console.log("Bir hata oluştu: " + error);
     }
 }
+
+export const deleteUserAccount = async (userId) => {
+    try {
+        const response = await fetch(`${URL}/user/account/${userId}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Kullanıcı kaydı silerken hata oluştu");
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        console.log("Bir hata oluştu: " + error);
+    }
+}
