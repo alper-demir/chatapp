@@ -18,11 +18,12 @@ const Login = () => {
                 body: JSON.stringify({ email, password }),
             });
 
+            const data = await response.json();
+            
             if (!response.ok) {
-                throw new Error("Giriş başarısız");
+                throw new Error(data.message);
             }
 
-            const data = await response.json();
             localStorage.setItem("token", data.token);
             navigate("/");
         } catch (error) {
