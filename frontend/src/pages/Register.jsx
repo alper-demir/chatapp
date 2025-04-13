@@ -4,6 +4,7 @@ import "./auth.css";
 
 const Register = () => {
     const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ const Register = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ email, password, username }),
             });
 
             if (!response.ok) {
@@ -30,8 +31,8 @@ const Register = () => {
 
             const data = await response.json();
             console.log(data);
-            
-            navigate("/chat"); // Kayıt başarılıysa chat sayfasına yönlendir
+
+            navigate("/"); // Kayıt başarılıysa chat sayfasına yönlendir
         } catch (error) {
             console.error("Kayıt hatası:", error);
         }
@@ -77,6 +78,16 @@ const Register = () => {
                             required
                         />
                         <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">👁️</span>
+                    </div>
+                    <div className="mb-4">
+                        <input
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder="Username"
+                            className="w-full p-3 bg-opacity-20 rounded-lg border border-gray-300 text-gray-800 placeholder-gray-800"
+                            required
+                        />
                     </div>
 
                     {/* Sign Up Button */}

@@ -24,7 +24,7 @@ const Login = () => {
 
             const data = await response.json();
             localStorage.setItem("token", data.token);
-            navigate("/chat");
+            navigate("/");
         } catch (error) {
             console.error("Giriş hatası:", error);
         }

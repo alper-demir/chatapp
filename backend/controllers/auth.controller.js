@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import { generateToken } from "../utils/JWT.js"
 
 export const register = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, username } = req.body;
 
     if (!email || !password) {
         return res.status(400).json({ message: "Email and password are required!" });
@@ -17,7 +17,7 @@ export const register = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const user = await User.create({ email, password: hashedPassword });
+        const user = await User.create({ email, password: hashedPassword, username });
         return res.status(201).json(user);
     }
     catch (err) {
