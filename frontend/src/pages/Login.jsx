@@ -18,11 +18,12 @@ const Login = () => {
                 body: JSON.stringify({ email, password }),
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                throw new Error("Giriş başarısız");
+                throw new Error(data.message);
             }
 
-            const data = await response.json();
             localStorage.setItem("token", data.token);
             navigate("/");
         } catch (error) {
@@ -35,6 +36,7 @@ const Login = () => {
             className="min-h-screen flex items-center justify-center bg-cover bg-center"
             style={{ backgroundImage: `url('/background.jpg')` }}
         >
+            <title>Chatapp | Login</title>
             <div className="glass-card w-full">
                 <h2 className="text-3xl font-semibold text-gray-800 mb-6 text-center">Login</h2>
                 <form onSubmit={handleLogin}>

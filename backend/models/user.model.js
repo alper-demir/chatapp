@@ -16,7 +16,8 @@ const userSchema = new mongoose.Schema({
         showOnlineStatus: { type: Boolean, default: true },
     },
     theme: { type: String, default: "light" },
-    isOnline: { type: Boolean, default: false }
+    isOnline: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false }
 }, { timestamps: true })
 
 

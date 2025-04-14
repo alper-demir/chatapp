@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import bcrypt from "bcrypt";
 
 export const findUserByEmail = async (req, res) => {
     const { email } = req.params;
@@ -9,7 +10,7 @@ export const findUserByEmail = async (req, res) => {
     }
 
     try {
-        const user = await User.findOne({ email }, { password: 0 });
+        const user = await User.findOne({ email, isDeleted: false }, { password: 0 });
         console.log(user);
 
         if (!user) {
@@ -25,7 +26,7 @@ export const findUserByEmail = async (req, res) => {
 export const getUserSettings = async (req, res) => {
     const { userId } = req.params;
     try {
-        const user = await User.findById(userId);
+        const user = await User.findOne({ _id: userId, isDeleted: false });
         if (!user) {
             return res.status(404).json({ message: "Kullanıcı bulunamadı" });
         }
@@ -97,12 +98,47 @@ export const findUserByUsername = async (req, res) => {
     const { username } = req.params;
 
     try {
-        const user = await User.findOne({ username }, { password: 0 });
+        const user = await User.findOne({ username, isDeleted: false }, { password: 0 });
         if (!user) {
             return res.status(404).json({ message: "Kullanıcı bulunamadı" });
         }
         res.status(200).json(user);
     } catch (error) {
         return res.status(500).json({ message: "Sunucu hatası", error });
+    }
+}
+
+export const deleteAccount = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const user = await User.findById(userId);
+        if (!user) { return res.status(404).json({ message: "Kullanıcı bulunamadı" }); }
+        if (user.isDeleted) { return res.status(400).json({ message: "Kullanıcı zaten silinmiş" }); }
+        await user.updateOne({ isDeleted: true });
+        res.status(200).json({ message: "Kullanıcı kaydı başarıyla silindi" });
+
+    } catch (error) {
+        res.status(500).json({ message: "Sunucu hatası : " + error });
+    }
+}
+
+export const changePassword = async (req, res) => {
+    const { userId } = req.params;
+    const { newPassword, currentPassword } = req.body;
+    console.log(newPassword + currentPassword + userId);
+
+    try {
+        const user = await User.findOne({ _id: userId, isDeleted: false });
+        if (!user) { return res.status(404).json({ message: "Kullanıcı bulunamadı" }); }
+
+        //Mevcut şifrenin geçerli olup olmadığını kontrol et
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) { return res.status(400).json({ message: "Mevcut şifre yanlış" }); }
+
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        await user.updateOne({ password: hashedNewPassword });
+        res.status(200).json({ message: "Şifre başarıyla değiştirildi" });
+    } catch (error) {
+        res.status(500).json({ message: "Sunucu hatası", error });
     }
 }
