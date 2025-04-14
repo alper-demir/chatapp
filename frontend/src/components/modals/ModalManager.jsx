@@ -3,11 +3,13 @@ import { closeModal } from '../../store/modalSlice';
 import LeaveGroupModal from "./Conversation/LeaveGroupModal";
 import GroupInfoModal from "./Conversation/GroupInfoModal";
 import ChangePasswordModal from "./Settings/ChangePasswordModal";
+import DeleteAccountModal from "./Settings/DeleteAccountModal";
 
 const modalComponents = { // MODAL LIST
     LeaveGroupModal: LeaveGroupModal,
     GroupInfoModal: GroupInfoModal,
-    ChangePasswordModal: ChangePasswordModal
+    ChangePasswordModal: ChangePasswordModal,
+    DeleteAccountModal: DeleteAccountModal
 };
 
 const ModalManager = () => {
