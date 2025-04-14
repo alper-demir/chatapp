@@ -40,6 +40,7 @@ const Register = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: `url('/background.jpg')` }}>
+            <title>Chatapp | Register</title>
             <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 w-full max-w-md shadow-lg glass-card">
                 <h2 className="text-3xl font-semibold text-gray-800 mb-6 text-center">Sign up</h2>
                 <form onSubmit={handleRegister}>
