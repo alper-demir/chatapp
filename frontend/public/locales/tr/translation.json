@@ -11,7 +11,11 @@
     ],
     "sidebar": {
         "conversations": "Sohbetler",
-        "chat": "Sohbet et"
+        "chat": "Sohbet et",
+        "newGroup": "Yeni Grup",
+        "profile": "Profil",
+        "settings": "Ayarlar",
+        "logout": "Çıkış Yap"
     },
     "settings": {
         "title": "Ayarlar",

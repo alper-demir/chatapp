@@ -11,7 +11,11 @@
     ],
     "sidebar": {
         "conversations": "Conversations",
-        "chat": "Chat"
+        "chat": "Chat",
+        "newGroup": "New Group",
+        "profile": "Profile",
+        "settings": "Settings",
+        "logout": "Logout"
     },
     "settings": {
         "title": "Settings",
