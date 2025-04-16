@@ -1,4 +1,14 @@
 {
+    "yesterday": "Yesterday",
+    "days": [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+    ],
     "sidebar": {
         "conversations": "Conversations",
         "chat": "Chat"

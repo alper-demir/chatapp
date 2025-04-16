@@ -1,4 +1,14 @@
 {
+    "yesterday": "Dün",
+    "days": [
+        "Pazar",
+        "Pazartesi",
+        "Salı",
+        "Çarşamba",
+        "Perşembe",
+        "Cuma",
+        "Cumartesi"
+    ],
     "sidebar": {
         "conversations": "Sohbetler",
         "chat": "Sohbet et"
