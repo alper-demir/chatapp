@@ -5,12 +5,14 @@ import socket from "../socket/init";
 import { formatMessageTime } from "../utils/date";
 import { IoCheckmarkDoneSharp, IoCheckmarkSharp } from "react-icons/io5";
 import More from "../components/ChatRoom/More";
+import { useTranslation } from "react-i18next";
 
 const ChatRoom = () => {
 
     const URL = import.meta.env.VITE_SERVER_URL;
 
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const { roomId } = useParams();
     const userId = useSelector((state) => state.user.user.userId); // Sender
@@ -194,24 +196,26 @@ const ChatRoom = () => {
             <header className="px-6 py-4 border-b border-border dark:border-dark-border shadow-sm flex items-center justify-between">
                 <div className="mb-1">
                     {conversation?.isGroup ? (
-                        <h2 className="text-xl font-semibold">
-                            {conversation.groupName}
-                        </h2>
+                        <h2 className="text-xl font-semibold">{conversation.groupName}</h2>
                     ) : (
                         <div>
                             <h2 className="text-xl font-semibold">
-                                {conversation?.participants?.map(p => p._id !== userId && <>{p.username}</>) || 'Kullanıcı'}
+                                {conversation?.participants?.map(
+                                    (p) => p._id !== userId && <>{p.username}</>
+                                ) || t("chatroom.defaultUser", "Kullanıcı")}
                             </h2>
                             {isOnline && (
                                 <span className="text-sm text-green-600 font-medium">
-                                    Çevrimiçi
+                                    {t("chatroom.online", "Çevrimiçi")}
                                 </span>
                             )}
                         </div>
                     )}
                 </div>
                 <div>
-                    {conversation?.isGroup && <More conversationId={roomId} groupName={conversation?.groupName} />}
+                    {conversation?.isGroup && (
+                        <More conversationId={roomId} groupName={conversation?.groupName} />
+                    )}
                 </div>
             </header>
 
@@ -221,93 +225,128 @@ const ChatRoom = () => {
                     <div key={date}>
                         {/* Tarih başlığı - ortalanmış */}
                         <div className="text-center text-sm my-4">
-                            {date === today ? "Bugün" : date}
+                            {date === today ? t("chatroom.today", "Bugün") : date}
                         </div>
                         {/* O tarihteki mesajlar */}
                         {groupedMessages[date].map((msg) => (
                             <div
                                 key={msg._id}
-                                className={`flex ${msg.type === "system" ? "justify-center" : msg.sender._id === userId ? "justify-end" : "justify-start"}`}
+                                className={`flex ${msg.type === "system"
+                                        ? "justify-center"
+                                        : msg.sender._id === userId
+                                            ? "justify-end"
+                                            : "justify-start"
+                                    }`}
                             >
-                                {
-                                    msg.type === "system" && (
-                                        <div className="text-sm italic text-center p-2 bg-system-message dark:bg-dark-system-message rounded-lg text-dark-text my-2">
-                                            {
-                                                msg.systemMessageType === "user_added" ? (
-                                                    <>{msg.performedUser.username} kullanıcısı {msg.sender.username} tarafından eklendi</>
-                                                ) : msg.systemMessageType === "user_kicked" ? (
-                                                    <>{msg.performedUser.username} kullanıcısı {msg.sender.username} tarafından çıkarıldı</>
-                                                ) : msg.systemMessageType === "user_joined" ? (
-                                                    <>{msg.performedUser.username} kullanıcısı davet linki ile katıldı</>
-                                                ) : msg.systemMessageType === "user_left" ? (
-                                                    <>{msg.performedUser.username} kullanıcısı ayrıldı</>
-                                                ) : msg.systemMessageType === "group_info_updated" ? (
-                                                    <>Grup bilgisi {msg.sender.username} tarafından güncellendi</>
-                                                ) : msg.systemMessageType === "user_joined_with_invitation_link" ? (
-                                                    <>{msg.performedUser.username} kullanıcısı davet linki ile katıldı</>
-                                                ) : msg.systemMessageType === "user_granted_admin" && (
-                                                    <>{msg.performedUser.username} kullanıcısı {msg.sender.username} tarafından yönetici yapıldı</>
-                                                )
-                                            }
-                                        </div>
-                                    )
-                                }
-                                {
-                                    msg.type !== "system" && (
-                                        <div className={` flex items-start max-w-lg p-3 rounded-xl my-1 ${msg.sender._id === userId ? "bg-message-sender dark:bg-dark-message-sender" : "bg-message-other dark:bg-dark-message-other shadow-sm"}`}
-                                        >
+                                {msg.type === "system" && (
+                                    <div className="text-sm italic text-center p-2 bg-system-message dark:bg-dark-system-message rounded-lg text-dark-text my-2">
+                                        {msg.systemMessageType === "user_added" ? (
+                                            <span>
+                                                {t("chatroom.systemMessages.user_added", {
+                                                    performedUser: msg.performedUser.username,
+                                                    sender: msg.sender.username,
+                                                })}
+                                            </span>
+                                        ) : msg.systemMessageType === "user_kicked" ? (
+                                            <span>
+                                                {t("chatroom.systemMessages.user_kicked", {
+                                                    performedUser: msg.performedUser.username,
+                                                    sender: msg.sender.username,
+                                                })}
+                                            </span>
+                                        ) : msg.systemMessageType === "user_joined" ? (
+                                            <span>
+                                                {t("chatroom.systemMessages.user_joined", {
+                                                    performedUser: msg.performedUser.username,
+                                                })}
+                                            </span>
+                                        ) : msg.systemMessageType === "user_left" ? (
+                                            <span>
+                                                {t("chatroom.systemMessages.user_left", {
+                                                    performedUser: msg.performedUser.username,
+                                                })}
+                                            </span>
+                                        ) : msg.systemMessageType === "group_info_updated" ? (
+                                            <span>
+                                                {t("chatroom.systemMessages.group_info_updated", {
+                                                    sender: msg.sender.username,
+                                                })}
+                                            </span>
+                                        ) : msg.systemMessageType === "user_joined_with_invitation_link" ? (
+                                            <span>
+                                                {t("chatroom.systemMessages.user_joined_with_invitation_link", {
+                                                    performedUser: msg.performedUser.username,
+                                                })}
+                                            </span>
+                                        ) : (
+                                            msg.systemMessageType === "user_granted_admin" && (
+                                                <span>
+                                                    {t("chatroom.systemMessages.user_granted_admin", {
+                                                        performedUser: msg.performedUser.username,
+                                                        sender: msg.sender.username,
+                                                    })}
+                                                </span>
+                                            )
+                                        )}
+                                    </div>
+                                )}
+                                {msg.type !== "system" && (
+                                    <div
+                                        className={`flex items-start max-w-lg p-3 rounded-xl my-1 ${msg.sender._id === userId
+                                                ? "bg-message-sender dark:bg-dark-message-sender"
+                                                : "bg-message-other dark:bg-dark-message-other shadow-sm"
+                                            }`}
+                                    >
+                                        {msg.sender._id !== userId && conversation?.isGroup && (
+                                            <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
+                                                {msg.sender?.avatar || "👤"}
+                                            </div>
+                                        )}
+                                        <div>
                                             {msg.sender._id !== userId && conversation?.isGroup && (
-                                                <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
-                                                    {msg.sender?.avatar || "👤"}
+                                                <div className="text-sm font-semibold mb-1">
+                                                    {msg.sender?.email?.split("@")[0]}
                                                 </div>
                                             )}
-                                            <div>
-                                                {msg.sender._id !== userId && conversation?.isGroup && (
-                                                    <div className="text-sm font-semibold mb-1">
-                                                        {msg.sender?.email?.split("@")[0]}
-                                                    </div>
-                                                )}
-                                                <div className="text-sm">{msg.type === "text" && msg.content}</div>
-                                                <div className="text-sidebar-text dark:text-dark-sidebar-text mt-1.5 text-right flex items-center gap-x-1">
-                                                    <span className="text-xs">{formatMessageTime(msg.createdAt)}</span>
-                                                    <div className="flex text-sm">
-                                                        {msg.sender._id === userId && (
-                                                            conversation?.isGroup ? (
-                                                                msg.readBy?.length === conversation.participants.length - 1 ? (
-                                                                    <IoCheckmarkDoneSharp className="text-doublecheckmark dark:text-dark-doublecheckmark" />
-                                                                ) : (
-                                                                    <IoCheckmarkSharp className="text-checkmark dark:text-dark-checkmark" />
-                                                                )
+                                            <div className="text-sm">{msg.type === "text" && msg.content}</div>
+                                            <div className="text-sidebar-text dark:text-dark-sidebar-text mt-1.5 text-right flex items-center gap-x-1">
+                                                <span className="text-xs">{formatMessageTime(msg.createdAt)}</span>
+                                                <div className="flex text-sm">
+                                                    {msg.sender._id === userId && (
+                                                        conversation?.isGroup ? (
+                                                            msg.readBy?.length === conversation.participants.length - 1 ? (
+                                                                <IoCheckmarkDoneSharp className="text-doublecheckmark dark:text-dark-doublecheckmark" />
                                                             ) : (
-                                                                msg.readBy?.length === 1 ? (
-                                                                    <IoCheckmarkDoneSharp className="text-doublecheckmark dark:text-dark-doublecheckmark" />
-                                                                ) : (
-                                                                    <IoCheckmarkSharp className="text-checkmark dark:text-dark-checkmark" />
-                                                                )
+                                                                <IoCheckmarkSharp className="text-checkmark dark:text-dark-checkmark" />
                                                             )
-                                                        )}
-                                                    </div>
+                                                        ) : (
+                                                            msg.readBy?.length === 1 ? (
+                                                                <IoCheckmarkDoneSharp className="text-doublecheckmark dark:text-dark-doublecheckmark" />
+                                                            ) : (
+                                                                <IoCheckmarkSharp className="text-checkmark dark:text-dark-checkmark" />
+                                                            )
+                                                        )
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
-                                    )
-                                }
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
-                ))
-                }
+                ))}
                 <div ref={messagesEndRef} />
-            </main >
+            </main>
 
             {/* Mesaj Gönderme Alanı */}
-            < footer className="p-4 border-t border-border dark:border-dark-border" >
+            <footer className="p-4 border-t border-border dark:border-dark-border">
                 <div className="flex items-center space-x-2">
                     <input
                         type="text"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Mesajınızı yazın..."
+                        placeholder={t("chatroom.messagePlaceholder", "Mesajınızı yazın...")}
                         className="flex-1 px-4 py-2.5 border border-border dark:border-dark-border rounded-lg focus:outline-none text-sm transition-all duration-200"
                         onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                     />
@@ -315,14 +354,23 @@ const ChatRoom = () => {
                         onClick={handleSendMessage}
                         className="px-4 py-2.5 bg-chatbutton dark:bg-dark-chatbutton text-white rounded-lg hover:bg-chatbutton-hover dark:hover:bg-dark-chatbutton-hover transition-colors duration-200 flex items-center space-x-2 cursor-pointer"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clipRule="evenodd" />
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
+                                clipRule="evenodd"
+                            />
                         </svg>
-                        <span>Gönder</span>
+                        <span>{t("chatroom.send", "Gönder")}</span>
                     </button>
                 </div>
-            </footer >
-        </div >
+            </footer>
+        </div>
     );
 };
 

@@ -17,7 +17,8 @@ const userSchema = new mongoose.Schema({
     },
     theme: { type: String, default: "light" },
     isOnline: { type: Boolean, default: false },
-    isDeleted: { type: Boolean, default: false }
+    isDeleted: { type: Boolean, default: false },
+    language: { type: String, default: "en" }
 }, { timestamps: true })
 
 

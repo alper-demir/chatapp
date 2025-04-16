@@ -1,51 +1,57 @@
+import i18n from 'i18next';
+import { languages } from '../config/languages';
+
+// Dil kodundan locale bilgisini al
+const getLocaleByLanguage = (code) => {
+    const lang = languages.find(lang => lang.code === code);
+    return lang?.locale || 'en-US';
+};
+
+const getCurrentLocale = () => getLocaleByLanguage(i18n.language);
+
 // Sohbet listesi için tarih formatı (relatif zaman)
 export const formatConversationTime = (timestamp) => {
     const postDate = new Date(timestamp);
     const now = new Date();
 
-    // Günlük Türkçe isimleri
-    const days = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+    const days = i18n.t('days', { returnObjects: true });
+    const locale = getCurrentLocale();
 
-    // Zaman farkını hesapla
     const diffInMilliseconds = now - postDate;
     const diffInHours = Math.floor(diffInMilliseconds / (1000 * 60 * 60));
     const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
 
-    // 1 günden az ise saati göster
     if (diffInHours < 24) {
-        return postDate.toLocaleTimeString('tr-TR', {
+        return postDate.toLocaleTimeString(locale, {
             hour: '2-digit',
             minute: '2-digit'
         });
     }
 
-    // Dün kontrolü
     const yesterdayCheck = new Date(now);
     yesterdayCheck.setDate(now.getDate() - 1);
     if (postDate.toDateString() === yesterdayCheck.toDateString()) {
-        return 'Dün';
+        return i18n.t('yesterday');
     }
 
-    // Bir hafta içinde ise gün ismini göster
     if (diffInDays < 7) {
         return days[postDate.getDay()];
     }
 
-    // Diğer durumlarda gün/ay/yıl formatında göster
-    const day = String(postDate.getDate()).padStart(2, '0');
-    const month = String(postDate.getMonth() + 1).padStart(2, '0');
-    const year = postDate.getFullYear();
-    return `${day}.${month}.${year}`;
+    return postDate.toLocaleDateString(locale);
 };
 
 // Mesaj detayları için saat formatı
 export const formatMessageTime = (timestamp) => {
-    return new Date(timestamp).toLocaleTimeString('tr-TR', {
+    const locale = getCurrentLocale();
+    return new Date(timestamp).toLocaleTimeString(locale, {
         hour: '2-digit',
         minute: '2-digit'
     });
 };
 
+// Sadece tarih
 export const formatDate = (timestamp) => {
-    return new Date(timestamp).toLocaleDateString();
-}
+    const locale = getCurrentLocale();
+    return new Date(timestamp).toLocaleDateString(locale);
+};

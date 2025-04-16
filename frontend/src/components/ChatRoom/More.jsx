@@ -5,10 +5,12 @@ import { IoMdMore } from "react-icons/io";
 import { RxExit } from "react-icons/rx";
 import { useDispatch } from 'react-redux';
 import { openModal } from '../../store/modalSlice';
+import { useTranslation } from 'react-i18next';
 
 const More = ({ conversationId, groupName }) => {
 
     const dispatch = useDispatch();
+    const { t } = useTranslation();
 
     const handleGroupInfoModal = () => {
         dispatch(openModal({ modalType: "GroupInfoModal", modalData: { conversationId } }))
@@ -36,7 +38,7 @@ const More = ({ conversationId, groupName }) => {
                                     } group flex w-full items-center px-4 py-2 text-sm`}
                             >
                                 <BsInfoSquare className="h-4 w-4 mr-3" />
-                                Grup Bilgisi
+                                {t("chatroom.groupInfo", "Grup bilgisi")}
                             </div>
                         )}
                     </MenuItem>
@@ -47,7 +49,7 @@ const More = ({ conversationId, groupName }) => {
                                     } group flex w-full items-center px-4 py-2 text-sm`}
                             >
                                 <RxExit className="h-4 w-4 mr-3" />
-                                Gruptan çık
+                                {t("chatroom.leaveGroup", "Gruptan çık")}
                             </div>
                         )}
                     </MenuItem>

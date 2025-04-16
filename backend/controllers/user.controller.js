@@ -1,3 +1,4 @@
+import { languages } from "../../frontend/src/config/languages.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 
@@ -44,7 +45,8 @@ export const getUserSettings = async (req, res) => {
                 showOnlineStatus: user.privacy?.showOnlineStatus ?? true, // Gizlilik ayarları
             },
             theme: user.theme || "light", // Tema ayarı
-            isOnline: user.isOnline || false, // Çevrimiçi durumu
+            isOnline: user.isOnline || false, // Çevrimiçi durumu,
+            language: user.language
         });
     } catch (error) {
         res.status(500).json({ message: "Sunucu hatası", error });

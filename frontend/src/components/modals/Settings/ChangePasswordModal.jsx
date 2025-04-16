@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { IoClose, IoEyeOutline, IoEyeOffOutline, IoCheckmarkCircleOutline, IoCloseCircleOutline } from "react-icons/io5";
 import { changePassword } from "../../../services/userService";
+import { useTranslation } from "react-i18next"; // i18next için
 
 // Yeniden kullanılabilir PasswordInput bileşeni
 const PasswordInput = ({ placeholder, value, onChange }) => {
@@ -37,7 +38,8 @@ const PasswordInput = ({ placeholder, value, onChange }) => {
     );
 };
 
-const ChangePasswordModal = ({ isOpen, close, modalData }) => {
+const ChangePasswordModal = ({ isOpen, close }) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const userId = useSelector((state) => state.user.user.userId);
     const [isLoading, setIsLoading] = useState(false);
@@ -78,29 +80,29 @@ const ChangePasswordModal = ({ isOpen, close, modalData }) => {
 
         // Tüm kuralların geçerli olduğunu kontrol et
         if (!isMinLengthValid) {
-            setErrorMessage("Şifre en az 6 karakter olmalıdır.");
+            setErrorMessage(t("changePasswordModal.error.minLength", "Şifre en az 6 karakter olmalıdır."));
             setIsLoading(false);
             return;
         }
         if (!isMaxLengthValid) {
-            setErrorMessage("Şifre en fazla 20 karakter olmalıdır.");
+            setErrorMessage(t("changePasswordModal.error.maxLength", "Şifre en fazla 20 karakter olmalıdır."));
             setIsLoading(false);
             return;
         }
         if (!isNoSpecialChars) {
-            setErrorMessage("Şifre özel karakter içermemelidir.");
+            setErrorMessage(t("changePasswordModal.error.specialChars", "Şifre özel karakter içermemelidir."));
             setIsLoading(false);
             return;
         }
         if (!isPasswordMatch) {
-            setErrorMessage("Yeni şifre ve onay şifresi eşleşmelidir.");
+            setErrorMessage(t("changePasswordModal.error.passwordMismatch", "Yeni şifre ve onay şifresi eşleşmelidir."));
             setIsLoading(false);
             return;
         }
 
         const data = await changePassword(userId, currentPassword, newPassword);
         console.log(data);
-        
+
         if (data) {
             close();
             navigate("/settings");
@@ -109,7 +111,7 @@ const ChangePasswordModal = ({ isOpen, close, modalData }) => {
     };
 
     return (
-        <Dialog open={isOpen} as="div" className="relative z50" onClose={close}>
+        <Dialog open={isOpen} as="div" className="relative z-50" onClose={close}>
             <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 text-text dark:text-dark-text">
                 <DialogPanel
                     transition
@@ -117,7 +119,7 @@ const ChangePasswordModal = ({ isOpen, close, modalData }) => {
                 >
                     <div className="flex justify-between items-center border-b pb-3 mb-4">
                         <DialogTitle as="h3" className="text-lg font-semibold">
-                            Şifreyi Değiştir
+                            {t("changePasswordModal.title", "Şifreyi Değiştir")}
                         </DialogTitle>
                         <button
                             onClick={close}
@@ -132,21 +134,21 @@ const ChangePasswordModal = ({ isOpen, close, modalData }) => {
                         {/* Şifreler için input */}
                         <div className="mt-4">
                             <PasswordInput
-                                placeholder="Mevcut şifrenizi girin"
+                                placeholder={t("changePasswordModal.currentPasswordPlaceholder", "Mevcut şifrenizi girin")}
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
                             />
                         </div>
                         <div className="mt-4">
                             <PasswordInput
-                                placeholder="Yeni şifre"
+                                placeholder={t("changePasswordModal.newPasswordPlaceholder", "Yeni şifre")}
                                 value={newPassword}
                                 onChange={handleNewPasswordChange}
                             />
                         </div>
                         <div className="mt-4">
                             <PasswordInput
-                                placeholder="Yeni şifre tekrar"
+                                placeholder={t("changePasswordModal.confirmPasswordPlaceholder", "Yeni şifre tekrar")}
                                 value={confirmNewPassword}
                                 onChange={handleConfirmPasswordChange}
                             />
@@ -154,7 +156,9 @@ const ChangePasswordModal = ({ isOpen, close, modalData }) => {
 
                         {/* Şifre kuralları */}
                         <div className="text-left mt-4">
-                            <p className="text-sm font-medium">Şifre Kuralları:</p>
+                            <p className="text-sm font-medium">
+                                {t("changePasswordModal.passwordRulesTitle", "Şifre Kuralları:")}
+                            </p>
                             <ul className="list-none text-sm mt-2">
                                 <li className="flex items-center">
                                     {isMinLengthValid ? (
@@ -162,7 +166,7 @@ const ChangePasswordModal = ({ isOpen, close, modalData }) => {
                                     ) : (
                                         <IoCloseCircleOutline className="text-red-500 mr-2" />
                                     )}
-                                    En az 6 karakter
+                                    {t("changePasswordModal.minLengthRule", "En az 6 karakter")}
                                 </li>
                                 <li className="flex items-center">
                                     {isMaxLengthValid ? (
@@ -170,7 +174,7 @@ const ChangePasswordModal = ({ isOpen, close, modalData }) => {
                                     ) : (
                                         <IoCloseCircleOutline className="text-red-500 mr-2" />
                                     )}
-                                    En fazla 20 karakter
+                                    {t("changePasswordModal.maxLengthRule", "En fazla 20 karakter")}
                                 </li>
                                 <li className="flex items-center">
                                     {isNoSpecialChars ? (
@@ -178,7 +182,7 @@ const ChangePasswordModal = ({ isOpen, close, modalData }) => {
                                     ) : (
                                         <IoCloseCircleOutline className="text-red-500 mr-2" />
                                     )}
-                                    Özel karakter içermemeli
+                                    {t("changePasswordModal.noSpecialCharsRule", "Özel karakter içermemeli")}
                                 </li>
                                 <li className="flex items-center">
                                     {isPasswordMatch ? (
@@ -186,7 +190,7 @@ const ChangePasswordModal = ({ isOpen, close, modalData }) => {
                                     ) : (
                                         <IoCloseCircleOutline className="text-red-500 mr-2" />
                                     )}
-                                    Şifreler eşleşmeli
+                                    {t("changePasswordModal.passwordMatchRule", "Şifreler eşleşmeli")}
                                 </li>
                             </ul>
                         </div>
@@ -203,7 +207,7 @@ const ChangePasswordModal = ({ isOpen, close, modalData }) => {
                             disabled={isLoading}
                             className="px-4 py-2 bg-gray-200 dark:bg-dark-sidebar text-gray-700 dark:text-dark-text rounded-lg hover:bg-gray-300 dark:hover:bg-dark-sidebar-selected transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
-                            İptal
+                            {t("changePasswordModal.cancelButton", "İptal")}
                         </button>
                         <button
                             onClick={handleChangePassword}
@@ -232,10 +236,10 @@ const ChangePasswordModal = ({ isOpen, close, modalData }) => {
                                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                         ></path>
                                     </svg>
-                                    <span>İşleniyor...</span>
+                                    <span>{t("changePasswordModal.processingButton", "İşleniyor...")}</span>
                                 </>
                             ) : (
-                                <span>Değiştir</span>
+                                <span>{t("changePasswordModal.changeButton", "Değiştir")}</span>
                             )}
                         </button>
                     </div>

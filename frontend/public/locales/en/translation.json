@@ -1,0 +1,164 @@
+{
+    "yesterday": "Yesterday",
+    "days": [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+    ],
+    "sidebar": {
+        "conversations": "Conversations",
+        "chat": "Chat"
+    },
+    "settings": {
+        "title": "Settings",
+        "back": "Back",
+        "profile": "Profile Settings",
+        "firstNamePlaceholder": "Enter your first name",
+        "lastNamePlaceholder": "Enter your last name",
+        "aboutPlaceholder": "Write something about yourself",
+        "username": "Username Settings",
+        "usernamePlaceholder": "Enter your new username",
+        "check": "Check",
+        "save": "Save",
+        "language": "Language Selection",
+        "language_select": "Select Language",
+        "notifications": "Notification Settings",
+        "enableNotifications": "Enable Notifications",
+        "theme": "Theme Settings",
+        "privacy": "Privacy Settings",
+        "showOnlineStatus": "Show Online Status",
+        "account": "Account Settings",
+        "changePassword": "Change Password",
+        "deleteAccount": "Delete Account"
+    },
+    "error": {
+        "title": "Page Not Found",
+        "message": "The page you are looking for might have been removed or is temporarily unavailable.",
+        "button": "Go to Home"
+    },
+    "chatroom": {
+        "online": "Online",
+        "today": "Today",
+        "messagePlaceholder": "Type your message...",
+        "send": "Send",
+        "systemMessages": {
+            "user_added": "{{performedUser}} was added by {{sender}}",
+            "user_kicked": "{{performedUser}} was removed by {{sender}}",
+            "user_joined": "{{performedUser}} joined via invite link",
+            "user_left": "{{performedUser}} left",
+            "group_info_updated": "Group info was updated by {{sender}}",
+            "user_joined_with_invitation_link": "{{performedUser}} joined via invite link",
+            "user_granted_admin": "{{performedUser}} was made admin by {{sender}}"
+        },
+        "groupInfo": " Grup info",
+        "leaveGroup": "Leave group"
+    },
+    "groupConversation": {
+        "title": "Create Group Chat",
+        "groupNameLabel": "Group Name",
+        "groupNamePlaceholder": "Enter group name...",
+        "searchUsersLabel": "Search Users",
+        "searchUsersPlaceholder": "Search by email...",
+        "searchResults": "Search Results",
+        "selectButton": "Select",
+        "selectedUsers": "Selected Users",
+        "createGroupButton": "Create Group"
+    },
+    "login": {
+        "title": "Login",
+        "pageTitle": "Chatapp | Login",
+        "emailPlaceholder": "Email",
+        "passwordPlaceholder": "Password",
+        "forgetPassword": "Forget password?",
+        "loginButton": "Login",
+        "noAccount": "Don't have an account?",
+        "signUp": "Sign up",
+        "or": "Or",
+        "facebookLogin": "Login with Facebook",
+        "googleLogin": "Login with Google"
+    },
+    "register": {
+        "pageTitle": "Chatapp | Register",
+        "title": "Sign up",
+        "emailPlaceholder": "Email",
+        "passwordPlaceholder": "Password",
+        "confirmPasswordPlaceholder": "Confirm password",
+        "usernamePlaceholder": "Username",
+        "signUpButton": "Sign up",
+        "hasAccount": "Already have an account?",
+        "loginLink": "Login",
+        "or": "Or",
+        "facebookLogin": "Login with Facebook",
+        "googleLogin": "Login with Google"
+    },
+    "profile": {
+        "editProfile": "Edit Profile",
+        "aboutTitle": "About",
+        "noAboutInfo": "No information available about this user.",
+        "joinDateTitle": "Join Date",
+        "sendMessage": "Send Message",
+        "loading": "Loading"
+    },
+    "groupInfoModal": {
+        "title": "Group Info",
+        "createdBy": "Created on {{date}}",
+        "groupNameLabel": "Group Name",
+        "groupNamePlaceholder": "Enter group name",
+        "groupNameEmpty": "No group name specified",
+        "descriptionLabel": "Group Description",
+        "descriptionPlaceholder": "Enter group description",
+        "descriptionEmpty": "No description",
+        "saveButton": "Save",
+        "savingButton": "Saving...",
+        "participantsTitle": "Participants",
+        "you": "(You)",
+        "admin": "(Admin)",
+        "makeAdmin": "Make Admin",
+        "removeUser": "Remove",
+        "addUserTitle": "Add User to Group",
+        "addUserPlaceholder": "Search user (by email)",
+        "addUserButton": "Add",
+        "createInviteLink": "Create Invite Link",
+        "copyLink": "Copy",
+        "closeButton": "Close"
+    },
+    "leaveGroupModal": {
+        "title": "Leave Group",
+        "confirmMessage": "Are you sure you want to leave the <span class='font-medium'>{{groupName}}</span> group?",
+        "warning": "This action cannot be undone, and you will need to be added by an admin to rejoin the group chat.",
+        "cancelButton": "Cancel",
+        "leaveButton": "Leave",
+        "leavingButton": "Leaving..."
+    },
+    "changePasswordModal": {
+        "title": "Change Password",
+        "currentPasswordPlaceholder": "Enter your current password",
+        "newPasswordPlaceholder": "New password",
+        "confirmPasswordPlaceholder": "Confirm new password",
+        "passwordRulesTitle": "Password Rules:",
+        "minLengthRule": "At least 6 characters",
+        "maxLengthRule": "At most 20 characters",
+        "noSpecialCharsRule": "No special characters",
+        "passwordMatchRule": "Passwords must match",
+        "error": {
+            "minLength": "Password must be at least 6 characters.",
+            "maxLength": "Password must be at most 20 characters.",
+            "specialChars": "Password must not contain special characters.",
+            "passwordMismatch": "New password and confirmation must match."
+        },
+        "cancelButton": "Cancel",
+        "changeButton": "Change",
+        "processingButton": "Processing..."
+    },
+    "deleteAccountModal": {
+        "title": "Delete Account",
+        "confirmMessage": "Are you sure you want to delete your account? This action cannot be undone!",
+        "cancelButton": "Cancel",
+        "deleteButton": "Delete Account",
+        "processingButton": "Processing..."
+    }
+}
