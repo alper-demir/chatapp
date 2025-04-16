@@ -1,0 +1,154 @@
+{
+    "sidebar": {
+        "conversations": "Sohbetler",
+        "chat": "Sohbet et"
+    },
+    "settings": {
+        "title": "Ayarlar",
+        "back": "Geri",
+        "profile": "Profil Ayarları",
+        "firstNamePlaceholder": "Adınızı girin",
+        "lastNamePlaceholder": "Soyadınızı girin",
+        "aboutPlaceholder": "Hakkınızda bir şeyler yazın",
+        "username": "Kullanıcı Adı Ayarları",
+        "usernamePlaceholder": "Yeni kullanıcı adınızı girin",
+        "check": "Kontrol Et",
+        "save": "Kaydet",
+        "language": "Dil Seçimi",
+        "language_select": "Dil Seçin",
+        "notifications": "Bildirim Ayarları",
+        "enableNotifications": "Bildirimleri Etkinleştir",
+        "theme": "Tema Ayarları",
+        "privacy": "Gizlilik Ayarları",
+        "showOnlineStatus": "Çevrimiçi Durumu Göster",
+        "account": "Hesap Ayarları",
+        "changePassword": "Şifre Değiştir",
+        "deleteAccount": "Hesabı Sil"
+    },
+    "error": {
+        "title": "Sayfa bulunamadı",
+        "message": "Aradığınız sayfa kaldırılmış olabilir veya geçici olarak kullanılamaz.",
+        "button": "Anasayfaya Dön"
+    },
+    "chatroom": {
+        "online": "Çevrimiçi",
+        "today": "Bugün",
+        "messagePlaceholder": "Mesajınızı yazın...",
+        "send": "Gönder",
+        "systemMessages": {
+            "user_added": "{{performedUser}} kullanıcısı {{sender}} tarafından eklendi",
+            "user_kicked": "{{performedUser}} kullanıcısı {{sender}} tarafından çıkarıldı",
+            "user_joined": "{{performedUser}} kullanıcısı davet linki ile katıldı",
+            "user_left": "{{performedUser}} kullanıcısı ayrıldı",
+            "group_info_updated": "Grup bilgisi {{sender}} tarafından güncellendi",
+            "user_joined_with_invitation_link": "{{performedUser}} kullanıcısı davet linki ile katıldı",
+            "user_granted_admin": "{{performedUser}} kullanıcısı {{sender}} tarafından yönetici yapıldı"
+        },
+        "groupInfo": " Grup bilgisi",
+        "leaveGroup": "Gruptan çık"
+    },
+    "groupConversation": {
+        "title": "Grup Sohbeti Oluştur",
+        "groupNameLabel": "Grup Adı",
+        "groupNamePlaceholder": "Grup adını girin...",
+        "searchUsersLabel": "Kullanıcı Ara",
+        "searchUsersPlaceholder": "Email ile ara...",
+        "searchResults": "Arama Sonuçları",
+        "selectButton": "Seç",
+        "selectedUsers": "Seçilen Kullanıcılar",
+        "createGroupButton": "Grup Oluştur"
+    },
+    "login": {
+        "title": "Giriş Yap",
+        "pageTitle": "Chatapp | Giriş",
+        "emailPlaceholder": "E-posta",
+        "passwordPlaceholder": "Şifre",
+        "forgetPassword": "Şifrenizi mi unuttunuz?",
+        "loginButton": "Giriş Yap",
+        "noAccount": "Hesabınız yok mu?",
+        "signUp": "Kayıt Ol",
+        "or": "Veya",
+        "facebookLogin": "Facebook ile Giriş Yap",
+        "googleLogin": "Google ile Giriş Yap"
+    },
+    "register": {
+        "pageTitle": "Chatapp | Kayıt",
+        "title": "Kayıt Ol",
+        "emailPlaceholder": "E-posta",
+        "passwordPlaceholder": "Şifre",
+        "confirmPasswordPlaceholder": "Şifreyi Onayla",
+        "usernamePlaceholder": "Kullanıcı Adı",
+        "signUpButton": "Kayıt Ol",
+        "hasAccount": "Zaten hesabınız var mı?",
+        "loginLink": "Giriş Yap",
+        "or": "Veya",
+        "facebookLogin": "Facebook ile Giriş Yap",
+        "googleLogin": "Google ile Giriş Yap"
+    },
+    "profile": {
+        "editProfile": "Profili Düzenle",
+        "aboutTitle": "Hakkında",
+        "noAboutInfo": "Bu kullanıcı hakkında bilgi yok.",
+        "joinDateTitle": "Katılım Tarihi",
+        "sendMessage": "Mesaj Gönder",
+        "loading": "Yükleniyor"
+    },
+    "groupInfoModal": {
+        "title": "Grup Bilgisi",
+        "createdBy": "tarafından {{date}} tarihinde oluşturuldu",
+        "groupNameLabel": "Grup Adı",
+        "groupNamePlaceholder": "Grup adını girin",
+        "groupNameEmpty": "Grup adı belirtilmemiş",
+        "descriptionLabel": "Grup Açıklaması",
+        "descriptionPlaceholder": "Grup açıklamasını girin",
+        "descriptionEmpty": "Açıklama yok",
+        "saveButton": "Kaydet",
+        "savingButton": "Kaydediliyor...",
+        "participantsTitle": "Katılımcılar",
+        "you": "(Sen)",
+        "admin": "(Yönetici)",
+        "makeAdmin": "Yönetici yap",
+        "removeUser": "Çıkar",
+        "addUserTitle": "Gruba Kullanıcı Ekle",
+        "addUserPlaceholder": "Kullanıcı ara (e-posta ile)",
+        "addUserButton": "Ekle",
+        "createInviteLink": "Davet Linki Oluştur",
+        "copyLink": "Kopyala",
+        "closeButton": "Kapat"
+    },
+    "leaveGroupModal": {
+        "title": "Gruptan Çık",
+        "confirmMessage": "<span class='font-medium'>{{groupName}}</span> grubundan çıkmak istediğine emin misin?",
+        "warning": "Bu işlem geri alınamaz ve grup sohbetine tekrar katılmak için bir yönetici tarafından eklenmen gerekir.",
+        "cancelButton": "İptal",
+        "leaveButton": "Çık",
+        "leavingButton": "Çıkılıyor..."
+    },
+    "changePasswordModal": {
+        "title": "Şifreyi Değiştir",
+        "currentPasswordPlaceholder": "Mevcut şifrenizi girin",
+        "newPasswordPlaceholder": "Yeni şifre",
+        "confirmPasswordPlaceholder": "Yeni şifre tekrar",
+        "passwordRulesTitle": "Şifre Kuralları:",
+        "minLengthRule": "En az 6 karakter",
+        "maxLengthRule": "En fazla 20 karakter",
+        "noSpecialCharsRule": "Özel karakter içermemeli",
+        "passwordMatchRule": "Şifreler eşleşmeli",
+        "error": {
+            "minLength": "Şifre en az 6 karakter olmalıdır.",
+            "maxLength": "Şifre en fazla 20 karakter olmalıdır.",
+            "specialChars": "Şifre özel karakter içermemelidir.",
+            "passwordMismatch": "Yeni şifre ve onay şifresi eşleşmelidir."
+        },
+        "cancelButton": "İptal",
+        "changeButton": "Değiştir",
+        "processingButton": "İşleniyor..."
+    },
+    "deleteAccountModal": {
+        "title": "Hesabı Sil",
+        "confirmMessage": "Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz!",
+        "cancelButton": "İptal",
+        "deleteButton": "Hesabı Sil",
+        "processingButton": "İşleniyor..."
+    }
+}

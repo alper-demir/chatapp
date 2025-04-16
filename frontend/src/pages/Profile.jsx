@@ -3,11 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { startConversation } from "../services/conversationService";
 import { getProfileWithUsername } from "../services/userService"
+import { useTranslation } from "react-i18next";
 const Profile = () => {
 
     const { username } = useParams();
     const navigate = useNavigate();
     const userId = useSelector((state) => state.user.user.userId);
+    const { t, i18n } = useTranslation();
 
     const [profileData, setProfileData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -43,7 +45,7 @@ const Profile = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-screen bg-main-bg dark:bg-dark-main-bg">
-                <p className="text-lg text-gray-500 dark:text-dark-text">Yükleniyor...</p>
+                <p className="text-lg text-gray-500 dark:text-dark-text">{t("profile.loading", "Yükleniyor")}...</p>
             </div>
         );
     }
@@ -57,18 +59,14 @@ const Profile = () => {
                         {profileData?.avatar || "👤"}
                     </div>
                     <div>
-                        <h1 className="text-2xl font-semibold">
-                            {profileData?.username}
-                        </h1>
-                        <p className="text-sm">
-                            {profileData?.email}
-                        </p>
+                        <h1 className="text-2xl font-semibold">{profileData?.username}</h1>
+                        <p className="text-sm">{profileData?.email}</p>
                         {isOwnProfile && (
                             <button
                                 onClick={() => navigate("/settings")}
                                 className="mt-2 px-3 py-1 bg-chatbutton dark:bg-dark-chatbutton text-white rounded-lg hover:bg-chatbutton-hover dark:hover:bg-dark-chatbutton-hover transition-colors text-sm"
                             >
-                                Profili Düzenle
+                                {t("profile.editProfile", "Profili Düzenle")}
                             </button>
                         )}
                     </div>
@@ -78,22 +76,26 @@ const Profile = () => {
                 <div className="mt-6 space-y-4">
                     <div>
                         <h2 className="text-lg font-medium">
-                            Hakkında
+                            {t("profile.aboutTitle", "Hakkında")}
                         </h2>
                         <p className="text-sm">
-                            {profileData?.about || "Bu kullanıcı hakkında bilgi yok."}
+                            {profileData?.about ||
+                                t("profile.noAboutInfo", "Bu kullanıcı hakkında bilgi yok.")}
                         </p>
                     </div>
                     <div>
                         <h2 className="text-lg font-medium">
-                            Katılım Tarihi
+                            {t("profile.joinDateTitle", "Katılım Tarihi")}
                         </h2>
                         <p className="text-sm">
-                            {new Date(profileData?.createdAt).toLocaleDateString("tr-TR", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                            })}
+                            {new Date(profileData?.createdAt).toLocaleDateString(
+                                i18n.language === "tr" ? "tr-TR" : "en-US",
+                                {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                }
+                            )}
                         </p>
                     </div>
                 </div>
@@ -104,7 +106,7 @@ const Profile = () => {
                             onClick={createConversation}
                             className="px-4 py-2 bg-chatbutton dark:bg-dark-chatbutton text-white rounded-lg hover:bg-chatbutton-hover dark:hover:bg-dark-chatbutton-hover transition-colors"
                         >
-                            Mesaj Gönder
+                            {t("profile.sendMessage", "Mesaj Gönder")}
                         </button>
                     </div>
                 )}

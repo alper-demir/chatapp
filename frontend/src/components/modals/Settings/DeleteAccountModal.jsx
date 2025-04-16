@@ -4,10 +4,11 @@ import { IoClose } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { deleteUserAccount } from "../../../services/userService";
+import { useTranslation } from "react-i18next";
 
 const DeleteAccountModal = ({ isOpen, close }) => {
-
-    const userId = useSelector(state => state.user.user.userId);
+    const { t } = useTranslation();
+    const userId = useSelector((state) => state.user.user.userId);
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -23,10 +24,10 @@ const DeleteAccountModal = ({ isOpen, close }) => {
             console.error("Hata:", data.message);
         }
         return;
-    }
+    };
 
     return (
-        <Dialog open={isOpen} as="div" className="relative z50" onClose={close}>
+        <Dialog open={isOpen} as="div" className="relative z-50" onClose={close}>
             <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 text-text dark:text-dark-text">
                 <DialogPanel
                     transition
@@ -34,7 +35,7 @@ const DeleteAccountModal = ({ isOpen, close }) => {
                 >
                     <div className="flex justify-between items-center border-b pb-3 mb-4">
                         <DialogTitle as="h3" className="text-lg font-semibold">
-                            Hesabı sil
+                            {t("deleteAccountModal.title", "Hesabı Sil")}
                         </DialogTitle>
                         <button
                             onClick={close}
@@ -47,7 +48,10 @@ const DeleteAccountModal = ({ isOpen, close }) => {
 
                     <div className="text-center mb-6">
                         <p className="text-sm mt-1">
-                            Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz!
+                            {t(
+                                "deleteAccountModal.confirmMessage",
+                                "Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz!"
+                            )}
                         </p>
                     </div>
 
@@ -57,7 +61,7 @@ const DeleteAccountModal = ({ isOpen, close }) => {
                             disabled={isLoading}
                             className="px-4 py-2 bg-gray-200 dark:bg-dark-sidebar text-gray-700 dark:text-dark-text rounded-lg hover:bg-gray-300 dark:hover:bg-dark-sidebar-selected transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
-                            İptal
+                            {t("deleteAccountModal.cancelButton", "İptal")}
                         </button>
                         <button
                             onClick={handleDeleteAccount}
@@ -86,17 +90,17 @@ const DeleteAccountModal = ({ isOpen, close }) => {
                                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                         ></path>
                                     </svg>
-                                    <span>İşleniyor...</span>
+                                    <span>{t("deleteAccountModal.processingButton", "İşleniyor...")}</span>
                                 </>
                             ) : (
-                                <span>Hesabı sil</span>
+                                <span>{t("deleteAccountModal.deleteButton", "Hesabı Sil")}</span>
                             )}
                         </button>
                     </div>
                 </DialogPanel>
             </div>
         </Dialog>
-    )
-}
+    );
+};
 
-export default DeleteAccountModal
+export default DeleteAccountModal;

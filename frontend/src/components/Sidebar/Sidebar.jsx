@@ -7,12 +7,14 @@ import More from './More';
 import Conversation from './Conversation';
 import { getConversationsWithUserId, startConversation } from '../../services/conversationService';
 import { searchUserWithEmail } from '../../services/userService';
+import { useTranslation } from 'react-i18next';
 
 const Sidebar = () => {
 
     const navigate = useNavigate();
     const userId = useSelector((state) => state.user.user.userId);
     const userSettings = useSelector(state => state.user.userSettings);
+    const { t } = useTranslation();
 
     const [selectedRoom, setSelectedRoom] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
@@ -169,7 +171,7 @@ const Sidebar = () => {
         <div className="hidden md:flex md:w-[320px] bg-sidebar dark:bg-dark-sidebar border-r border-border dark:border-dark-border shadow-sm flex-col">
             {/* Header */}
             <div className="px-5 py-4 border-b border-border dark:border-dark-border flex items-center justify-between">
-                <h1 className="text-xl font-semibold">Sohbetler</h1>
+                <h1 className="text-xl font-semibold">{t("sidebar.conversations")}</h1>
                 <More setSelectedRoom={setSelectedRoom} />
             </div>
 
@@ -202,7 +204,7 @@ const Sidebar = () => {
                             onClick={() => createConversation(searchResult)}
                             className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700 transition-colors duration-200"
                         >
-                            Sohbet Et
+                            {t("sidebar.chat")}
                         </button>
                     </div>
                 )}

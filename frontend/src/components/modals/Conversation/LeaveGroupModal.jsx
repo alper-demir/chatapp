@@ -4,8 +4,10 @@ import { useSelector } from "react-redux";
 import { IoClose } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { leaveConversation } from "../../../services/conversationService";
+import { useTranslation } from "react-i18next"; // i18next için
 
 const LeaveGroupModal = ({ isOpen, close, modalData }) => {
+    const { t } = useTranslation(); // Çeviri fonksiyonu
     const navigate = useNavigate();
     const userId = useSelector((state) => state.user.user.userId);
     const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +30,7 @@ const LeaveGroupModal = ({ isOpen, close, modalData }) => {
                 >
                     <div className="flex justify-between items-center border-b pb-3 mb-4">
                         <DialogTitle as="h3" className="text-lg font-semibold">
-                            Gruptan Çık
+                            {t("leaveGroupModal.title", "Gruptan Çık")}
                         </DialogTitle>
                         <button
                             onClick={close}
@@ -40,11 +42,19 @@ const LeaveGroupModal = ({ isOpen, close, modalData }) => {
                     </div>
 
                     <div className="text-center mb-6">
-                        <p className="text-sm">
-                            <span className="font-medium">{modalData?.groupName}</span> grubundan çıkmak istediğine emin misin?
-                        </p>
+                        <p
+                            className="text-sm"
+                            dangerouslySetInnerHTML={{
+                                __html: t("leaveGroupModal.confirmMessage", {
+                                    groupName: modalData?.groupName || "Bu grup",
+                                }),
+                            }}
+                        />
                         <p className="text-xs text-gray-500 mt-1">
-                            Bu işlem geri alınamaz ve grup sohbetine tekrar katılmak için bir yönetici tarafından eklenmen gerekir.
+                            {t(
+                                "leaveGroupModal.warning",
+                                "Bu işlem geri alınamaz ve grup sohbetine tekrar katılmak için bir yönetici tarafından eklenmen gerekir."
+                            )}
                         </p>
                     </div>
 
@@ -52,9 +62,9 @@ const LeaveGroupModal = ({ isOpen, close, modalData }) => {
                         <button
                             onClick={close}
                             disabled={isLoading}
-                            className="px-4 py-2 bg-gray-200 dark:bg-dark-sidebar text-gray-700 dark:text-dark-text rounded-lg hover:bg-gray-300 dark:hover:bg-dark-sidebar-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                            className="px-4 py-2 bg-gray-200 dark:bg-dark-sidebar text-gray-700 dark:text-dark-text rounded-lg hover:bg-gray-300 dark:hover:bg-dark-sidebar-selected transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
-                            İptal
+                            {t("leaveGroupModal.cancelButton", "İptal")}
                         </button>
                         <button
                             onClick={handleLeaveGroup}
@@ -83,10 +93,10 @@ const LeaveGroupModal = ({ isOpen, close, modalData }) => {
                                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                         ></path>
                                     </svg>
-                                    <span>Çıkılıyor...</span>
+                                    <span>{t("leaveGroupModal.leavingButton", "Çıkılıyor...")}</span>
                                 </>
                             ) : (
-                                <span>Çık</span>
+                                <span>{t("leaveGroupModal.leaveButton", "Çık")}</span>
                             )}
                         </button>
                     </div>
