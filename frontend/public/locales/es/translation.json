@@ -1,0 +1,168 @@
+{
+    "yesterday": "Ayer",
+    "days": [
+        "Domingo",
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado"
+    ],
+    "sidebar": {
+        "conversations": "Conversaciones",
+        "chat": "Chat",
+        "newGroup": "Nuevo grupo",
+        "profile": "Perfil",
+        "settings": "Configuración",
+        "logout": "Cerrar sesión"
+    },
+    "settings": {
+        "title": "Configuración",
+        "back": "Volver",
+        "profile": "Configuración del perfil",
+        "firstNamePlaceholder": "Ingresa tu nombre",
+        "lastNamePlaceholder": "Ingresa tu apellido",
+        "aboutPlaceholder": "Escribe algo sobre ti",
+        "username": "Configuración del nombre de usuario",
+        "usernamePlaceholder": "Ingresa tu nuevo nombre de usuario",
+        "check": "Verificar",
+        "save": "Guardar",
+        "language": "Selección de idioma",
+        "language_select": "Seleccionar idioma",
+        "notifications": "Configuración de notificaciones",
+        "enableNotifications": "Habilitar notificaciones",
+        "theme": "Configuración del tema",
+        "privacy": "Configuración de privacidad",
+        "showOnlineStatus": "Mostrar estado en línea",
+        "account": "Configuración de la cuenta",
+        "changePassword": "Cambiar contraseña",
+        "deleteAccount": "Eliminar cuenta"
+    },
+    "error": {
+        "title": "Página no encontrada",
+        "message": "La página que buscas podría haber sido eliminada o no está disponible temporalmente.",
+        "button": "Ir a la página principal"
+    },
+    "chatroom": {
+        "online": "En línea",
+        "today": "Hoy",
+        "messagePlaceholder": "Escribe tu mensaje...",
+        "send": "Enviar",
+        "systemMessages": {
+            "user_added": "{{performedUser}} fue añadido por {{sender}}",
+            "user_kicked": "{{performedUser}} fue eliminado por {{sender}}",
+            "user_joined": "{{performedUser}} se unió mediante un enlace de invitación",
+            "user_left": "{{performedUser}} abandonó el grupo",
+            "group_info_updated": "La información del grupo fue actualizada por {{sender}}",
+            "user_joined_with_invitation_link": "{{performedUser}} se unió mediante un enlace de invitación",
+            "user_granted_admin": "{{performedUser}} fue nombrado administrador por {{sender}}"
+        },
+        "groupInfo": "Información del grupo",
+        "leaveGroup": "Abandonar grupo"
+    },
+    "groupConversation": {
+        "title": "Crear chat grupal",
+        "groupNameLabel": "Nombre del grupo",
+        "groupNamePlaceholder": "Ingresa el nombre del grupo...",
+        "searchUsersLabel": "Buscar usuarios",
+        "searchUsersPlaceholder": "Buscar por correo electrónico...",
+        "searchResults": "Resultados de búsqueda",
+        "selectButton": "Seleccionar",
+        "selectedUsers": "Usuarios seleccionados",
+        "createGroupButton": "Crear grupo"
+    },
+    "login": {
+        "title": "Iniciar sesión",
+        "pageTitle": "Chatapp | Iniciar sesión",
+        "emailPlaceholder": "Correo electrónico",
+        "passwordPlaceholder": "Contraseña",
+        "forgetPassword": "¿Olvidaste tu contraseña?",
+        "loginButton": "Iniciar sesión",
+        "noAccount": "¿No tienes una cuenta?",
+        "signUp": "Registrarse",
+        "or": "O",
+        "facebookLogin": "Iniciar sesión con Facebook",
+        "googleLogin": "Iniciar sesión con Google"
+    },
+    "register": {
+        "pageTitle": "Chatapp | Registrarse",
+        "title": "Registrarse",
+        "emailPlaceholder": "Correo electrónico",
+        "passwordPlaceholder": "Contraseña",
+        "confirmPasswordPlaceholder": "Confirmar contraseña",
+        "usernamePlaceholder": "Nombre de usuario",
+        "signUpButton": "Registrarse",
+        "hasAccount": "¿Ya tienes una cuenta?",
+        "loginLink": "Iniciar sesión",
+        "or": "O",
+        "facebookLogin": "Iniciar sesión con Facebook",
+        "googleLogin": "Iniciar sesión con Google"
+    },
+    "profile": {
+        "editProfile": "Editar perfil",
+        "aboutTitle": "Acerca de",
+        "noAboutInfo": "No hay información disponible sobre este usuario.",
+        "joinDateTitle": "Fecha de registro",
+        "sendMessage": "Enviar mensaje",
+        "loading": "Cargando"
+    },
+    "groupInfoModal": {
+        "title": "Información del grupo",
+        "createdBy": "Creado el {{date}}",
+        "groupNameLabel": "Nombre del grupo",
+        "groupNamePlaceholder": "Ingresa el nombre del grupo",
+        "groupNameEmpty": "No se especificó ningún nombre de grupo",
+        "descriptionLabel": "Descripción del grupo",
+        "descriptionPlaceholder": "Ingresa la descripción del grupo",
+        "descriptionEmpty": "Sin descripción",
+        "saveButton": "Guardar",
+        "savingButton": "Guardando...",
+        "participantsTitle": "Participantes",
+        "you": "(Tú)",
+        "admin": "(Administrador)",
+        "makeAdmin": "Hacer administrador",
+        "removeUser": "Eliminar",
+        "addUserTitle": "Añadir usuario al grupo",
+        "addUserPlaceholder": "Buscar usuario (por correo electrónico)",
+        "addUserButton": "Añadir",
+        "createInviteLink": "Crear enlace de invitación",
+        "copyLink": "Copiar",
+        "closeButton": "Cerrar"
+    },
+    "leaveGroupModal": {
+        "title": "Abandonar grupo",
+        "confirmMessage": "¿Estás seguro de que quieres abandonar el grupo <span class='font-medium'>{{groupName}}</span>?",
+        "warning": "Esta acción no se puede deshacer y necesitarás ser añadido por un administrador para volver a unirte al chat del grupo.",
+        "cancelButton": "Cancelar",
+        "leaveButton": "Abandonar",
+        "leavingButton": "Abandonando..."
+    },
+    "changePasswordModal": {
+        "title": "Cambiar contraseña",
+        "currentPasswordPlaceholder": "Ingresa tu contraseña actual",
+        "newPasswordPlaceholder": "Nueva contraseña",
+        "confirmPasswordPlaceholder": "Confirmar nueva contraseña",
+        "passwordRulesTitle": "Reglas de la contraseña:",
+        "minLengthRule": "Al menos 6 caracteres",
+        "maxLengthRule": "Máximo 20 caracteres",
+        "noSpecialCharsRule": "Sin caracteres especiales",
+        "passwordMatchRule": "Las contraseñas deben coincidir",
+        "error": {
+            "minLength": "La contraseña debe tener al menos 6 caracteres.",
+            "maxLength": "La contraseña debe tener un máximo de 20 caracteres.",
+            "specialChars": "La contraseña no debe contener caracteres especiales.",
+            "passwordMismatch": "La nueva contraseña y la confirmación deben coincidir."
+        },
+        "cancelButton": "Cancelar",
+        "changeButton": "Cambiar",
+        "processingButton": "Procesando..."
+    },
+    "deleteAccountModal": {
+        "title": "Eliminar cuenta",
+        "confirmMessage": "¿Estás seguro de que quieres eliminar tu cuenta? ¡Esta acción no se puede deshacer!",
+        "cancelButton": "Cancelar",
+        "deleteButton": "Eliminar cuenta",
+        "processingButton": "Procesando..."
+    }
+}
