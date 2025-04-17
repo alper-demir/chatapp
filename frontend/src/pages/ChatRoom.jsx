@@ -6,6 +6,7 @@ import { formatMessageTime } from "../utils/date";
 import { IoCheckmarkDoneSharp, IoCheckmarkSharp } from "react-icons/io5";
 import More from "../components/ChatRoom/More";
 import { useTranslation } from "react-i18next";
+import { FaArrowAltCircleUp } from "react-icons/fa";
 
 const ChatRoom = () => {
 
@@ -231,12 +232,7 @@ const ChatRoom = () => {
                         {groupedMessages[date].map((msg) => (
                             <div
                                 key={msg._id}
-                                className={`flex ${msg.type === "system"
-                                        ? "justify-center"
-                                        : msg.sender._id === userId
-                                            ? "justify-end"
-                                            : "justify-start"
-                                    }`}
+                                className={`flex ${msg.type === "system" ? "justify-center" : msg.sender._id === userId ? "justify-end" : "justify-start"}`}
                             >
                                 {msg.type === "system" && (
                                     <div className="text-sm italic text-center p-2 bg-system-message dark:bg-dark-system-message rounded-lg text-dark-text my-2">
@@ -293,8 +289,8 @@ const ChatRoom = () => {
                                 {msg.type !== "system" && (
                                     <div
                                         className={`flex items-start max-w-lg p-3 rounded-xl my-1 ${msg.sender._id === userId
-                                                ? "bg-message-sender dark:bg-dark-message-sender"
-                                                : "bg-message-other dark:bg-dark-message-other shadow-sm"
+                                            ? "bg-message-sender dark:bg-dark-message-sender"
+                                            : "bg-message-other dark:bg-dark-message-other shadow-sm"
                                             }`}
                                     >
                                         {msg.sender._id !== userId && conversation?.isGroup && (
@@ -354,18 +350,7 @@ const ChatRoom = () => {
                         onClick={handleSendMessage}
                         className="px-4 py-2.5 bg-chatbutton dark:bg-dark-chatbutton text-white rounded-lg hover:bg-chatbutton-hover dark:hover:bg-dark-chatbutton-hover transition-colors duration-200 flex items-center space-x-2 cursor-pointer"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                        >
-                            <path
-                                fillRule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
+                        <FaArrowAltCircleUp className="text-lg" />
                         <span>{t("chatroom.send", "Gönder")}</span>
                     </button>
                 </div>
