@@ -3,10 +3,12 @@ import { CgProfile } from "react-icons/cg";
 import { HiOutlineUserGroup } from "react-icons/hi2";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 const More = ({ setSelectedRoom }) => {
 
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -32,7 +34,7 @@ const More = ({ setSelectedRoom }) => {
                                         } group flex w-full items-center px-4 py-2 text-sm`}
                                 >
                                     <HiOutlineUserGroup className="h-4 w-4 mr-3" />
-                                    Yeni Grup
+                                    {t("sidebar.newGroup", "Yeni grup")}
                                 </Link>
                             )}
                         </MenuItem>
@@ -43,7 +45,7 @@ const More = ({ setSelectedRoom }) => {
                                         } group flex w-full items-center px-4 py-2 text-sm`}
                                 >
                                     <CgProfile className="h-4 w-4 mr-3" />
-                                    Profil
+                                    {t("sidebar.profile", "Profil")}
                                 </button>
                             )}
                         </MenuItem>
@@ -54,7 +56,7 @@ const More = ({ setSelectedRoom }) => {
                                         } group flex w-full items-center px-4 py-2 text-sm`}
                                 >
                                     <IoIosSettings className="h-4 w-4 mr-3" />
-                                    Ayarlar
+                                    {t("sidebar.settings", "Ayarlar")}
                                 </Link>
                             )}
                         </MenuItem>
@@ -69,7 +71,7 @@ const More = ({ setSelectedRoom }) => {
                                         } group flex w-full items-center px-4 py-2 text-sm`}
                                 >
                                     <IoIosLogOut className="h-4 w-4 mr-3" />
-                                    Çıkış yap
+                                    {t("sidebar.logout", "Çıkış yap")}
                                 </button>
                             )}
                         </MenuItem>
