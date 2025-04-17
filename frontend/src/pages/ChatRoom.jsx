@@ -7,6 +7,8 @@ import { IoCheckmarkDoneSharp, IoCheckmarkSharp } from "react-icons/io5";
 import More from "../components/ChatRoom/More";
 import { useTranslation } from "react-i18next";
 import { FaArrowAltCircleUp } from "react-icons/fa";
+import EmojiPicker from 'emoji-picker-react';
+import { BsEmojiSmile } from "react-icons/bs";
 
 const ChatRoom = () => {
 
@@ -24,6 +26,7 @@ const ChatRoom = () => {
     const [conversation, setConversation] = useState(null);
     const [participants, setParticipants] = useState([]);
     const [isOnline, setIsOnline] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
     const socketMessageSound = new Audio("/notification-socket.mp3"); // public/notification-socket.mp3
     const otherScreenMessageSound = new Audio("/notification-other-screen.mp3"); // public/notification-other-screen.mp3
@@ -80,6 +83,10 @@ const ChatRoom = () => {
             setNewMessage("");
             console.log("Mesaj gönderildi:", newMessage);
         }
+    };
+
+    const handleEmojiClick = (emojiObject) => {
+        setNewMessage((prev) => prev + emojiObject.emoji);
     };
 
     // En alta kaydırma fonksiyonu
@@ -336,8 +343,26 @@ const ChatRoom = () => {
             </main>
 
             {/* Mesaj Gönderme Alanı */}
-            <footer className="p-4 border-t border-border dark:border-dark-border">
+            <footer className="p-4 border-t border-border dark:border-dark-border relative">
                 <div className="flex items-center space-x-2">
+                    {/* Emoji Butonu */}
+                    <button
+                        onClick={() => setShowEmojiPicker((prev) => !prev)}
+                        className="p-2 rounded-full hover:bg-sidebar-hover dark:hover:bg-dark-sidebar-selected transition-all duration-200 transform hover:scale-105 cursor-pointer"
+                        aria-label="Emoji seç"
+                    >
+                        <BsEmojiSmile className="h-5 w-5" />
+                    </button>
+                    {/* Emoji Seçici */}
+                    {showEmojiPicker && (
+                        <div className="absolute bottom-16 left-4 z-10 overflow-hidden w-full max-w-xs sm:max-w-sm">
+                            <EmojiPicker
+                                onEmojiClick={handleEmojiClick}
+                                theme={userSettings?.theme === "dark" ? "dark" : "light"}
+                                autoFocusSearch={true}
+                            />
+                        </div>
+                    )}
                     <input
                         type="text"
                         value={newMessage}
