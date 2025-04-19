@@ -6,6 +6,9 @@ import { formatMessageTime } from "../utils/date";
 import { IoCheckmarkDoneSharp, IoCheckmarkSharp } from "react-icons/io5";
 import More from "../components/ChatRoom/More";
 import { useTranslation } from "react-i18next";
+import { FaArrowAltCircleUp } from "react-icons/fa";
+import EmojiPicker from 'emoji-picker-react';
+import { BsEmojiSmile } from "react-icons/bs";
 
 const ChatRoom = () => {
 
@@ -23,6 +26,7 @@ const ChatRoom = () => {
     const [conversation, setConversation] = useState(null);
     const [participants, setParticipants] = useState([]);
     const [isOnline, setIsOnline] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
     const socketMessageSound = new Audio("/notification-socket.mp3"); // public/notification-socket.mp3
     const otherScreenMessageSound = new Audio("/notification-other-screen.mp3"); // public/notification-other-screen.mp3
@@ -79,6 +83,10 @@ const ChatRoom = () => {
             setNewMessage("");
             console.log("Mesaj gönderildi:", newMessage);
         }
+    };
+
+    const handleEmojiClick = (emojiObject) => {
+        setNewMessage((prev) => prev + emojiObject.emoji);
     };
 
     // En alta kaydırma fonksiyonu
@@ -231,12 +239,7 @@ const ChatRoom = () => {
                         {groupedMessages[date].map((msg) => (
                             <div
                                 key={msg._id}
-                                className={`flex ${msg.type === "system"
-                                        ? "justify-center"
-                                        : msg.sender._id === userId
-                                            ? "justify-end"
-                                            : "justify-start"
-                                    }`}
+                                className={`flex ${msg.type === "system" ? "justify-center" : msg.sender._id === userId ? "justify-end" : "justify-start"}`}
                             >
                                 {msg.type === "system" && (
                                     <div className="text-sm italic text-center p-2 bg-system-message dark:bg-dark-system-message rounded-lg text-dark-text my-2">
@@ -293,8 +296,8 @@ const ChatRoom = () => {
                                 {msg.type !== "system" && (
                                     <div
                                         className={`flex items-start max-w-lg p-3 rounded-xl my-1 ${msg.sender._id === userId
-                                                ? "bg-message-sender dark:bg-dark-message-sender"
-                                                : "bg-message-other dark:bg-dark-message-other shadow-sm"
+                                            ? "bg-message-sender dark:bg-dark-message-sender"
+                                            : "bg-message-other dark:bg-dark-message-other shadow-sm"
                                             }`}
                                     >
                                         {msg.sender._id !== userId && conversation?.isGroup && (
@@ -340,8 +343,26 @@ const ChatRoom = () => {
             </main>
 
             {/* Mesaj Gönderme Alanı */}
-            <footer className="p-4 border-t border-border dark:border-dark-border">
+            <footer className="p-4 border-t border-border dark:border-dark-border relative">
                 <div className="flex items-center space-x-2">
+                    {/* Emoji Butonu */}
+                    <button
+                        onClick={() => setShowEmojiPicker((prev) => !prev)}
+                        className="p-2 rounded-full hover:bg-sidebar-hover dark:hover:bg-dark-sidebar-selected transition-all duration-200 transform hover:scale-105 cursor-pointer"
+                        aria-label="Emoji seç"
+                    >
+                        <BsEmojiSmile className="h-5 w-5" />
+                    </button>
+                    {/* Emoji Seçici */}
+                    {showEmojiPicker && (
+                        <div className="absolute bottom-16 left-4 z-10 overflow-hidden w-full max-w-xs sm:max-w-sm">
+                            <EmojiPicker
+                                onEmojiClick={handleEmojiClick}
+                                theme={userSettings?.theme === "dark" ? "dark" : "light"}
+                                autoFocusSearch={true}
+                            />
+                        </div>
+                    )}
                     <input
                         type="text"
                         value={newMessage}
@@ -354,18 +375,7 @@ const ChatRoom = () => {
                         onClick={handleSendMessage}
                         className="px-4 py-2.5 bg-chatbutton dark:bg-dark-chatbutton text-white rounded-lg hover:bg-chatbutton-hover dark:hover:bg-dark-chatbutton-hover transition-colors duration-200 flex items-center space-x-2 cursor-pointer"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                        >
-                            <path
-                                fillRule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
+                        <FaArrowAltCircleUp className="text-lg" />
                         <span>{t("chatroom.send", "Gönder")}</span>
                     </button>
                 </div>
