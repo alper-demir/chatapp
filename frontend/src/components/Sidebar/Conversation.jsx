@@ -1,10 +1,11 @@
 import { formatConversationTime } from '../../utils/date';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Conversation = ({ conv, selectedRoom, setSelectedRoom }) => {
     const userId = useSelector(state => state.user.user.userId);
-
+    const { t } = useTranslation();
     // Bireysel sohbette karşı tarafın kullanıcı adını bul
     const otherParticipant = conv?.isGroup
         ? null
@@ -29,7 +30,21 @@ const Conversation = ({ conv, selectedRoom, setSelectedRoom }) => {
                     )}
                 </div>
                 <div className="text-sm text-sidebar-text dark:text-dark-sidebar-text flex justify-between items-center">
-                    <span className="truncate mr-2" title={conv.lastMessage?.content}>{conv.lastMessage?.content || "Yeni sohbet"}</span>
+                    <span className="truncate mr-2" title={conv.lastMessage?.content}>
+                        {
+                            conv.lastMessage?.mediaType ? (
+                                conv.lastMessage?.mediaType === "audio" ? (
+                                    <span>{t("sidebar.audioMessage", "Sesli mesaj")}</span>
+                                ) : conv.lastMessage?.mediaType === "image" ? (
+                                    <span>{t("sidebar.imageMessage", "Görsel")}</span>
+                                ) : conv.lastMessage?.mediaType === "video" && (
+                                    <span>{t("sidebar.videoMessage", "Video")}</span>
+                                )
+                            ) : (
+                                conv.lastMessage?.content || "Yeni sohbet"
+                            )
+                        }
+                    </span>
                     <span className="text-xs">{formatConversationTime(conv.updatedAt)}</span>
                 </div>
             </div>
