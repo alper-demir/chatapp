@@ -6,35 +6,54 @@ import { formatMessageTime } from "../utils/date";
 import { IoCheckmarkDoneSharp, IoCheckmarkSharp } from "react-icons/io5";
 import More from "../components/ChatRoom/More";
 import { useTranslation } from "react-i18next";
-import { FaArrowAltCircleUp } from "react-icons/fa";
+import { FaArrowAltCircleUp, FaMicrophone, FaTrash } from "react-icons/fa";
 import EmojiPicker from 'emoji-picker-react';
 import { BsEmojiSmile } from "react-icons/bs";
+import { PiRecord } from "react-icons/pi";
+import autoAnimate from "@formkit/auto-animate";
+import AudioView from "../components/AudioView";
 
 const ChatRoom = () => {
 
-    const URL = import.meta.env.VITE_SERVER_URL;
+    const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
     const navigate = useNavigate();
     const { t } = useTranslation();
-
+    const recordRef = useRef(null);
+    const mediaRecorderRef = useRef(null);
+    const chunksRef = useRef([]);
+    const timerRef = useRef(null);
+    const footerRef = useRef(null);
+    const timeIntervalRef = useRef(null);
+    const messagesEndRef = useRef(null);
     const { roomId } = useParams();
+
     const userId = useSelector((state) => state.user.user.userId); // Sender
     const userSettings = useSelector(state => state.user.userSettings);
     const [newMessage, setNewMessage] = useState("");
     const [messages, setMessages] = useState([]);
-    const messagesEndRef = useRef(null); // En alta kaydırmak için referans
     const [conversation, setConversation] = useState(null);
     const [participants, setParticipants] = useState([]);
     const [isOnline, setIsOnline] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [recording, setRecording] = useState(false);
+    const [audioURL, setAudioURL] = useState('');
 
     const socketMessageSound = new Audio("/notification-socket.mp3"); // public/notification-socket.mp3
     const otherScreenMessageSound = new Audio("/notification-other-screen.mp3"); // public/notification-other-screen.mp3
 
+    useEffect(() => {
+        recordRef.current && autoAnimate(recordRef.current);
+    }, [recordRef]);
+
+    useEffect(() => {
+        footerRef.current && autoAnimate(footerRef.current);
+    }, [footerRef]);
+
     const fetchMessages = async () => {
         setMessages([])
         try {
-            const response = await fetch(`${URL}/message/${roomId}`, { method: "GET" });
+            const response = await fetch(`${SERVER_URL}/message/${roomId}`, { method: "GET" });
             if (response.ok) {
                 const data = await response.json();
                 console.log(data);
@@ -50,7 +69,7 @@ const ChatRoom = () => {
 
     const fetchConversation = async () => {
         try {
-            const response = await fetch(`${URL}/conversation/get/id/${roomId}`);
+            const response = await fetch(`${SERVER_URL}/conversation/get/id/${roomId}`);
             if (response.ok) {
                 const data = await response.json();
                 console.log(data);
@@ -198,6 +217,113 @@ const ChatRoom = () => {
         scrollToBottom();
     }, [messages]);
 
+    const stopRecording = () => {
+        if (mediaRecorderRef.current) {
+            mediaRecorderRef.current.stop();
+            setRecording(false);
+            clearTimeout(timerRef.current);
+            clearInterval(timeIntervalRef.current); // Süreyi durdur
+        }
+    };
+
+    const deleteRecording = () => {
+        setAudioURL("");
+        setRecording(false);
+        clearTimeout(timerRef.current);
+        clearInterval(timeIntervalRef.current); // Süreyi durdur
+        if (mediaRecorderRef.current) {
+            mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+        }
+        mediaRecorderRef.current = null;
+        chunksRef.current = [];
+    }
+
+    const handleRecording = async () => {
+        setRecording((prev) => !prev);
+        if (recording) {
+            console.log("Ses kaydı durduruldu.");
+            stopRecording();
+        } else {
+            console.log("Ses kaydı başlatıldı.");
+            try {
+                let time = 15; // Şu an tek bir ses kaydı maksimum 15 saniye olarak ayarlandı
+                timeIntervalRef.current = setInterval(() => {
+                    console.log("saniye: " + time);
+                    time--;
+                    if (time === 0) {
+                        stopRecording();
+                        setRecording(false);
+                    }
+                }, 1000);
+
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const mediaRecorder = new MediaRecorder(stream);
+                mediaRecorderRef.current = mediaRecorder;
+                chunksRef.current = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) chunksRef.current.push(e.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+                    const url = URL.createObjectURL(blob);
+                    setAudioURL(url);
+                    mediaRecorder.stream.getTracks().forEach((track) => track.stop()); // Stream içeriklerinin hepsini durdur
+                };
+
+                mediaRecorder.start();
+            } catch (err) {
+                console.error("Microphone access error:", err);
+                setRecording(false);
+                clearInterval(timeIntervalRef.current);
+            }
+        }
+    };
+
+    const sendAudioMessage = async () => {
+        // Blob'u oluştur
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+
+        // Blob'dan bir File nesnesi oluştur
+        const audioFile = new File([blob], `audio_${Date.now()}.webm`, {
+            type: "audio/webm",
+        });
+
+        const cloud_name = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+        const upload_preset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+        // FormData nesnesi oluştur ve parametreleri ekle
+        const formData = new FormData();
+        formData.append("file", audioFile);
+        formData.append("upload_preset", upload_preset);
+        formData.append("cloud_name", cloud_name);
+
+        try {
+            // Cloudinary'e dosyayı yükle
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${cloud_name}/upload`, {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+            if (data.secure_url) {
+                socket.emit("sendMessage", {
+                    conversationId: roomId,
+                    sender: userId,
+                    mediaUrl: data.secure_url,
+                    type: "audio",
+                });
+                setRecording(false);
+                setAudioURL("");
+            } else {
+                console.error("Yükleme hatası:", data);
+            }
+        } catch (error) {
+            console.error("Yükleme sırasında hata oluştu:", error);
+        }
+    };
+
     return (
         <div className="flex flex-col h-full bg-main-bg dark:bg-dark-main-bg font-inter">
             {/* Chat Header */}
@@ -308,10 +434,23 @@ const ChatRoom = () => {
                                         <div>
                                             {msg.sender._id !== userId && conversation?.isGroup && (
                                                 <div className="text-sm font-semibold mb-1">
-                                                    {msg.sender?.email?.split("@")[0]}
+                                                    {msg.sender?.username}
                                                 </div>
                                             )}
-                                            <div className="text-sm">{msg.type === "text" && msg.content}</div>
+                                            {
+                                                msg.mediaType ? (
+                                                    msg.mediaType === "audio" ? (
+                                                        <div className="w-60"><AudioView audioUrl={msg.mediaUrl} /></div>
+                                                    ) : msg.mediaType === "image" ? (
+                                                        <>img</>
+                                                    ) : (
+                                                        <>video</>
+                                                    )
+                                                ) : (
+                                                    <div className="text-sm">{msg.type === "text" && msg.content}</div>
+                                                )
+                                            }
+
                                             <div className="text-sidebar-text dark:text-dark-sidebar-text mt-1.5 text-right flex items-center gap-x-1">
                                                 <span className="text-xs">{formatMessageTime(msg.createdAt)}</span>
                                                 <div className="flex text-sm">
@@ -343,44 +482,63 @@ const ChatRoom = () => {
             </main>
 
             {/* Mesaj Gönderme Alanı */}
-            <footer className="p-4 border-t border-border dark:border-dark-border relative">
-                <div className="flex items-center space-x-2">
-                    {/* Emoji Butonu */}
-                    <button
-                        onClick={() => setShowEmojiPicker((prev) => !prev)}
-                        className="p-2 rounded-full hover:bg-sidebar-hover dark:hover:bg-dark-sidebar-selected transition-all duration-200 transform hover:scale-105 cursor-pointer"
-                        aria-label="Emoji seç"
-                    >
-                        <BsEmojiSmile className="h-5 w-5" />
-                    </button>
-                    {/* Emoji Seçici */}
-                    {showEmojiPicker && (
-                        <div className="absolute bottom-16 left-4 z-10 overflow-hidden w-full max-w-xs sm:max-w-sm">
-                            <EmojiPicker
-                                onEmojiClick={handleEmojiClick}
-                                theme={userSettings?.theme === "dark" ? "dark" : "light"}
-                                autoFocusSearch={true}
-                            />
+            <footer footer className="p-4 border-t border-border dark:border-dark-border relative transition-all" ref={footerRef} >
+                {
+                    audioURL ? (
+                        <div className="flex justify-end items-center gap-x-4" >
+                            <button title={t("chatroom.deleteAuidoRecordTitle", "Sil")} onClick={deleteRecording} className="cursor-pointer"><FaTrash /></button>
+                            <div className="w-lg"><AudioView audioUrl={audioURL} /></div>
+                            <button onClick={sendAudioMessage}><FaArrowAltCircleUp className="text-2xl cursor-pointer" /></button>
                         </div>
-                    )}
-                    <input
-                        type="text"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder={t("chatroom.messagePlaceholder", "Mesajınızı yazın...")}
-                        className="flex-1 px-4 py-2.5 border border-border dark:border-dark-border rounded-lg focus:outline-none text-sm transition-all duration-200"
-                        onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                    />
-                    <button
-                        onClick={handleSendMessage}
-                        className="px-4 py-2.5 bg-chatbutton dark:bg-dark-chatbutton text-white rounded-lg hover:bg-chatbutton-hover dark:hover:bg-dark-chatbutton-hover transition-colors duration-200 flex items-center space-x-2 cursor-pointer"
-                    >
-                        <FaArrowAltCircleUp className="text-lg" />
-                        <span>{t("chatroom.send", "Gönder")}</span>
-                    </button>
-                </div>
-            </footer>
-        </div>
+                    ) : (
+                        <div className="flex items-center space-x-2">
+                            {/* Emoji Butonu */}
+                            <button
+                                onClick={() => setShowEmojiPicker((prev) => !prev)}
+                                className="p-2 rounded-full hover:bg-sidebar-hover dark:hover:bg-dark-sidebar-selected transition-all duration-200 transform hover:scale-105 cursor-pointer"
+                                aria-label="Emoji seç"
+                            >
+                                <BsEmojiSmile className="h-5 w-5" />
+                            </button>
+                            {/* Emoji Seçici */}
+                            {showEmojiPicker && (
+                                <div className="absolute bottom-16 left-4 z-10 overflow-hidden w-full max-w-xs sm:max-w-sm">
+                                    <EmojiPicker
+                                        onEmojiClick={handleEmojiClick}
+                                        theme={userSettings?.theme === "dark" ? "dark" : "light"}
+                                        autoFocusSearch={true}
+                                    />
+                                </div>
+                            )}
+                            <input
+                                type="text"
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                placeholder={t("chatroom.messagePlaceholder", "Mesajınızı yazın...")}
+                                className="flex-1 px-4 py-2.5 border border-border dark:border-dark-border rounded-lg focus:outline-none text-sm transition-all duration-200"
+                                onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                            />
+                            <div ref={recordRef} className="border border-border hover:bg-sidebar-hover dark:border-dark-border hover:dark:bg-dark-sidebar-selected rounded-full p-1 w-9 h-9 flex items-center justify-center transition-all duration-200 cursor-pointer" onClick={handleRecording}>
+                                {
+                                    recording ? (
+                                        <PiRecord className="text-lg animate-ping" />
+                                    ) : (
+                                        <FaMicrophone className="text-lg" />
+                                    )
+                                }
+                            </div>
+                            <button
+                                onClick={handleSendMessage}
+                                className="px-4 py-2.5 bg-chatbutton dark:bg-dark-chatbutton text-white rounded-lg hover:bg-chatbutton-hover dark:hover:bg-dark-chatbutton-hover transition-colors duration-200 flex items-center space-x-2 cursor-pointer"
+                            >
+                                <FaArrowAltCircleUp className="text-lg" />
+                            </button>
+                        </div>
+                    )
+                }
+
+            </footer >
+        </div >
     );
 };
 
