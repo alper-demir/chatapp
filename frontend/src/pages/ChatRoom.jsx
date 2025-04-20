@@ -38,6 +38,7 @@ const ChatRoom = () => {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [recording, setRecording] = useState(false);
     const [audioURL, setAudioURL] = useState('');
+    const [disableSendAudioButton, setDisableSendAudioButton] = useState(false);
 
     const socketMessageSound = new Audio("/notification-socket.mp3"); // public/notification-socket.mp3
     const otherScreenMessageSound = new Audio("/notification-other-screen.mp3"); // public/notification-other-screen.mp3
@@ -278,10 +279,15 @@ const ChatRoom = () => {
                 setRecording(false);
                 clearInterval(timeIntervalRef.current);
             }
+            finally {
+                setDisableSendAudioButton(false);
+            }
         }
     };
 
     const sendAudioMessage = async () => {
+        if (!audioURL || disableSendAudioButton) return;
+        setDisableSendAudioButton(true);
         // Blob'u oluştur
         const blob = new Blob(chunksRef.current, { type: "audio/webm" });
 
@@ -488,7 +494,7 @@ const ChatRoom = () => {
                         <div className="flex justify-end items-center gap-x-4" >
                             <button title={t("chatroom.deleteAuidoRecordTitle", "Sil")} onClick={deleteRecording} className="cursor-pointer"><FaTrash /></button>
                             <div className="w-lg"><AudioView audioUrl={audioURL} /></div>
-                            <button onClick={sendAudioMessage}><FaArrowAltCircleUp className="text-2xl cursor-pointer" /></button>
+                            <button className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-75" onClick={sendAudioMessage}><FaArrowAltCircleUp className="text-2xl" disabled={disableSendAudioButton} /></button>
                         </div>
                     ) : (
                         <div className="flex items-center space-x-2">
