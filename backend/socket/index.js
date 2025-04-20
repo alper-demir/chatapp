@@ -87,13 +87,16 @@ const initializeSocket = (server) => {
 
         socket.on("sendMessage", async (message) => {
             try {
-                console.log("Message received: ", message.content, message.sender, message.conversationId);
+                console.log("Message received: ", message.content, message.sender, message.conversationId, message.type, message.mediaUrl);
 
                 // Yeni mesaj oluşturuluyor
                 const newMessage = await Message.create({
                     conversationId: message.conversationId,
                     sender: message.sender,
-                    content: message.content
+                    content: message.content,
+                    mediaUrl: message.mediaUrl,
+                    mediaType: message.type,
+                    type: message.type
                 });
 
                 // Gönderici bilgileri doldurulmuş mesaj
