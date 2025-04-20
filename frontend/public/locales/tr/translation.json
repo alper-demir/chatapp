@@ -15,7 +15,10 @@
         "newGroup": "Yeni Grup",
         "profile": "Profil",
         "settings": "Ayarlar",
-        "logout": "Çıkış Yap"
+        "logout": "Çıkış Yap",
+        "audioMessage": "Sesli mesaj",
+        "videoMessage": "Video",
+        "imageMessage": "Görsel"
     },
     "settings": {
         "title": "Ayarlar",
@@ -59,7 +62,8 @@
             "user_granted_admin": "{{performedUser}} kullanıcısı {{sender}} tarafından yönetici yapıldı"
         },
         "groupInfo": " Grup bilgisi",
-        "leaveGroup": "Gruptan çık"
+        "leaveGroup": "Gruptan çık",
+        "deleteAuidoRecordTitle": "Sil"
     },
     "groupConversation": {
         "title": "Grup Sohbeti Oluştur",

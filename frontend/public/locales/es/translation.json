@@ -15,7 +15,10 @@
         "newGroup": "Nuevo grupo",
         "profile": "Perfil",
         "settings": "Configuración",
-        "logout": "Cerrar sesión"
+        "logout": "Cerrar sesión",
+        "audioMessage": "Correo de voz",
+        "videoMessage": "Video",
+        "imageMessage": "Visual"
     },
     "settings": {
         "title": "Configuración",
@@ -59,7 +62,8 @@
             "user_granted_admin": "{{performedUser}} fue nombrado administrador por {{sender}}"
         },
         "groupInfo": "Información del grupo",
-        "leaveGroup": "Abandonar grupo"
+        "leaveGroup": "Abandonar grupo",
+        "deleteAuidoRecordTitle": "Borrar"
     },
     "groupConversation": {
         "title": "Crear chat grupal",
