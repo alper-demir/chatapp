@@ -12,6 +12,9 @@ import { BsEmojiSmile } from "react-icons/bs";
 import { PiRecord } from "react-icons/pi";
 import autoAnimate from "@formkit/auto-animate";
 import AudioView from "../components/AudioView";
+import CurrentParticipantMessageMore from "../components/Message/CurrentParticipantMessageMore";
+import OtherParticipantMessageMore from "../components/Message/OtherParticipantMessageMore";
+import { RxCross1 } from "react-icons/rx";
 
 const ChatRoom = () => {
 
@@ -92,6 +95,10 @@ const ChatRoom = () => {
     }
 
     const handleSendMessage = async () => {
+        if (audioURL) {
+            await sendAudioMessage();
+            return;
+        }
         if (newMessage.trim()) {
             console.log(roomId, userId, newMessage);
 
@@ -99,8 +106,10 @@ const ChatRoom = () => {
                 conversationId: roomId,
                 sender: userId,
                 content: newMessage,
+                replyTo: replyMessage ? replyMessage._id : null,
             });
             setNewMessage("");
+            setReplyMessage(null);
             console.log("Mesaj gönderildi:", newMessage);
         }
     };
@@ -319,6 +328,7 @@ const ChatRoom = () => {
                     sender: userId,
                     mediaUrl: data.secure_url,
                     type: "audio",
+                    replyTo: replyMessage ? replyMessage._id : null,
                 });
                 setRecording(false);
                 setAudioURL("");
@@ -327,8 +337,18 @@ const ChatRoom = () => {
             }
         } catch (error) {
             console.error("Yükleme sırasında hata oluştu:", error);
+        } finally {
+            setDisableSendAudioButton(false);
+            setAudioURL("");
+            setNewMessage("");
+            setRecording(false);
+            setReplyMessage(null);
+            clearTimeout(timerRef.current);
+            clearInterval(timeIntervalRef.current);
         }
     };
+
+    const [replyMessage, setReplyMessage] = useState(null);
 
     return (
         <div className="flex flex-col h-full bg-main-bg dark:bg-dark-main-bg font-inter">
@@ -369,10 +389,7 @@ const ChatRoom = () => {
                         </div>
                         {/* O tarihteki mesajlar */}
                         {groupedMessages[date].map((msg) => (
-                            <div
-                                key={msg._id}
-                                className={`flex ${msg.type === "system" ? "justify-center" : msg.sender._id === userId ? "justify-end" : "justify-start"}`}
-                            >
+                            <div key={msg._id} className={`flex ${msg.type === "system" ? "justify-center" : msg.sender._id === userId ? "justify-end" : "justify-start"}`} id={msg._id} >
                                 {msg.type === "system" && (
                                     <div className="text-sm italic text-center p-2 bg-system-message dark:bg-dark-system-message rounded-lg text-dark-text my-2">
                                         {msg.systemMessageType === "user_added" ? (
@@ -426,36 +443,67 @@ const ChatRoom = () => {
                                     </div>
                                 )}
                                 {msg.type !== "system" && (
-                                    <div
-                                        className={`flex items-start max-w-lg p-3 rounded-xl my-1 ${msg.sender._id === userId
-                                            ? "bg-message-sender dark:bg-dark-message-sender"
-                                            : "bg-message-other dark:bg-dark-message-other shadow-sm"
-                                            }`}
-                                    >
-                                        {msg.sender._id !== userId && conversation?.isGroup && (
-                                            <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
-                                                {msg.sender?.avatar || "👤"}
-                                            </div>
-                                        )}
-                                        <div>
-                                            {msg.sender._id !== userId && conversation?.isGroup && (
-                                                <div className="text-sm font-semibold mb-1">
-                                                    {msg.sender?.username}
+                                    <div className={`flex items-start max-w-lg p-3 rounded-xl my-1 group ${msg.sender._id === userId
+                                        ? "bg-message-sender dark:bg-dark-message-sender"
+                                        : "bg-message-other dark:bg-dark-message-other shadow-sm"
+                                        }`} >
+                                        {
+                                            msg.sender._id !== userId && conversation?.isGroup && (
+                                                <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
+                                                    {msg.sender?.avatar || "👤"}
                                                 </div>
-                                            )}
-                                            {
-                                                msg.mediaType ? (
-                                                    msg.mediaType === "audio" ? (
-                                                        <div className="w-60"><AudioView audioUrl={msg.mediaUrl} /></div>
-                                                    ) : msg.mediaType === "image" ? (
-                                                        <>img</>
-                                                    ) : (
-                                                        <>video</>
-                                                    )
-                                                ) : (
-                                                    <div className="text-sm">{msg.type === "text" && msg.content}</div>
-                                                )
-                                            }
+                                            )
+                                        }
+                                        <div>
+                                            <div className="flex justify-between">
+                                                <div>
+                                                    {msg.replyTo && (
+                                                        <div className="text-sm font-semibold bg-gray-500 rounded-lg p-2 mb-2 cursor-pointer" onClick={() => { document.getElementById(msg.replyTo?._id)?.scrollIntoView({ behavior: "smooth", block: "center" }); }}>
+                                                            <div>{msg.replyTo?.sender?._id !== userId ? (<>{msg.replyTo?.sender?.username}</>) : (<>Siz</>)}</div>
+                                                            {
+                                                                msg.replyTo.mediaType ? (
+                                                                    msg.replyTo.mediaType === "audio" ? (
+                                                                        <div className="w-60"><AudioView reply={true} audioUrl={msg.replyTo.mediaUrl} /></div>
+                                                                    ) : msg.replyTo.mediaType === "image" ? (
+                                                                        <>img</>
+                                                                    ) : (
+                                                                        <>video</>
+                                                                    )
+                                                                ) : (
+                                                                    <div className="text-sm">{msg.replyTo.type === "text" && msg.replyTo.content}</div>
+                                                                )
+                                                            }
+                                                        </div>
+                                                    )}
+                                                    {msg.sender._id !== userId && conversation?.isGroup && (
+                                                        <div className="text-sm font-semibold mb-1">
+                                                            {msg.sender?.username}
+                                                        </div>
+                                                    )}
+                                                    {
+                                                        msg.mediaType ? (
+                                                            msg.mediaType === "audio" ? (
+                                                                <div className="w-60"><AudioView audioUrl={msg.mediaUrl} /></div>
+                                                            ) : msg.mediaType === "image" ? (
+                                                                <>img</>
+                                                            ) : (
+                                                                <>video</>
+                                                            )
+                                                        ) : (
+                                                            <div className="text-sm">{msg.type === "text" && msg.content}</div>
+                                                        )
+                                                    }
+                                                </div>
+                                                <div className="ml-4">
+                                                    {
+                                                        msg.sender._id !== userId ? (
+                                                            <div className="text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"><OtherParticipantMessageMore message={msg} messageId={msg._id} setReplyMessage={setReplyMessage} /></div>
+                                                        ) : (
+                                                            <div className="text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"><CurrentParticipantMessageMore messageId={msg._id} /></div>
+                                                        )
+                                                    }
+                                                </div>
+                                            </div>
 
                                             <div className="text-sidebar-text dark:text-dark-sidebar-text mt-1.5 text-right flex items-center gap-x-1">
                                                 <span className="text-xs">{formatMessageTime(msg.createdAt)}</span>
@@ -483,18 +531,57 @@ const ChatRoom = () => {
                             </div>
                         ))}
                     </div>
-                ))}
+                ))
+                }
                 <div ref={messagesEndRef} />
-            </main>
-
+            </main >
             {/* Mesaj Gönderme Alanı */}
-            <footer footer className="p-4 border-t border-border dark:border-dark-border relative transition-all" ref={footerRef} >
+            < footer footer className="p-4 border-t border-border dark:border-dark-border relative transition-all" ref={footerRef} >
+                {
+                    replyMessage && (
+                        <div className="border-b border-border dark:border-dark-border mb-2 pb-4">
+                            {
+                                JSON.stringify(replyMessage) && (
+                                    <div className={`flex justify-between items-center p-3 pr-5 rounded-xl my-1 group ${replyMessage.sender._id === userId
+                                        ? "bg-message-sender dark:bg-dark-message-sender"
+                                        : "bg-message-other dark:bg-dark-message-other shadow-sm"
+                                        }`}
+                                    >
+                                        <div className="flex justify-between max-w-xl">
+                                            <div>
+                                                {replyMessage.sender._id !== userId && conversation?.isGroup && (
+                                                    <div className="text-sm font-semibold mb-1">
+                                                        {replyMessage.sender?.username}
+                                                    </div>
+                                                )}
+                                                {
+                                                    replyMessage.mediaType ? (
+                                                        replyMessage.mediaType === "audio" ? (
+                                                            <div className="w-60"><AudioView audioUrl={replyMessage.mediaUrl} /></div>
+                                                        ) : replyMessage.mediaType === "image" ? (
+                                                            <>img</>
+                                                        ) : (
+                                                            <>video</>
+                                                        )
+                                                    ) : (
+                                                        <div className="text-sm">{replyMessage.type === "text" && replyMessage.content}</div>
+                                                    )
+                                                }
+                                            </div>
+                                        </div>
+                                        <div><RxCross1 className="text-lg cursor-pointer" onClick={() => setReplyMessage(null)} /></div>
+                                    </div>
+                                )
+                            }
+                        </div>
+                    )
+                }
                 {
                     audioURL ? (
                         <div className="flex justify-end items-center gap-x-4" >
                             <button title={t("chatroom.deleteAuidoRecordTitle", "Sil")} onClick={deleteRecording} className="cursor-pointer"><FaTrash /></button>
                             <div className="w-lg"><AudioView audioUrl={audioURL} /></div>
-                            <button className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-75" onClick={sendAudioMessage}><FaArrowAltCircleUp className="text-2xl" disabled={disableSendAudioButton} /></button>
+                            <button className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-75" onClick={handleSendMessage}><FaArrowAltCircleUp className="text-2xl" disabled={disableSendAudioButton} /></button>
                         </div>
                     ) : (
                         <div className="flex items-center space-x-2">
@@ -520,8 +607,9 @@ const ChatRoom = () => {
                                 type="text"
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
+                                disabled={recording}
                                 placeholder={t("chatroom.messagePlaceholder", "Mesajınızı yazın...")}
-                                className="flex-1 px-4 py-2.5 border border-border dark:border-dark-border rounded-lg focus:outline-none text-sm transition-all duration-200"
+                                className="flex-1 px-4 py-2.5 border border-border dark:border-dark-border rounded-lg focus:outline-none text-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
                                 onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                             />
                             <div ref={recordRef} className="border border-border hover:bg-sidebar-hover dark:border-dark-border hover:dark:bg-dark-sidebar-selected rounded-full p-1 w-9 h-9 flex items-center justify-center transition-all duration-200 cursor-pointer" onClick={handleRecording}>
