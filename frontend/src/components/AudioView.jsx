@@ -3,7 +3,7 @@ import WaveSurfer from 'wavesurfer.js';
 import { FaPause } from "react-icons/fa6";
 import { BiSolidRightArrow } from "react-icons/bi";
 
-const AudioView = ({ audioUrl }) => {
+const AudioView = ({ audioUrl, reply = false }) => {
     const waveformRef = useRef(null);
     const wavesurferRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -49,13 +49,13 @@ const AudioView = ({ audioUrl }) => {
 
     return (
         <div className="flex items-center space-x-2">
-            <button
+            {!reply && <button
                 onClick={togglePlayPause}
                 className="p-2 rounded-full cursor-pointer hover:scale-105 transition-transform duration-200"
             >
                 {isPlaying ? <FaPause className='text-lg' /> : <BiSolidRightArrow className='text-lg' />}
-            </button>
-            <div ref={waveformRef} className="w-full"></div>
+            </button>}
+            <div ref={waveformRef} className={`w-full ${reply ? 'pointer-events-none' : ''}`}></div>
         </div>
     );
 };
