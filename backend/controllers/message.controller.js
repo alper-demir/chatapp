@@ -37,7 +37,11 @@ export const getMessages = async (req, res) => {
             return res.status(404).json({ message: "Sohbet bulunamadı." });
         }
 
-        const messages = await Message.find({ conversationId }).populate([{ path: "sender", select: { password: 0 } }, { path: "performedUser", select: "username" }]);
+        const messages = await Message.find({ conversationId }).populate([
+            { path: "sender", select: "username" },
+            { path: "performedUser", select: "username" },
+            { path: "replyTo", populate: { path: "sender", select: "username" } }
+        ]);
 
         res.status(200).json(messages);
     } catch (error) {

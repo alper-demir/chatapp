@@ -67,7 +67,7 @@ const initializeSocket = (server) => {
                 // Güncellenmiş mesajları al (frontend'e göndermek için)
                 const updatedMessages = await Message.find({
                     conversationId: data.conversationId
-                }).populate([{ path: "sender", select: { password: 0 } }, { path: "performedUser", select: "username" }]);
+                }).populate([{ path: "sender", select: { password: 0 } }, { path: "performedUser", select: "username" }, { path: "replyTo", populate: { path: "sender", select: "username" } }]);
 
                 // Odaya güncellenmiş mesajları gönder
                 io.to(data.conversationId).emit("receiveMarkAsRead", updatedMessages);
@@ -87,7 +87,7 @@ const initializeSocket = (server) => {
 
         socket.on("sendMessage", async (message) => {
             try {
-                console.log("Message received: ", message.content, message.sender, message.conversationId, message.type, message.mediaUrl);
+                console.log("Message received: ", message.content, message.sender, message.conversationId, message.type, message.mediaUrl, message.replyTo);
 
                 // Yeni mesaj oluşturuluyor
                 const newMessage = await Message.create({
@@ -96,7 +96,8 @@ const initializeSocket = (server) => {
                     content: message.content,
                     mediaUrl: message.mediaUrl,
                     mediaType: message.type,
-                    type: message.type
+                    type: message.type,
+                    replyTo: message.replyTo
                 });
 
                 // Gönderici bilgileri doldurulmuş mesaj
