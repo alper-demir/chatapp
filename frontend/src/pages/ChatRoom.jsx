@@ -458,7 +458,7 @@ const ChatRoom = () => {
                                                 <div>
                                                     {msg.replyTo && (
                                                         <div className="text-sm font-semibold bg-reply-bg dark:bg-dark-reply-bg rounded-lg p-2 mb-2 cursor-pointer" onClick={() => { document.getElementById(msg.replyTo?._id)?.scrollIntoView({ behavior: "smooth", block: "center" }); }}>
-                                                            <div>{msg.replyTo?.sender?._id !== userId ? (<>{msg.replyTo?.sender?.username}</>) : (<>Siz</>)}</div>
+                                                            <div>{msg.replyTo?.sender?._id !== userId ? (<>{msg.replyTo?.sender?.username}</>) : (<>{t("chatroom.you", "Siz")}</>)}</div>
                                                             {
                                                                 msg.replyTo.mediaType ? (
                                                                     msg.replyTo.mediaType === "audio" ? (
@@ -542,11 +542,13 @@ const ChatRoom = () => {
                                     >
                                         <div className="flex justify-between max-w-xl">
                                             <div>
-                                                {replyMessage.sender._id !== userId && conversation?.isGroup && (
-                                                    <div className="text-sm font-semibold mb-1">
-                                                        {replyMessage.sender?.username}
-                                                    </div>
-                                                )}
+                                                <div className="text-sm font-semibold mb-1">
+                                                    {
+                                                        replyMessage.sender._id !== userId ? (
+                                                            <>{replyMessage.sender?.username}</>
+                                                        ) : (<>{t("chatroom.you", "Siz")}</>)
+                                                    }
+                                                </div>
                                                 {
                                                     replyMessage.mediaType ? (
                                                         replyMessage.mediaType === "audio" ? (
@@ -562,7 +564,7 @@ const ChatRoom = () => {
                                                 }
                                             </div>
                                         </div>
-                                        <div><RxCross1 className="text-lg cursor-pointer" onClick={() => setReplyMessage(null)} /></div>
+                                        <div><RxCross1 className="text-lg cursor-pointer hover:scale-105 transition-all duration-200" onClick={() => setReplyMessage(null)} /></div>
                                     </div>
                                 )
                             }
@@ -605,7 +607,7 @@ const ChatRoom = () => {
                                 className="flex-1 px-4 py-2.5 border border-border dark:border-dark-border rounded-lg focus:outline-none text-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
                                 onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                             />
-                            <div ref={recordRef} className="border border-border hover:bg-sidebar-hover dark:border-dark-border hover:dark:bg-dark-sidebar-selected rounded-full p-1 w-9 h-9 flex items-center justify-center transition-all duration-200 cursor-pointer" onClick={handleRecording}>
+                            <div title={recording ? t("chatroom.stopAudioTitle", "Kaydı durdur") : t("chatroom.recordAudioTitle", "Ses kaydet")} ref={recordRef} className="border border-border hover:bg-sidebar-hover dark:border-dark-border hover:dark:bg-dark-sidebar-selected rounded-full p-1 w-9 h-9 flex items-center justify-center transition-all duration-200 cursor-pointer" onClick={handleRecording}>
                                 {
                                     recording ? (
                                         <PiRecord className="text-lg animate-ping" />
