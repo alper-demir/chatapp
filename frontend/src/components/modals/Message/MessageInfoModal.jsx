@@ -1,7 +1,7 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { useTranslation } from "react-i18next";
 import { formatDate, formatMessageTime } from "../../../utils/date";
-import AudioView from "../../AudioView";
+import Content from "../../Message/Content";
 
 const MessageInfoModal = ({ isOpen, close, modalData }) => {
     const { t } = useTranslation();
@@ -25,19 +25,7 @@ const MessageInfoModal = ({ isOpen, close, modalData }) => {
                             {t("messageInfoModal.sender", "Gönderen")}: {message.sender.email}
                         </p>
                         <p className="text-sm">
-                            {
-                                message.mediaType ? (
-                                    message.mediaType === "audio" ? (
-                                        <div className="w-60"><AudioView audioUrl={message.mediaUrl} /></div>
-                                    ) : message.mediaType === "image" ? (
-                                        <>img</>
-                                    ) : (
-                                        <>video</>
-                                    )
-                                ) : (
-                                    <div className="text-sm">{message.type === "text" && message.content}</div>
-                                )
-                            }
+                            <Content message={message} />
                         </p>
                         <p className="text-xs">
                             {t("messageInfoModal.time", "Gönderilme Zamanı")}: {formatDate(message.createdAt) + " " + formatMessageTime(message.createdAt)}

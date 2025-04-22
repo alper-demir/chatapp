@@ -14,6 +14,7 @@ import autoAnimate from "@formkit/auto-animate";
 import AudioView from "../components/AudioView";
 import MessageMore from "../components/Message/MessageMore";
 import { RxCross1 } from "react-icons/rx";
+import Content from "../components/Message/Content";
 
 const ChatRoom = () => {
 
@@ -41,9 +42,16 @@ const ChatRoom = () => {
     const [recording, setRecording] = useState(false);
     const [audioURL, setAudioURL] = useState('');
     const [disableSendAudioButton, setDisableSendAudioButton] = useState(false);
+    const [replyMessage, setReplyMessage] = useState(null);
 
     const socketMessageSound = new Audio("/notification-socket.mp3"); // public/notification-socket.mp3
     const otherScreenMessageSound = new Audio("/notification-other-screen.mp3"); // public/notification-other-screen.mp3
+    
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        inputRef?.current?.focus();
+    }, [replyMessage]);
 
     useEffect(() => {
         recordRef.current && autoAnimate(recordRef.current);
@@ -347,7 +355,6 @@ const ChatRoom = () => {
         }
     };
 
-    const [replyMessage, setReplyMessage] = useState(null);
 
     return (
         <div className="flex flex-col h-full bg-main-bg dark:bg-dark-main-bg font-inter">
@@ -455,23 +462,11 @@ const ChatRoom = () => {
                                         }
                                         <div>
                                             <div className="flex justify-between">
-                                                <div>
+                                                <div> {/* Cevap verilen mesajın içeriği */}
                                                     {msg.replyTo && (
                                                         <div className="text-sm font-semibold bg-reply-bg dark:bg-dark-reply-bg rounded-lg p-2 mb-2 cursor-pointer" onClick={() => { document.getElementById(msg.replyTo?._id)?.scrollIntoView({ behavior: "smooth", block: "center" }); }}>
                                                             <div>{msg.replyTo?.sender?._id !== userId ? (<>{msg.replyTo?.sender?.username}</>) : (<>{t("chatroom.you", "Siz")}</>)}</div>
-                                                            {
-                                                                msg.replyTo.mediaType ? (
-                                                                    msg.replyTo.mediaType === "audio" ? (
-                                                                        <div className="w-60"><AudioView reply={true} audioUrl={msg.replyTo.mediaUrl} /></div>
-                                                                    ) : msg.replyTo.mediaType === "image" ? (
-                                                                        <>img</>
-                                                                    ) : (
-                                                                        <>video</>
-                                                                    )
-                                                                ) : (
-                                                                    <div className="text-sm">{msg.replyTo.type === "text" && msg.replyTo.content}</div>
-                                                                )
-                                                            }
+                                                            <Content message={msg.replyTo} reply={true} />
                                                         </div>
                                                     )}
                                                     {msg.sender._id !== userId && conversation?.isGroup && (
@@ -479,19 +474,7 @@ const ChatRoom = () => {
                                                             {msg.sender?.username}
                                                         </div>
                                                     )}
-                                                    {
-                                                        msg.mediaType ? (
-                                                            msg.mediaType === "audio" ? (
-                                                                <div className="w-60"><AudioView audioUrl={msg.mediaUrl} /></div>
-                                                            ) : msg.mediaType === "image" ? (
-                                                                <>img</>
-                                                            ) : (
-                                                                <>video</>
-                                                            )
-                                                        ) : (
-                                                            <div className="text-sm">{msg.type === "text" && msg.content}</div>
-                                                        )
-                                                    }
+                                                    <Content message={msg} />
                                                 </div>
                                                 <div className="ml-4">
                                                     <div className="text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"><MessageMore message={msg} setReplyMessage={setReplyMessage} userId={userId} /></div>
@@ -549,19 +532,7 @@ const ChatRoom = () => {
                                                         ) : (<>{t("chatroom.you", "Siz")}</>)
                                                     }
                                                 </div>
-                                                {
-                                                    replyMessage.mediaType ? (
-                                                        replyMessage.mediaType === "audio" ? (
-                                                            <div className="w-60"><AudioView audioUrl={replyMessage.mediaUrl} /></div>
-                                                        ) : replyMessage.mediaType === "image" ? (
-                                                            <>img</>
-                                                        ) : (
-                                                            <>video</>
-                                                        )
-                                                    ) : (
-                                                        <div className="text-sm">{replyMessage.type === "text" && replyMessage.content}</div>
-                                                    )
-                                                }
+                                                <Content message={replyMessage} />
                                             </div>
                                         </div>
                                         <div><RxCross1 className="text-lg cursor-pointer hover:scale-105 transition-all duration-200" onClick={() => setReplyMessage(null)} /></div>
@@ -601,6 +572,7 @@ const ChatRoom = () => {
                             <input
                                 type="text"
                                 value={newMessage}
+                                ref={inputRef}
                                 onChange={(e) => setNewMessage(e.target.value)}
                                 disabled={recording}
                                 placeholder={t("chatroom.messagePlaceholder", "Mesajınızı yazın...")}
