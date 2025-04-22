@@ -58,4 +58,7 @@
 
     --color-system-message: #1f66ad;
     --color-dark-system-message: #c2543a;
+
+    --color-reply-bg: #fff;
+    --color-dark-reply-bg: #212121;
 }

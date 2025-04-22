@@ -457,7 +457,7 @@ const ChatRoom = () => {
                                             <div className="flex justify-between">
                                                 <div>
                                                     {msg.replyTo && (
-                                                        <div className="text-sm font-semibold bg-gray-500 rounded-lg p-2 mb-2 cursor-pointer" onClick={() => { document.getElementById(msg.replyTo?._id)?.scrollIntoView({ behavior: "smooth", block: "center" }); }}>
+                                                        <div className="text-sm font-semibold bg-reply-bg dark:bg-dark-reply-bg rounded-lg p-2 mb-2 cursor-pointer" onClick={() => { document.getElementById(msg.replyTo?._id)?.scrollIntoView({ behavior: "smooth", block: "center" }); }}>
                                                             <div>{msg.replyTo?.sender?._id !== userId ? (<>{msg.replyTo?.sender?.username}</>) : (<>Siz</>)}</div>
                                                             {
                                                                 msg.replyTo.mediaType ? (
