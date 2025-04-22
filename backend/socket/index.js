@@ -87,9 +87,6 @@ const initializeSocket = (server) => {
 
         socket.on("sendMessage", async (message) => {
             try {
-                console.log("Message received: ", message.content, message.sender, message.conversationId, message.type, message.mediaUrl, message.replyTo);
-
-                // Yeni mesaj oluşturuluyor
                 const newMessage = await Message.create({
                     conversationId: message.conversationId,
                     sender: message.sender,
@@ -104,15 +101,15 @@ const initializeSocket = (server) => {
                 const populatedMessage = await Message.findById(newMessage._id)
                     .populate("sender", { password: 0 });
 
+                // Sadece ilgili conversation odasındaki kullanıcılara yeni mesajı gönder
+                io.to(message.conversationId).emit("receiveMessage", populatedMessage);
+
                 // Conversation'ın son mesajı güncelleniyor (new:true ile güncel hali alınıyor)
                 const updatedConversation = await Conversation.findByIdAndUpdate(
                     message.conversationId,
                     { lastMessage: newMessage._id, updatedAt: Date.now() },
                     { new: true }
                 ).populate([{ path: "lastMessage", populate: { path: "sender", select: "username" } }, { path: "participants", select: "username" }]);
-
-                // Sadece ilgili conversation odasındaki kullanıcılara yeni mesajı gönder
-                io.to(message.conversationId).emit("receiveMessage", populatedMessage);
 
                 // Conversation güncellemesini, katılımcıların user odalarına gönder
                 updatedConversation.participants.forEach(participant => {
