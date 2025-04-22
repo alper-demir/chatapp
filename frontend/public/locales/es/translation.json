@@ -63,7 +63,10 @@
         },
         "groupInfo": "Información del grupo",
         "leaveGroup": "Abandonar grupo",
-        "deleteAuidoRecordTitle": "Borrar"
+        "deleteAuidoRecordTitle": "Borrar",
+        "you": "Tú",
+        "recordAudioTitle": "Grabar audio",
+        "stopAudioTitle": "Dejar de grabar"
     },
     "groupConversation": {
         "title": "Crear chat grupal",

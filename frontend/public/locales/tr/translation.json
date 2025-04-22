@@ -63,7 +63,10 @@
         },
         "groupInfo": " Grup bilgisi",
         "leaveGroup": "Gruptan çık",
-        "deleteAuidoRecordTitle": "Sil"
+        "deleteAuidoRecordTitle": "Sil",
+        "you": "Siz",
+        "recordAudioTitle": "Ses kaydet",
+        "stopAudioTitle": "Kaydı durdur"
     },
     "groupConversation": {
         "title": "Grup Sohbeti Oluştur",
