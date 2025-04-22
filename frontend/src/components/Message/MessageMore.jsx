@@ -6,13 +6,13 @@ import { openModal } from '../../store/modalSlice';
 import { useTranslation } from 'react-i18next';
 import { BsArrow90DegLeft } from "react-icons/bs";
 
-const OtherParticipantMessageMore = ({ conversationId, message, setReplyMessage, userId }) => {
+const MessageMore = ({ message, setReplyMessage, userId }) => {
 
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
-    const handleGroupInfoModal = () => {
-        dispatch(openModal({ modalType: "GroupInfoModal", modalData: { conversationId } }))
+    const handleMessageInfoModal = () => {
+        dispatch(openModal({ modalType: "MessageInfoModal", modalData: { message } }))
     }
 
     return (
@@ -28,12 +28,12 @@ const OtherParticipantMessageMore = ({ conversationId, message, setReplyMessage,
                 <div className="py-1">
                     <MenuItem>
                         {({ active }) => (
-                            <div onClick={handleGroupInfoModal}
+                            <div onClick={handleMessageInfoModal}
                                 className={`cursor-pointer ${active ? 'bg-sidebar-hover dark:bg-dark-dropdown-hover text-text dark:text-dark-text' : 'text-text dark:text-dark-text'
                                     } group flex w-full items-center px-4 py-2 text-sm`}
                             >
                                 <BsInfoSquare className="h-4 w-4 mr-3" />
-                                Mesaj bilgisi {message._id && <>{message._id}</>}
+                                {t("chatroom.messageMore.messageInfo", "Mesaj bilgisi")}
                             </div>
                         )}
                     </MenuItem>
@@ -44,11 +44,11 @@ const OtherParticipantMessageMore = ({ conversationId, message, setReplyMessage,
                                     } group flex w-full items-center px-4 py-2 text-sm`}
                             >
                                 <BsArrow90DegLeft className="h-4 w-4 mr-3" />
-                                Cevapla
+                                {t("chatroom.messageMore.reply", "Yanıtla")}
                             </div>
                         )}
                     </MenuItem>
-                    {
+                    {/* {
                         message.sender._id !== userId && (
                             <MenuItem>
                                 {({ active }) => (
@@ -62,11 +62,11 @@ const OtherParticipantMessageMore = ({ conversationId, message, setReplyMessage,
                                 )}
                             </MenuItem>
                         )
-                    }
+                    } */}
                 </div>
             </MenuItems>
         </Menu>
     )
 }
 
-export default OtherParticipantMessageMore
+export default MessageMore
