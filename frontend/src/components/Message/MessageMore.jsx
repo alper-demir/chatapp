@@ -6,7 +6,7 @@ import { openModal } from '../../store/modalSlice';
 import { useTranslation } from 'react-i18next';
 import { BsArrow90DegLeft } from "react-icons/bs";
 
-const OtherParticipantMessageMore = ({ conversationId, message, messageId, setReplyMessage }) => {
+const OtherParticipantMessageMore = ({ conversationId, message, setReplyMessage, userId }) => {
 
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -33,7 +33,7 @@ const OtherParticipantMessageMore = ({ conversationId, message, messageId, setRe
                                     } group flex w-full items-center px-4 py-2 text-sm`}
                             >
                                 <BsInfoSquare className="h-4 w-4 mr-3" />
-                                Mesaj bilgisi {messageId && <>{messageId}</>}
+                                Mesaj bilgisi {message._id && <>{message._id}</>}
                             </div>
                         )}
                     </MenuItem>
@@ -48,6 +48,21 @@ const OtherParticipantMessageMore = ({ conversationId, message, messageId, setRe
                             </div>
                         )}
                     </MenuItem>
+                    {
+                        message.sender._id !== userId && (
+                            <MenuItem>
+                                {({ active }) => (
+                                    <div onClick={() => setReplyMessage(message)}
+                                        className={`cursor-pointer ${active ? 'bg-sidebar-hover dark:bg-dark-dropdown-hover text-text dark:text-dark-text' : 'text-text dark:text-dark-text'
+                                            } group flex w-full items-center px-4 py-2 text-sm`}
+                                    >
+                                        <BsArrow90DegLeft className="h-4 w-4 mr-3" />
+                                        Other
+                                    </div>
+                                )}
+                            </MenuItem>
+                        )
+                    }
                 </div>
             </MenuItems>
         </Menu>

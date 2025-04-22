@@ -12,8 +12,7 @@ import { BsEmojiSmile } from "react-icons/bs";
 import { PiRecord } from "react-icons/pi";
 import autoAnimate from "@formkit/auto-animate";
 import AudioView from "../components/AudioView";
-import CurrentParticipantMessageMore from "../components/Message/CurrentParticipantMessageMore";
-import OtherParticipantMessageMore from "../components/Message/OtherParticipantMessageMore";
+import MessageMore from "../components/Message/MessageMore";
 import { RxCross1 } from "react-icons/rx";
 
 const ChatRoom = () => {
@@ -495,13 +494,7 @@ const ChatRoom = () => {
                                                     }
                                                 </div>
                                                 <div className="ml-4">
-                                                    {
-                                                        msg.sender._id !== userId ? (
-                                                            <div className="text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"><OtherParticipantMessageMore message={msg} messageId={msg._id} setReplyMessage={setReplyMessage} /></div>
-                                                        ) : (
-                                                            <div className="text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"><CurrentParticipantMessageMore messageId={msg._id} /></div>
-                                                        )
-                                                    }
+                                                    <div className="text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"><MessageMore message={msg} setReplyMessage={setReplyMessage} userId={userId} /></div>
                                                 </div>
                                             </div>
 
