@@ -66,7 +66,11 @@
         "deleteAuidoRecordTitle": "Sil",
         "you": "Siz",
         "recordAudioTitle": "Ses kaydet",
-        "stopAudioTitle": "Kaydı durdur"
+        "stopAudioTitle": "Kaydı durdur",
+        "messageMore": {
+            "messageInfo": "Mesaj bilgisi",
+            "reply": "Yanıtla"
+        }
     },
     "groupConversation": {
         "title": "Grup Sohbeti Oluştur",
@@ -171,5 +175,11 @@
         "cancelButton": "İptal",
         "deleteButton": "Hesabı Sil",
         "processingButton": "İşleniyor..."
+    },
+    "messageInfoModal": {
+        "title": "Mesaj Bilgisi",
+        "sender": "Gönderen",
+        "time": "Gönderilme zamanı",
+        "close": "Kapat"
     }
 }

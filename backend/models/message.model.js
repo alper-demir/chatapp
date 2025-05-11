@@ -22,4 +22,6 @@ const MessageSchema = new mongoose.Schema({
     replyTo: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' } // Yanıtlanan mesaj
 }, { timestamps: true });
 
+MessageSchema.index({ conversationId: 1, createdAt: -1 });
+
 export default mongoose.model("Message", MessageSchema);

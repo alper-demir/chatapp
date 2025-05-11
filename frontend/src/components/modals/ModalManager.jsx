@@ -4,12 +4,14 @@ import LeaveGroupModal from "./Conversation/LeaveGroupModal";
 import GroupInfoModal from "./Conversation/GroupInfoModal";
 import ChangePasswordModal from "./Settings/ChangePasswordModal";
 import DeleteAccountModal from "./Settings/DeleteAccountModal";
+import MessageInfoModal from './Message/MessageInfoModal';
 
 const modalComponents = { // MODAL LIST
     LeaveGroupModal: LeaveGroupModal,
     GroupInfoModal: GroupInfoModal,
     ChangePasswordModal: ChangePasswordModal,
-    DeleteAccountModal: DeleteAccountModal
+    DeleteAccountModal: DeleteAccountModal,
+    MessageInfoModal: MessageInfoModal
 };
 
 const ModalManager = () => {

@@ -66,7 +66,11 @@
         "deleteAuidoRecordTitle": "Borrar",
         "you": "Tú",
         "recordAudioTitle": "Grabar audio",
-        "stopAudioTitle": "Dejar de grabar"
+        "stopAudioTitle": "Dejar de grabar",
+        "messageMore": {
+            "messageInfo": "Información del mensaje",
+            "reply": "Responder"
+        }
     },
     "groupConversation": {
         "title": "Crear chat grupal",
@@ -171,5 +175,11 @@
         "cancelButton": "Cancelar",
         "deleteButton": "Eliminar cuenta",
         "processingButton": "Procesando..."
+    },
+    "messageInfoModal": {
+        "title": "Información del mensaje",
+        "sender": "Remitente",
+        "time": "Hora de envío",
+        "close": "Cerrar"
     }
 }
