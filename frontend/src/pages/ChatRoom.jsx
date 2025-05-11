@@ -18,6 +18,7 @@ const ChatRoom = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const messagesEndRef = useRef(null);
+    const messagesContainerRef = useRef(null);
     const { roomId } = useParams();
 
     const userId = useSelector((state) => state.user.user.userId);
@@ -28,29 +29,62 @@ const ChatRoom = () => {
     const [participants, setParticipants] = useState([]);
     const [isOnline, setIsOnline] = useState(false);
     const [replyMessage, setReplyMessage] = useState(null);
+    const [cursor, setCursor] = useState(null);
+    const [hasMore, setHasMore] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [initialLoad, setInitialLoad] = useState(true);
 
     const socketMessageSound = new Audio("/notification-socket.mp3");
     const otherScreenMessageSound = new Audio("/notification-other-screen.mp3");
 
-    const fetchMessages = async () => {
-        setMessages([]);
-        try {
-            const response = await fetch(`${SERVER_URL}/message/${roomId}`, {
-                method: "GET",
+    const scrollToBottom = (smooth = false) => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({
+                behavior: smooth ? "smooth" : "auto",
             });
+        }
+    };
+
+    const fetchMessages = async (cursorValue = null, reset = false) => {
+        if (isLoading || !hasMore) return;
+        setIsLoading(true);
+
+        const container = messagesContainerRef.current;
+        let previousScrollHeight = container ? container.scrollHeight : 0;
+
+        try {
+            const url = cursorValue
+                ? `${SERVER_URL}/message/${roomId}?cursor=${cursorValue}&limit=20`
+                : `${SERVER_URL}/message/${roomId}?limit=20`;
+            const response = await fetch(url, { method: "GET" });
             if (response.ok) {
                 const data = await response.json();
-                setMessages(data);
+                const newMessages = data.messages.reverse();
+
+                setMessages((prev) => (reset ? newMessages : [...newMessages, ...prev]));
+                setCursor(data.nextCursor);
+                setHasMore(data.hasMore);
+
+                if (!initialLoad && !reset && container) {
+                    const newScrollHeight = container.scrollHeight;
+                    container.scrollTop = newScrollHeight - previousScrollHeight;
+                }
             } else {
                 console.error("Mesajlar getirilemedi.");
             }
         } catch (error) {
             console.error("Mesajlar getirilemedi:", error);
+        } finally {
+            setIsLoading(false);
+            if (initialLoad || reset) {
+                setInitialLoad(false);
+                scrollToBottom();
+            }
         }
     };
 
     const fetchConversation = async () => {
-        const data = await getConversationWithConversationId(roomId)
+        const data = await getConversationWithConversationId(roomId);
         setConversation(data);
         if (!data.participants.some((p) => p._id === userId)) {
             navigate("/");
@@ -68,13 +102,27 @@ const ChatRoom = () => {
             });
             setNewMessage("");
             setReplyMessage(null);
-            console.log("Mesaj gönderildi:", newMessage);
+            scrollToBottom(true);
         }
     };
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const handleScroll = () => {
+        if (!messagesContainerRef.current) return;
+        const { scrollTop } = messagesContainerRef.current;
+        if (scrollTop <= 0 && hasMore && !isLoading) {
+            fetchMessages(cursor);
+        }
     };
+
+    useEffect(() => {
+        // Oda değiştiğinde state’leri sıfırla
+        setMessages([]);
+        setCursor(null);
+        setHasMore(true);
+        setInitialLoad(true);
+        fetchConversation();
+        fetchMessages(null, true); // İlk mesajları yükle, reset ile
+    }, [roomId]);
 
     useEffect(() => {
         socket.emit("joinRoom", roomId, userId);
@@ -83,7 +131,7 @@ const ChatRoom = () => {
         const handleReceiveMessage = (message) => {
             if (message.conversationId === roomId) {
                 setMessages((prev) => [...prev, message]);
-                scrollToBottom();
+                scrollToBottom(true);
                 socket.emit("markAsRead", { conversationId: roomId, userId });
 
                 if (
@@ -104,6 +152,7 @@ const ChatRoom = () => {
 
         return () => {
             socket.off("receiveMessage", handleReceiveMessage);
+            socket.emit("leaveRoom", roomId, userId);
         };
     }, [roomId, userId, userSettings]);
 
@@ -130,8 +179,12 @@ const ChatRoom = () => {
     useEffect(() => {
         const handleReceiveMarkAsRead = (updatedMessages) => {
             if (updatedMessages[0]?.conversationId === roomId) {
-                setMessages(updatedMessages);
-                scrollToBottom();
+                setMessages((prev) =>
+                    prev.map((msg) =>
+                        updatedMessages.find((um) => um._id === msg._id) || msg
+                    )
+                );
+                scrollToBottom(true); // Smooth kaydır
             }
         };
 
@@ -155,11 +208,9 @@ const ChatRoom = () => {
         };
     }, [roomId]);
 
-    const [groupedMessages, setGroupedMessages] = useState({})
+    const [groupedMessages, setGroupedMessages] = useState({});
     const fetchGroupMessages = () => {
-        const x = messages.reduce((acc, msg) => {
-            console.log("test");
-
+        const grouped = messages.reduce((acc, msg) => {
             const date = new Date(msg.createdAt).toLocaleDateString();
             if (!acc[date]) {
                 acc[date] = [];
@@ -167,56 +218,65 @@ const ChatRoom = () => {
             acc[date].push(msg);
             return acc;
         }, {});
-        setGroupedMessages(x)
-    }
+        setGroupedMessages(grouped);
+    };
 
     useEffect(() => {
-        fetchConversation();
-        fetchMessages();
-    }, [roomId]);
-
-    useEffect(() => {
-        scrollToBottom();
         fetchGroupMessages();
     }, [messages]);
 
     return (
         <div className="flex flex-col h-full bg-main-bg dark:bg-dark-main-bg font-inter">
-            {/* Chat Header */}
             <Header conversation={conversation} userId={userId} isOnline={isOnline} roomId={roomId} />
-
-            {/* Mesaj Alanı */}
-            <main className="flex-1 overflow-y-auto p-6 space-y-4 bg-main-bg dark:bg-dark-main-bg">
+            <main
+                ref={messagesContainerRef}
+                className="flex-1 overflow-y-auto p-6 space-y-4 bg-main-bg dark:bg-dark-main-bg"
+                onScroll={handleScroll}
+            >
+                {isLoading && <div className="text-center">Yükleniyor...</div>}
                 {Object.keys(groupedMessages).map((date) => (
                     <div key={date}>
-                        {/* Tarih başlığı - ortalanmış */}
                         <div className="text-center text-sm my-4">
                             {date === new Date().toLocaleDateString() ? t("chatroom.today", "Bugün") : date}
                         </div>
-                        {/* O tarihteki mesajlar */}
                         {groupedMessages[date].map((msg) => (
-                            <div key={msg._id} className={`flex ${msg.type === "system" ? "justify-center" : msg.sender._id === userId ? "justify-end" : "justify-start"}`} id={msg._id} >
-                                {msg.type === "system" && (
-                                    <SystemMessages msg={msg} />
-                                )}
+                            <div
+                                key={msg._id}
+                                className={`flex ${msg.type === "system" ? "justify-center" : msg.sender._id === userId ? "justify-end" : "justify-start"}`}
+                                id={msg._id}
+                            >
+                                {msg.type === "system" && <SystemMessages msg={msg} />}
                                 {msg.type !== "system" && (
-                                    <div className={`flex items-start max-w-lg p-3 rounded-xl my-1 group ${msg.sender._id === userId
-                                        ? "bg-message-sender dark:bg-dark-message-sender"
-                                        : "bg-message-other dark:bg-dark-message-other shadow-sm"
-                                        }`} >
-                                        {
-                                            msg.sender._id !== userId && conversation?.isGroup && (
-                                                <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
-                                                    {msg.sender?.avatar || "👤"}
-                                                </div>
-                                            )
-                                        }
+                                    <div
+                                        className={`flex items-start max-w-lg p-3 rounded-xl my-1 group ${msg.sender._id === userId
+                                                ? "bg-message-sender dark:bg-dark-message-sender"
+                                                : "bg-message-other dark:bg-dark-message-other shadow-sm"
+                                            }`}
+                                    >
+                                        {msg.sender._id !== userId && conversation?.isGroup && (
+                                            <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
+                                                {msg.sender?.avatar || "👤"}
+                                            </div>
+                                        )}
                                         <div>
                                             <div className="flex justify-between">
-                                                <div> {/* Cevap verilen mesajın içeriği */}
+                                                <div>
                                                     {msg.replyTo && (
-                                                        <div className="text-sm font-semibold bg-reply-bg dark:bg-dark-reply-bg rounded-lg p-2 mb-2 cursor-pointer" onClick={() => { document.getElementById(msg.replyTo?._id)?.scrollIntoView({ behavior: "smooth", block: "center" }); }}>
-                                                            <div>{msg.replyTo?.sender?._id !== userId ? (<>{msg.replyTo?.sender?.username}</>) : (<>{t("chatroom.you", "Siz")}</>)}</div>
+                                                        <div
+                                                            className="text-sm font-semibold bg-reply-bg dark:bg-dark-reply-bg rounded-lg p-2 mb-2 cursor-pointer"
+                                                            onClick={() => {
+                                                                document
+                                                                    .getElementById(msg.replyTo?._id)
+                                                                    ?.scrollIntoView({ behavior: "smooth", block: "center" });
+                                                            }}
+                                                        >
+                                                            <div>
+                                                                {msg.replyTo?.sender?._id !== userId ? (
+                                                                    <>{msg.replyTo?.sender?.username}</>
+                                                                ) : (
+                                                                    <>{t("chatroom.you", "Siz")}</>
+                                                                )}
+                                                            </div>
                                                             <Content message={msg.replyTo} reply={true} />
                                                         </div>
                                                     )}
@@ -228,10 +288,15 @@ const ChatRoom = () => {
                                                     <Content message={msg} />
                                                 </div>
                                                 <div className="ml-4">
-                                                    <div className="text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"><MessageMore message={msg} setReplyMessage={setReplyMessage} userId={userId} /></div>
+                                                    <div className="text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer">
+                                                        <MessageMore
+                                                            message={msg}
+                                                            setReplyMessage={setReplyMessage}
+                                                            userId={userId}
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
-
                                             <div className="text-sidebar-text dark:text-dark-sidebar-text mt-1.5 text-right flex items-center gap-x-1">
                                                 <span className="text-xs">{formatMessageTime(msg.createdAt)}</span>
                                                 <div className="flex text-sm">
@@ -258,12 +323,9 @@ const ChatRoom = () => {
                             </div>
                         ))}
                     </div>
-                ))
-                }
+                ))}
                 <div ref={messagesEndRef} />
-            </main >
-
-            {/* Mesaj Gönderme Alanı */}
+            </main>
             <ChatRoomFooter
                 userId={userId}
                 roomId={roomId}
